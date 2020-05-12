@@ -6,33 +6,18 @@ dependencies {
 	compile "org.eclipse.xtext:org.eclipse.xtext.xbase.ide:${xtextVersion}"
 }
 
-// Add a start script for the socket case
-mainClassName = 'de.joneug.mdal.ide.RunServer'
+mainClassName = 'org.eclipse.xtext.ide.server.ServerLauncher'
 startScripts {
-	applicationName = 'mdal-socket'
-}
-
-// Add another start script for the standalone / self-contained case
-task standaloneStartScript(type: CreateStartScripts) {
-	mainClassName = 'org.eclipse.xtext.ide.server.ServerLauncher'
 	applicationName = 'mdal-standalone'
-	outputDir = new File(project.buildDir, 'scripts')
-	classpath = jar.outputs.files + project.configurations.runtime
 }
 
-applicationDistribution.into("bin") {
-	from(standaloneStartScript)
-	fileMode = 0755
-}
-
-// Omit parent directory
+// Omit parent directory in distributions
 distZip {
     eachFile { file ->
         String path = file.relativePath
         file.setPath(path.substring(path.indexOf("/") + 1, path.length()))
     }
 }
-
 distTar {
 	eachFile { file ->
         String path = file.relativePath
