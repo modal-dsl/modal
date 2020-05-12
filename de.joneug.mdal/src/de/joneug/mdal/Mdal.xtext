@@ -1,0 +1,9 @@
+grammar de.joneug.Mdal with org.eclipse.xtext.common.Terminals
+
+generate mdal "https://www.example.org/mdal"
+
+Model:
+	greetings+=Greeting*;
+	
+Greeting:
+	'Hello' name=ID ('from' from=[Greeting])? '!';

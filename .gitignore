@@ -1,0 +1,27 @@
+# Xtext / Xtend
+model
+src-gen
+xtend-gen
+.antlr*.jar
+
+# Eclipse
+.classpath
+.project
+.settings/
+.metadata/
+bin/
+
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea/
+out/
+
+# Gradle
+.gradle/
+build/
+!gradle-wrapper.jar
+
+# VS Code
+.vscode/
