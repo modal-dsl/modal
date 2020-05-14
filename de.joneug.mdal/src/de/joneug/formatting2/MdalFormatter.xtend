@@ -15,8 +15,8 @@ class MdalFormatter extends AbstractFormatter2 {
 
 	def dispatch void format(Model model, extension IFormattableDocument document) {
 		// TODO: format HiddenRegions around keywords, attributes, cross references, etc. 
-		for (greeting : model.greetings) {
-			greeting.format
+		for (alExtension : model.alExtensions) {
+			alExtension.format
 		}
 	}
 	

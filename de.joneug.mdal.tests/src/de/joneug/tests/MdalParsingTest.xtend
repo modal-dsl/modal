@@ -8,6 +8,7 @@ import de.joneug.mdal.Model
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.XtextRunner
 import org.eclipse.xtext.testing.util.ParseHelper
+import org.eclipse.xtext.util.EmfFormatter
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,16 +16,25 @@ import org.junit.runner.RunWith
 @RunWith(XtextRunner)
 @InjectWith(MdalInjectorProvider)
 class MdalParsingTest {
+	
 	@Inject
 	ParseHelper<Model> parseHelper
 	
 	@Test
 	def void loadModel() {
-		val result = parseHelper.parse('''
-			Hello Xtext!
+		val model = parseHelper.parse('''
+			extension 'Seminar Module' {
+				idRanges: [
+					50000,
+					50000..100000
+				]
+			}
 		''')
-		Assert.assertNotNull(result)
-		val errors = result.eResource.errors
+
+		println(EmfFormatter.objToStr(model))
+
+		Assert.assertNotNull(model)
+		val errors = model.eResource.errors
 		Assert.assertTrue('''Unexpected errors: «errors.join(", ")»''', errors.isEmpty)
 	}
 }

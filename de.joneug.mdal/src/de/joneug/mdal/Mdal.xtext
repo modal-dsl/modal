@@ -3,7 +3,32 @@ grammar de.joneug.Mdal with org.eclipse.xtext.common.Terminals
 generate mdal "https://www.example.org/mdal"
 
 Model:
-	greetings+=Greeting*;
+	alExtensions += AlExtension*
+;
 	
-Greeting:
-	'Hello' name=ID ('from' from=[Greeting])? '!';
+AlExtension:
+	'extension' name = STRING '{'
+		('id:' id = STRING)?
+		('idRanges: [' (idRanges += IdRange (',' idRanges += IdRange)*) ']')?
+		('platform:' platform = STRING)?
+	 	('publisher:' publisher = STRING)?
+		('version:' version = STRING)?
+		('brief:' brief = STRING)?
+		('description:' description = STRING)?
+		('privacyStatement:' privacyStatement = STRING)?
+		('eula:' eula = STRING)?
+		('help:' help = STRING)?
+		('url:' url = STRING)?
+		('contextSensitiveHelpUrl:' contextSensitiveHelpUrl = STRING)?
+		('showMyCode:' showMyCode = Bool)?
+		('runtime:' runtime = STRING)?
+	'}'
+;
+
+IdRange:
+	min = INT ('..' max = INT)?
+;
+
+enum Bool:
+	TRUE = 'true' | FALSE = 'false'
+;
