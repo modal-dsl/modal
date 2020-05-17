@@ -17,6 +17,7 @@ import static org.junit.Assert.assertTrue
 
 import static extension de.joneug.mdal.tests.util.InMemoryFileSystemAccessExtensions.*
 import static extension de.joneug.mdal.util.ObjectExtensions.*
+import static org.junit.Assert.fail
 
 @ExtendWith(InjectionExtension)
 @InjectWith(MdalInjectorProvider)
@@ -46,6 +47,7 @@ class MdalGeneratorTest {
         val basePath = "seminar_module"
         
         checkFileContains(basePath + "/app.json", #['"id": "'])
+        fail()
 	}
 	
 	@Test
