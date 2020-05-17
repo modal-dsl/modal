@@ -1,14 +1,14 @@
 dependencies {
-	testCompile 'org.junit.jupiter:junit-jupiter-api'
-	testRuntime 'org.junit.jupiter:junit-jupiter-engine'
-	testCompile "org.eclipse.xtext:org.eclipse.xtext.testing:${xtextVersion}"
-	testCompile "org.eclipse.xtext:org.eclipse.xtext.xbase.testing:${xtextVersion}"
-	compile "org.eclipse.xtext:org.eclipse.xtext:${xtextVersion}"
-	compile "org.eclipse.xtext:org.eclipse.xtext.xbase:${xtextVersion}"
+	testImplementation 'org.junit.jupiter:junit-jupiter-api'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+	testImplementation "org.eclipse.xtext:org.eclipse.xtext.testing:${xtextVersion}"
+	testImplementation "org.eclipse.xtext:org.eclipse.xtext.xbase.testing:${xtextVersion}"
+	implementation "org.eclipse.xtext:org.eclipse.xtext:${xtextVersion}"
+	implementation "org.eclipse.xtext:org.eclipse.xtext.xbase:${xtextVersion}"
 }
 configurations {
 	mwe2 {
-		extendsFrom compile
+		extendsFrom implementation
 	}
 }
 
