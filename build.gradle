@@ -1,32 +1,26 @@
 buildscript {
 	repositories {
-		jcenter()
-		maven {
-			url "https://plugins.gradle.org/m2/"
-		}
+		mavenCentral()
 	}
 	dependencies {
 		classpath 'org.xtext:xtext-gradle-plugin:2.0.8'
 	}
 }
 
-// Configuration for Xtext projects
-configure(subprojects.findAll { it.name.startsWith('de.joneug.mdal') }) {
-
+subprojects {
 	ext.xtextVersion = '2.21.0'
 	repositories {
-		maven {
-			url 'https://oss.sonatype.org/content/repositories/snapshots'
-		}
-		jcenter()
+		mavenCentral()
 	}
 	
 	apply plugin: 'java'
 	dependencies {
 		compile platform("org.eclipse.xtext:xtext-dev-bom:${xtextVersion}")
 	}
+
 	apply plugin: 'org.xtext.xtend'
 	apply from: "${rootDir}/gradle/source-layout.gradle"
+	apply plugin: 'eclipse'
 	
 	group = 'de.joneug.mdal'
 	version = '0.0.0'
@@ -37,5 +31,4 @@ configure(subprojects.findAll { it.name.startsWith('de.joneug.mdal') }) {
 	configurations.all {
 		exclude group: 'asm'
 	}
-
 }

@@ -1,14 +1,14 @@
-apply plugin: 'application'
-
 dependencies {
 	compile project(':de.joneug.mdal')
 	compile "org.eclipse.xtext:org.eclipse.xtext.ide:${xtextVersion}"
 	compile "org.eclipse.xtext:org.eclipse.xtext.xbase.ide:${xtextVersion}"
 }
 
-mainClassName = 'org.eclipse.xtext.ide.server.ServerLauncher'
+apply plugin: 'application'
+mainClassName = "org.eclipse.xtext.ide.server.ServerLauncher"
+
 startScripts {
-	applicationName = 'mdal-standalone'
+	applicationName = 'mdal-ls'
 }
 
 // Omit parent directory in distributions

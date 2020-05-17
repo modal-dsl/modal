@@ -1,5 +1,0 @@
-dependencies {
-	compile project(':de.joneug.mdal')
-	testCompile "org.eclipse.xtext:org.eclipse.xtext.testing:${xtextVersion}"
-	testCompile "junit:junit:4.13"
-}

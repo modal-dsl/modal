@@ -1,6 +1,2 @@
-rootProject.name = 'mdAL'
-
 include 'de.joneug.mdal'
 include 'de.joneug.mdal.ide'
-include 'de.joneug.mdal.tests'
-include 'de.joneug.mdal.websockets'
