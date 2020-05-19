@@ -6,7 +6,6 @@ package de.joneug.mdal;
 import com.google.inject.Binder;
 import com.google.inject.Provider;
 import com.google.inject.name.Names;
-import de.joneug.mdal.generator.MdalGenerator;
 import de.joneug.mdal.parser.antlr.MdalAntlrTokenFileProvider;
 import de.joneug.mdal.parser.antlr.MdalParser;
 import de.joneug.mdal.parser.antlr.internal.InternalMdalLexer;
@@ -19,7 +18,6 @@ import de.joneug.mdal.validation.MdalValidator;
 import java.util.Properties;
 import org.eclipse.xtext.Constants;
 import org.eclipse.xtext.IGrammarAccess;
-import org.eclipse.xtext.generator.IGenerator2;
 import org.eclipse.xtext.naming.DefaultDeclarativeQualifiedNameProvider;
 import org.eclipse.xtext.naming.IQualifiedNameProvider;
 import org.eclipse.xtext.parser.IParser;
@@ -191,11 +189,6 @@ public abstract class AbstractMdalRuntimeModule extends DefaultRuntimeModule {
 	// contributed by org.eclipse.xtext.xtext.generator.builder.BuilderIntegrationFragment2
 	public void configureIResourceDescriptionsPersisted(Binder binder) {
 		binder.bind(IResourceDescriptions.class).annotatedWith(Names.named(ResourceDescriptionsProvider.PERSISTED_DESCRIPTIONS)).to(ResourceSetBasedResourceDescriptions.class);
-	}
-	
-	// contributed by org.eclipse.xtext.xtext.generator.generator.GeneratorFragment2
-	public Class<? extends IGenerator2> bindIGenerator2() {
-		return MdalGenerator.class;
 	}
 	
 }

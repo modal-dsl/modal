@@ -5,7 +5,7 @@ dependencies {
 }
 
 apply plugin: 'application'
-mainClassName = "org.eclipse.xtext.ide.server.ServerLauncher"
+mainClassName = "de.joneug.mdal.ide.server.MdalLanguageServerLauncher"
 
 startScripts {
 	applicationName = 'mdal-ls'

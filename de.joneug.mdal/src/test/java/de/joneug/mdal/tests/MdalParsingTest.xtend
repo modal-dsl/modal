@@ -3,7 +3,6 @@ package de.joneug.mdal.tests
 import com.google.inject.Inject
 import de.joneug.mdal.mdal.MdalPackage
 import de.joneug.mdal.mdal.Model
-import de.joneug.mdal.validation.AlExtensionValidator
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
 import org.eclipse.xtext.testing.util.ParseHelper
@@ -11,6 +10,7 @@ import org.eclipse.xtext.testing.validation.ValidationTestHelper
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
 
+import static de.joneug.mdal.validation.IssueCodes.*
 import static org.junit.Assert.assertNotNull
 import static org.junit.Assert.assertTrue
 
@@ -49,7 +49,7 @@ class MdalParsingTest {
 		assertNotNull(model)
 		
 		// Invalid ID
-		model.assertWarning(MdalPackage.eINSTANCE.alExtension, AlExtensionValidator.INVALID_ID)
+		model.assertWarning(MdalPackage.eINSTANCE.alExtension, INVALID_ID)
 	}
 	
 }

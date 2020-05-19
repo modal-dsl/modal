@@ -1,9 +1,9 @@
 package de.joneug.mdal.tests
 
 import com.google.inject.Inject
+import de.joneug.mdal.generator.MdalGenerator
 import de.joneug.mdal.mdal.Model
 import de.joneug.mdal.tests.util.GeneratorContextStub
-import org.eclipse.xtext.generator.IGenerator2
 import org.eclipse.xtext.generator.InMemoryFileSystemAccess
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
@@ -25,14 +25,14 @@ class MdalGeneratorTest {
 	@Inject
 	ParseHelper<Model> parseHelper
 	
-	@Inject
-	IGenerator2 generator
+	MdalGenerator generator
 	
 	InMemoryFileSystemAccess fsa
 	
 	@BeforeEach
     def void setUp() {
-        fsa = new InMemoryFileSystemAccess()
+    	this.generator = new MdalGenerator()
+        this.fsa = new InMemoryFileSystemAccess()
     }
     
     @Test
