@@ -1,7 +1,5 @@
 package de.joneug.mdal.ide.server;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.eclipse.xtext.ide.server.LaunchArgs;
 import org.eclipse.xtext.ide.server.ServerLauncher;
 import org.eclipse.xtext.ide.server.ServerModule;
@@ -32,8 +30,6 @@ public class MdalLanguageServerLauncher extends ServerLauncher {
 	
 	public static void redirectStandardStreams(String prefix, String[] args) {
 		if (shouldLogStandardStreams(args)) {
-			Logger.getRootLogger().setLevel(Level.DEBUG);
-			
 			// Redirect to standard error to show logging in VS Code Output
 			redirectStandardStreams(System.err);
 		} else {
