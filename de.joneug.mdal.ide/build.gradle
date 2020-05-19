@@ -1,4 +1,8 @@
 dependencies {
+	testImplementation 'org.junit.jupiter:junit-jupiter-api'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+	testImplementation "org.eclipse.xtext:org.eclipse.xtext.testing:${xtextVersion}"
+	testImplementation "org.eclipse.xtext:org.eclipse.xtext.xbase.testing:${xtextVersion}"
 	implementation project(':de.joneug.mdal')
 	implementation "org.eclipse.xtext:org.eclipse.xtext.ide:${xtextVersion}"
 	implementation "org.eclipse.xtext:org.eclipse.xtext.xbase.ide:${xtextVersion}"
@@ -9,6 +13,10 @@ mainClassName = "de.joneug.mdal.ide.server.MdalLanguageServerLauncher"
 
 startScripts {
 	applicationName = 'mdal-ls'
+}
+
+test {
+	useJUnitPlatform()
 }
 
 // Omit parent directory in distributions
