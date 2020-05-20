@@ -7,6 +7,14 @@ buildscript {
 	}
 }
 
+allprojects {
+	apply plugin: 'jacoco'
+	
+	repositories {
+		mavenCentral()
+	}
+}
+
 subprojects {
 	ext.xtextVersion = '2.21.0'
 	repositories {
@@ -31,4 +39,23 @@ subprojects {
 	configurations.all {
 		exclude group: 'asm'
 	}
+}
+
+task codeCoverageReport(type: JacocoReport) {
+    executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+
+    subprojects.each {
+        sourceSets it.sourceSets.main
+    }
+
+    reports {
+        xml.enabled true
+        xml.destination file("${buildDir}/reports/jacoco/coverage.xml")
+        html.enabled false
+        csv.enabled false
+    }
+}
+
+codeCoverageReport.dependsOn {
+    subprojects*.test
 }
