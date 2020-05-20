@@ -1,0 +1,9 @@
+coverage:
+  status:
+    project:
+      DSL:
+        paths:
+          - de.joneug.mdal
+      IDE:
+        paths:
+          - de.joneug.mdal.ide
