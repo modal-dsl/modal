@@ -2,6 +2,7 @@
 model
 src-gen
 xtend-gen
+xtext-gen
 .antlr*.jar
 
 # Eclipse
@@ -25,3 +26,6 @@ build/
 
 # VS Code
 .vscode/
+
+# AL
+*.app
