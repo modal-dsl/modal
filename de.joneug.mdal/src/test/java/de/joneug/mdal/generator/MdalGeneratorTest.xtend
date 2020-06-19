@@ -17,6 +17,7 @@ import static extension de.joneug.mdal.extensions.InMemoryFileSystemAccessExtens
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue
 import de.joneug.mdal.test.util.ExampleContentGenerator
+import static org.junit.Assert.fail
 
 @ExtendWith(InjectionExtension)
 @InjectWith(MdalInjectorProvider)
@@ -44,6 +45,16 @@ class MdalGeneratorTest {
 	def void testDoGenerate() {
 		doGenerate(ExampleContentGenerator.generateCorrectModel.toString)
 
+		// Tables
+		checkFileContains(
+			"Table/SEMSeminarSetup.Table.al",
+			#[
+				'table 123456700 "SEM Seminar Setup"',
+				'field(1; "Primary Key"; Code[10])',
+				'DrillDownPageID = "SEM Seminar Setup";',
+				'AccessByPermission = TableData "SEM Posted Seminar Reg. Header" = R;'
+			]
+		)
 		checkFileContains(
 			"Table/SEMSeminar.Table.al",
 			#[
@@ -53,6 +64,18 @@ class MdalGeneratorTest {
 				'SeminarReg: Record "SEM Seminar Reg. Header";',
 				'if NoSeriesMgt.SelectSeries(SemSetup."Seminar Nos.", OldSem."No. Series", "No. Series") then begin',
 				'local procedure OnAfterGetSemSetup(var SemSetup: Record "SEM Seminar Setup")'
+			]
+		)
+		
+		// Pages
+		checkFileContains(
+			"Page/SEMSeminarSetup.Page.al",
+			#[
+				'page 123456700 "SEM Seminar Setup"',
+				'SourceTable = "SEM Seminar Setup";',
+				'group(General)',
+				'field(CopyComments; "Copy Comments")',
+				'group("Number Series")'
 			]
 		)
 	}
@@ -80,11 +103,10 @@ class MdalGeneratorTest {
 		logDebug(fsa.getFileInDefaultOutput(filePath))
 
 		val fileContents = fsa.getFileInDefaultOutput(filePath).toString
-
-		assertTrue(
-			'''File at path "«filePath»" doesn't contain all expected contents."''',
-			expectedContents.forall[fileContents.contains(it)]
-		)
+		
+		expectedContents.forEach[
+			assertTrue('''File at path "«filePath»" doesn't contain the expected content "«it»"".''', fileContents.contains(it))
+		]
 	}
 
 	def checkFileExists(String filePath) {
