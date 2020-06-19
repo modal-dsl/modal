@@ -53,8 +53,9 @@ public class GeneratorManagement {
 	}
 
 	public void initializeFileSystemAccess() {
-		JavaIoFileSystemAccess fsa = MdalUtils.getJavaIoFileSystemAccess();
-		fsa.setOutputPath(".");
+		JavaIoFileSystemAccess javaFsa = MdalUtils.getJavaIoFileSystemAccess();
+		javaFsa.setOutputPath(".");
+		this.fsa = javaFsa;
 	}
 	
 	public void initializeFileSystemAccess(IFileSystemAccess2 fsa) {

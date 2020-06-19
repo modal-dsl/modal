@@ -10,12 +10,17 @@ import org.eclipse.xtext.ide.server.ILanguageServerAccess
 import org.eclipse.xtext.ide.server.commands.IExecutableCommandService
 import org.eclipse.xtext.util.CancelIndicator
 
-import static de.joneug.mdal.ide.command.CommandCodes.*
 import static de.joneug.mdal.util.MdalUtils.*
 
 import static extension de.joneug.mdal.extensions.ObjectExtensions.*
 
 class MdalCommandService implements IExecutableCommandService {
+
+	public static final String RETURN_PREFIX_SUCCESS = "mdal.command.success";
+	public static final String RETURN_PREFIX_ERROR = "mdal.command.error";
+
+	public static final String GENERATE = "mdal.generate";
+	public static final String CLEAN = "mdal.clean";
 
 	IGenerator2 generator = new MdalGenerator()
 
