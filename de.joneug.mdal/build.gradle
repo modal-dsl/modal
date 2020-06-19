@@ -5,6 +5,7 @@ dependencies {
 	testImplementation "org.eclipse.xtext:org.eclipse.xtext.xbase.testing:${xtextVersion}"
 	implementation "org.eclipse.xtext:org.eclipse.xtext:${xtextVersion}"
 	implementation "org.eclipse.xtext:org.eclipse.xtext.xbase:${xtextVersion}"
+	implementation "com.google.code.gson:gson:2.8.6"
 }
 configurations {
 	mwe2 {

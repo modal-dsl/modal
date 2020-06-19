@@ -3,62 +3,186 @@ grammar de.joneug.mdal.Mdal with org.eclipse.xtext.common.Terminals
 generate mdal "https://www.example.org/mdal"
 
 Model:
-	alExtensions += AlExtension*
-;
-	
-AlExtension:
-	'extension' name = STRING '{'
-		('id' id = STRING)?
-		('idRanges' '[' (idRanges += IdRange (',' idRanges += IdRange)*) ']')?
-		('platform' platform = STRING)?
-	 	('publisher' publisher = STRING)?
-		('version' version = STRING)?
-		('brief' brief = STRING)?
-		('description' description = STRING)?
-		('privacyStatement' privacyStatement = STRING)?
-		('eula' eula = STRING)?
-		('help' help = STRING)?
-		('url' url = STRING)?
-		('contextSensitiveHelpUrl' contextSensitiveHelpUrl = STRING)?
-		('showMyCode' showMyCode = Bool)?
-		('runtime' runtime = STRING)?
+	solution=Solution;
+
+Solution:
+	'solution' name=STRING '{'
+		(
+			('Prefix' '=' prefix=STRING ';')? &
+			(master=Master) &
+			(supplemental+=Supplemental)* &
+			//(documentHeader=DocumentHeader) &
+			//(documentLine=DocumentLine) &
+			(journal=Journal)
+		)
 	'}'
 ;
 
-Document:
-	'document' name = STRING '{'
-		
+Entity:
+	Master | Supplemental
+;
+
+Master:
+	'master' name=STRING '{'
+		(
+			('ShortName' '=' shortName=STRING ';') &
+			('NameInsteadDescr' '=' nameInsteadDescr=Bool ';')? &
+			('fields' '{' fields+=Field* '}')?
+		)
+	'}';
+
+Supplemental:
+	'supplemental' name = STRING '{'
+		(
+			('ShortName' '=' shortName=STRING ';') &
+			('NameInsteadDescr' '=' nameInsteadDescr=Bool ';')? &
+			('fields' '{' fields+=Field* '}')?
+		)
 	'}'
+;
+
+//DocumentHeader:
+//	'documentHeader' name = STRING '{'
+//		(
+//			'ShortName' '=' shortName = STRING &
+//			'PstdDocName' '=' pstdDocName = STRING &
+//			'PstdDocShortName' '=' pstdDocShortName = STRING //&
+//			//'fields' '{' (fields += Field)* & (includeFields += IncludeField)* '}'	
+//		)
+//	'}'
+//;
+
+//DocumentLine:
+//	'documentLine' name = STRING '{'
+//		(
+//			'ShortName' '=' shortName = STRING &
+//			'PstdDocName' '=' pstdDocName = STRING &
+//			'PstdDocShortName' '=' pstdDocShortName = STRING //&
+//			//'fields' '{' & fields += Field* & includeFields += IncludeField* '}'
+//		)
+//	'}'
+//;
+
+Journal:
+	{Journal} 'journal' '{'
+		'fields' '{' ((fields+=Field)* & (includeFields+=IncludeField)*) '}'
+	'}'
+;
+
+// See https://stackoverflow.com/questions/21306822/xtext-dsl-reference-to-attribute
+IncludeField:
+	'include' '(' entity=STRING '.' field=STRING ')'// ('{' &
+		//('CardGroup' cardGroup = STRING)?
+	//'}')?
 ;
 
 Field:
-	'field' name = STRING '{'
-		('no' no = INT)?
-		('description' description = STRING)?
-		'type' type = Type
-	'}'
-;
+	CustomField | TemplateField;
 
-Type:
-	TypeText
-;
+CustomField:
+	'field' '(' name=STRING ';' type=FieldType ')'
+	(
+		'{'
+			(
+				('Caption' '=' caption=STRING ';')? &
+				('TableRelation' '=' tableRelation=STRING ';')?
+			)
+		'}'
+	)?;
+
+TemplateField:
+	'template' '(' name=STRING ';' type=TemplateType ')';
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Template Types
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+TemplateType:
+	TemplateGenProdPostingGroup | TemplateDimensions | TemplateAddress | TemplateContactInfo;
+
+TemplateGenProdPostingGroup:
+	{TemplateGenProdPostingGroup} 'GenProductPostingGroup';
+
+TemplateDimensions:
+	{TemplateDimensions} 'Dimensions';
+
+TemplateAddress:
+	{TemplateAddress} 'Address';
+
+TemplateContactInfo:
+	{TemplateContactInfo} 'ContactInfo';
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Field Types
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+FieldType:
+	TypeBoolean | TypeInteger | TypeBigInteger | TypeDecimal | TypeCode | TypeText
+	| TypeDate | TypeTime | TypeDateTime | TypeGuid | TypeBlob | TypeEnum | TypeOption
+	| TypeMedia | TypeMediaSet | TypeDateFormula | TypeDuration | TypeRecordId | TypeTableFilter;
+
+TypeBoolean:
+	{TypeBoolean} 'Boolean';
 
 TypeInteger:
-	'Integer'
-;
+	{TypeInteger} 'Integer';
 
 TypeBigInteger:
-	'BigInteger'
-;
+	{TypeBigInteger} 'BigInteger';
+
+TypeDecimal:
+	{TypeDecimal} 'Decimal';
+
+TypeCode:
+	{TypeCode} 'Code' '[' length=INT ']';
 
 TypeText:
-	{TypeText} 'Text'('[' length = INT ']')?
-;
+	{TypeText} 'Text' '[' length=INT ']';
 
-IdRange:
-	min = INT ('..' max = INT)?
-;
+TypeDate:
+	{TypeDate} 'Date';
 
-enum Bool:
-	TRUE = 'true' | FALSE = 'false'
-;
+TypeTime:
+	{TypeTime} 'Time';
+
+TypeDateTime:
+	{TypeDateTime} 'DateTime';
+
+TypeGuid:
+	{TypeGuid} 'Guid';
+
+TypeBlob:
+	{TypeBlob} 'Blob';
+
+TypeEnum:
+	{TypeEnum} 'Enum' '[' members+=STRING (',' members+=STRING)* ']';
+
+TypeOption:
+	{TypeOption} 'Option' '[' members+=STRING* ']';
+
+TypeMedia:
+	{TypeMedia} 'Media';
+
+TypeMediaSet:
+	{TypeMediaSet} 'MediaSet';
+
+TypeDateFormula:
+	{TypeDateFormula} 'DateFormula';
+
+TypeDuration:
+	{TypeDuration} 'Duration';
+
+TypeRecordId:
+	{TypeRecordId} 'RecordId';
+
+TypeTableFilter:
+	{TypeTableFilter} 'TableFilter';
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Boolean enum
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+// Internally used options
+enum BoolInternal:
+	UNSPECIFIED | TRUE | FALSE;
+
+// Options visible to the user
+enum Bool returns BoolInternal:
+	TRUE='true' | FALSE='false';

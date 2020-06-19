@@ -1,4 +1,4 @@
-package de.joneug.mdal.tests.util
+package de.joneug.mdal.extensions
 
 import org.eclipse.xtext.generator.IFileSystemAccess
 import org.eclipse.xtext.generator.InMemoryFileSystemAccess

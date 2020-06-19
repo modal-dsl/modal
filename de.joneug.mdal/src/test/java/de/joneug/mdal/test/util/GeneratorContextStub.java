@@ -1,4 +1,4 @@
-package de.joneug.mdal.tests.util;
+package de.joneug.mdal.test.util;
 
 import org.eclipse.xtext.generator.IGeneratorContext;
 import org.eclipse.xtext.util.CancelIndicator;

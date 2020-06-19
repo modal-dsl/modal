@@ -26,6 +26,3 @@ build/
 
 # VS Code
 .vscode/
-
-# AL
-*.app

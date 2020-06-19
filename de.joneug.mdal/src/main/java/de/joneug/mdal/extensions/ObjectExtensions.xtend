@@ -1,4 +1,4 @@
-package de.joneug.mdal.util
+package de.joneug.mdal.extensions
 
 import org.apache.log4j.Logger
 

@@ -9,7 +9,7 @@ import org.eclipse.xtext.ide.server.commands.IExecutableCommandService;
 
 import de.joneug.mdal.ide.action.MdalCodeActionService;
 import de.joneug.mdal.ide.command.MdalCommandService;
-import de.joneug.mdal.ide.contentassist.MdalContentProposalProvider;
+import de.joneug.mdal.ide.contentassist.MdalIdeContentProposalProvider;
 
 /**
  * Use this class to register ide components.
@@ -25,7 +25,7 @@ public class MdalIdeModule extends AbstractMdalIdeModule {
 	}
 	
 	public Class<? extends IdeContentProposalProvider> bindIdeContentProposalProvider() {
-		return MdalContentProposalProvider.class;
+		return MdalIdeContentProposalProvider.class;
 	}
 		
 }

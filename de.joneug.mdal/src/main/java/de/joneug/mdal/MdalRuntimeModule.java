@@ -3,9 +3,16 @@
  */
 package de.joneug.mdal;
 
+import org.eclipse.xtext.parser.IParser;
+
+import de.joneug.mdal.parser.antlr.MdalParser;
 
 /**
  * Use this class to register components to be used at runtime / without the Equinox extension registry.
  */
 public class MdalRuntimeModule extends AbstractMdalRuntimeModule {
+	
+	public Class<? extends IParser> bindIParser() {
+		return MdalParser.class;
+	}
 }
