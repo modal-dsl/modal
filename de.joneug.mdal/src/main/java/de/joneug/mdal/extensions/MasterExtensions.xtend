@@ -1,105 +1,56 @@
 package de.joneug.mdal.extensions
 
 import de.joneug.mdal.generator.GeneratorManagement
-import de.joneug.mdal.mdal.BoolInternal
-import de.joneug.mdal.mdal.CustomField
+import de.joneug.mdal.mdal.Entity
 import de.joneug.mdal.mdal.Master
-import de.joneug.mdal.mdal.Solution
-import de.joneug.mdal.mdal.TemplateDimensions
-import de.joneug.mdal.mdal.TemplateField
 import org.eclipse.xtext.generator.IFileSystemAccess2
 
-import static extension de.joneug.mdal.extensions.CustomFieldExtensions.*
-import static extension de.joneug.mdal.extensions.SolutionExtensions.*
 import static extension de.joneug.mdal.extensions.StringExtensions.*
-import static extension de.joneug.mdal.extensions.TemplateFieldExtensions.*
+import static extension de.joneug.mdal.extensions.EObjectExtensions.*
+import static extension de.joneug.mdal.extensions.EntityExtensions.*
+import static extension de.joneug.mdal.extensions.SolutionExtensions.*
 
 /**
  * This is an extension library for all {@link Master objects}.
  */
 class MasterExtensions {
-	
-	/*
-	 * Helper extensions
-	 */
 
 	static GeneratorManagement management = GeneratorManagement.getInstance()
-
-	static def isNameInsteadDescr(Master master) {
-		if (master.nameInsteadDescr == BoolInternal.UNSPECIFIED) {
-			return false
-		} else {
-			return master.nameInsteadDescr == BoolInternal.TRUE
-		}
-	}
-
-	static def getDescrOrName(Master master) {
-		if (master.isNameInsteadDescr) {
-			return 'Name'
-		} else {
-			return 'Description'
-		}
+	
+	static def getDataCaptionFields(Master master) {
+		val fields = (master as Entity).dataCaptionFields
+		fields.add('No.')
+		return fields
 	}
 	
-	static def getCleanedName(Master master) {
-		return master.name.onlyAlphabetic.removeSpaces
+	static def getFieldgroupDropDown(Master master) {
+		val fields = (master as Entity).fieldgroupDropDown
+		fields.add('No.')
+		return fields
 	}
 	
-	static def getCleanedShortName(Master master) {
-		return master.shortName.onlyAlphabetic.removeSpaces
-	}
-
-	static def getCustomFields(Master master) {
-		return master.fields.filter(CustomField)
-	}
-
-	static def getTemplateFields(Master master) {
-		return master.fields.filter(TemplateField)
-	}
-
-	static def addDimensions(Master master) {
-		master.templateFields.exists[it.type instanceof TemplateDimensions]
-	}
-
-	static def getTableName(Master master, Solution solution) {
-		return solution.constructObjectName(master.name)
-	}
-
-	static def getTableFileName(Master master, Solution solution) {
-		return constructTableFileName(master.getTableName(solution))
+	static def getFieldGroupBrick(Master master) {
+		val fields = (master as Entity).fieldGroupBrick
+		fields.add('No.')
+		return fields
 	}
 	
-	static def getTableVariableName(Master master) {
-		return master.cleanedShortName
-	}
-
-	static def getCardPageName(Master master, Solution solution) {
-		return solution.constructObjectName(master.name + ' Card')
-	}
-
-	static def getListPageName(Master master, Solution solution) {
-		return solution.constructObjectName(master.name + ' List')
-	}
-	
-	/*
-	 * Generator extensions
-	 */
-	
-	static def void doGenerate(Master master, Solution solution, IFileSystemAccess2 fsa) {
+	static def void doGenerate(Master master, IFileSystemAccess2 fsa) {
 		// Table
-		solution.saveTable(fsa, master.getTableFileName(solution), master.doGenerateTable(solution, fsa))
+		master.solution.saveTable(fsa, master.tableFileName, master.doGenerateTable(fsa))
 		
 		// List Page
 		// Card Page
 	}
 
-	static def doGenerateTable(Master master, Solution solution, IFileSystemAccess2 fsa) '''
-		table «management.getNewTableNo()» "«master.getTableName(solution)»"
+	static def doGenerateTable(Master master, IFileSystemAccess2 fsa) '''
+		«val solution = master.solution»
+		table «management.getNewTableNo()» "«master.tableName»"
 		{
 			Caption = '«master.name»';
-			DataCaptionFields = "No.", «master.descrOrName»;
-			DrillDownPageID = "«master.getListPageName(solution)»";
-			LookupPageId = "«master.getListPageName(solution)»";
+			DataCaptionFields = «FOR field : master.dataCaptionFields SEPARATOR ', '»«field.saveQuote»«ENDFOR»;
+			DrillDownPageID = "«master.listPageName»";
+			LookupPageId = "«master.listPageName»";
 			
 			fields
 			{
@@ -116,24 +67,7 @@ class MasterExtensions {
 						end;
 					end;
 				}
-				field(«management.getNewFieldNo(master)»; «master.descrOrName»; Text[100])
-				{
-					Caption = '«master.descrOrName»';
-					
-					trigger OnValidate()
-					begin
-						if ("Search «master.descrOrName»" = UpperCase(xRec.«master.descrOrName»)) or ("Search «master.descrOrName»" = '') then
-							"Search «master.descrOrName»" := CopyStr(«master.descrOrName», 1, MaxStrLen("Search «master.descrOrName»"));
-					end;
-				}
-				field(«management.getNewFieldNo(master)»; "Search «master.descrOrName»"; Code[100])
-				{
-					Caption = 'Search «master.descrOrName»';
-				}
-				field(«management.getNewFieldNo(master)»; "«master.descrOrName» 2"; Text[50])
-				{
-					Caption = '«master.descrOrName» 2';
-				}
+				«master.doGenerateFields(fsa)»
 				field(«management.getNewFieldNo(master)»; Blocked; Boolean)
 				{
 					Caption = 'Blocked';
@@ -156,27 +90,23 @@ class MasterExtensions {
 					Editable = false;
 					FieldClass = FlowField;
 				}
-				«FOR field : master.customFields»
-					«field.doGenerate(master, solution, fsa)»
-				«ENDFOR»
-				«FOR field : master.templateFields»
-					«field.doGenerate(master)»
-				«ENDFOR»
 			}
 			
 			keys
 			{
-				key(Key1; "No.")
+				key(Key«management.getNewKeyNo(master)»; "No.")
 				{
 					Clustered = true;
 				}
-				key(Key2; "Search «master.descrOrName»") { }
+				«FOR field : master.keys»
+					key(Key«management.getNewKeyNo(master)»; «field.saveQuote») { }
+				«ENDFOR»
 			}
 			
 			fieldgroups
 			{
-				fieldgroup(DropDown; "No.", «master.descrOrName») { }
-				fieldgroup(Brick; "No.", «master.descrOrName», "«master.descrOrName» 2") { }
+				fieldgroup(DropDown; «FOR field : master.fieldgroupDropDown SEPARATOR ', '»«field.saveQuote»«ENDFOR») { }
+				fieldgroup(Brick; «FOR field : master.fieldGroupBrick SEPARATOR ', '»«field.saveQuote»«ENDFOR») { }
 			}
 			
 			trigger OnInsert()
@@ -187,7 +117,7 @@ class MasterExtensions {
 				end;
 				
 				«IF master.addDimensions»
-					DimMgt.UpdateDefaultDim(Database::"«master.getTableName(solution)»", "No.", "Global Dimension 1 Code", "Global Dimension 2 Code");
+					DimMgt.UpdateDefaultDim(Database::"«master.tableName»", "No.", "Global Dimension 1 Code", "Global Dimension 2 Code");
 				«ENDIF»
 			end;
 			
@@ -199,7 +129,7 @@ class MasterExtensions {
 			trigger OnDelete()
 			begin
 				«IF master.addDimensions»
-					DimMgt.DeleteDefaultDim(Database::"«master.getTableName(solution)»", "No.");
+					DimMgt.DeleteDefaultDim(Database::"«master.tableName»", "No.");
 					
 				«ENDIF»
 				CommentLine.SetRange("Table Name", CommentLine."Table Name"::«master.cleanedName»);
@@ -227,11 +157,11 @@ class MasterExtensions {
 					DimMgt: Codeunit DimensionManagement;
 				«ENDIF»
 				CommentLine: Record "Comment Line";
-				«master.tableVariableName»: Record "«master.getTableName(solution)»";
+				«master.tableVariableName»: Record "«master.tableName»";
 				«solution.documentHeaderTableVariableName»: Record "«solution.documentHeaderTableName»";
 				ExistingDocumentsErr: Label 'You cannot delete %1 %2 because there is at least one outstanding %3 for this «master.name».';
 				
-			procedure AssistEdit(Old«master.tableVariableName»: Record "«master.getTableName(solution)»"): Boolean
+			procedure AssistEdit(Old«master.tableVariableName»: Record "«master.tableName»"): Boolean
 			begin
 				with «master.tableVariableName» do begin
 					«master.tableVariableName» := Rec;
@@ -252,7 +182,7 @@ class MasterExtensions {
 					
 					DimMgt.ValidateDimValueCode(FieldNumber, ShortcutDimCode);
 					if not IsTemporary then begin
-						DimMgt.SaveDefaultDim(Database::"«master.getTableName(solution)»", "No.", FieldNumber, ShortcutDimCode);
+						DimMgt.SaveDefaultDim(Database::"«master.tableName»", "No.", FieldNumber, ShortcutDimCode);
 						Modify;
 					end;
 					
@@ -260,12 +190,12 @@ class MasterExtensions {
 				end;
 				
 				[IntegrationEvent(false, false)]
-				local procedure OnBeforeValidateShortcutDimCode(var «master.tableVariableName»: Record "«master.getTableName(solution)»"; var x«master.tableVariableName»: Record "«master.getTableName(solution)»"; FieldNumber: Integer; var ShortcutDimCode: Code[20])
+				local procedure OnBeforeValidateShortcutDimCode(var «master.tableVariableName»: Record "«master.tableName»"; var x«master.tableVariableName»: Record "«master.tableName»"; FieldNumber: Integer; var ShortcutDimCode: Code[20])
 				begin
 				end;
 				
 				[IntegrationEvent(false, false)]
-				local procedure OnAfterValidateShortcutDimCode(var «master.tableVariableName»: Record "«master.getTableName(solution)»"; var x«master.tableVariableName»: Record "«master.getTableName(solution)»"; FieldNumber: Integer; var ShortcutDimCode: Code[20])
+				local procedure OnAfterValidateShortcutDimCode(var «master.tableVariableName»: Record "«master.tableName»"; var x«master.tableVariableName»: Record "«master.tableName»"; FieldNumber: Integer; var ShortcutDimCode: Code[20])
 				begin
 				end;
 			«ENDIF»

@@ -3,8 +3,8 @@ package de.joneug.mdal.generator
 import com.google.inject.Inject
 import de.joneug.al.ObjectRange
 import de.joneug.mdal.mdal.Model
-import de.joneug.mdal.test.util.ExampleContentGenerator
 import de.joneug.mdal.tests.MdalInjectorProvider
+import de.joneug.mdal.util.ExampleContentGenerator
 import java.util.TreeSet
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.InMemoryFileSystemAccess

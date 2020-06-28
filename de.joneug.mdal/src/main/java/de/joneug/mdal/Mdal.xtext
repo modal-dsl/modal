@@ -11,69 +11,67 @@ Solution:
 			('Prefix' '=' prefix=STRING ';')? &
 			(master=Master) &
 			(supplemental+=Supplemental)* &
-			//(documentHeader=DocumentHeader) &
-			//(documentLine=DocumentLine) &
+			(document=Document) &
 			(journal=Journal)
 		)
 	'}'
 ;
 
 Entity:
-	Master | Supplemental
+	Master | Supplemental | DocumentHeader | DocumentLine | Journal
 ;
 
 Master:
 	'master' name=STRING '{'
 		(
 			('ShortName' '=' shortName=STRING ';') &
-			('NameInsteadDescr' '=' nameInsteadDescr=Bool ';')? &
 			('fields' '{' fields+=Field* '}')?
 		)
 	'}';
 
 Supplemental:
-	'supplemental' name = STRING '{'
+	'supplemental' name=STRING '{'
 		(
 			('ShortName' '=' shortName=STRING ';') &
-			('NameInsteadDescr' '=' nameInsteadDescr=Bool ';')? &
 			('fields' '{' fields+=Field* '}')?
 		)
 	'}'
 ;
 
-//DocumentHeader:
-//	'documentHeader' name = STRING '{'
-//		(
-//			'ShortName' '=' shortName = STRING &
-//			'PstdDocName' '=' pstdDocName = STRING &
-//			'PstdDocShortName' '=' pstdDocShortName = STRING //&
-//			//'fields' '{' (fields += Field)* & (includeFields += IncludeField)* '}'	
-//		)
-//	'}'
-//;
-
-//DocumentLine:
-//	'documentLine' name = STRING '{'
-//		(
-//			'ShortName' '=' shortName = STRING &
-//			'PstdDocName' '=' pstdDocName = STRING &
-//			'PstdDocShortName' '=' pstdDocShortName = STRING //&
-//			//'fields' '{' & fields += Field* & includeFields += IncludeField* '}'
-//		)
-//	'}'
-//;
-
-Journal:
-	{Journal} 'journal' '{'
-		'fields' '{' ((fields+=Field)* & (includeFields+=IncludeField)*) '}'
+Document:
+	'document' '{'
+		(
+			(documentHeader=DocumentHeader) &
+			(documentLine=DocumentLine)
+		)
 	'}'
 ;
 
-// See https://stackoverflow.com/questions/21306822/xtext-dsl-reference-to-attribute
-IncludeField:
-	'include' '(' entity=STRING '.' field=STRING ')'// ('{' &
-		//('CardGroup' cardGroup = STRING)?
-	//'}')?
+DocumentHeader:
+	{DocumentHeader} 'header' name=STRING '{'
+		(
+			('ShortName' '=' shortName=STRING ';') &
+			('fields' '{' ((fields+=Field)* & (includeFields+=IncludeField)*) '}')?	
+		)
+	'}'
+;
+
+DocumentLine:
+	{DocumentLine} 'line' name=STRING '{'
+		(
+			('ShortName' '=' shortName=STRING ';') &
+			('fields' '{' ((fields+=Field)* & (includeFields+=IncludeField)*) '}')?	
+		)
+	'}'
+;
+
+Journal:
+	{Journal} 'journal' name=STRING '{'
+		(
+			('ShortName' '=' shortName=STRING ';') &
+			('fields' '{' ((fields+=Field)* & (includeFields+=IncludeField)*) '}')?	
+		)
+	'}'
 ;
 
 Field:
@@ -88,16 +86,30 @@ CustomField:
 				('TableRelation' '=' tableRelation=STRING ';')?
 			)
 		'}'
-	)?;
+	)?
+;
 
 TemplateField:
-	'template' '(' name=STRING ';' type=TemplateType ')';
+	'template' '(' name=STRING ';' type=TemplateType ')'
+;
+
+IncludeField:
+	'include' '(' entity=STRING '.' field=STRING ')'// ('{' &
+		//('CardGroup' cardGroup = STRING)?
+	//'}')?
+;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Template Types
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 TemplateType:
-	TemplateGenProdPostingGroup | TemplateDimensions | TemplateAddress | TemplateContactInfo;
+	TemplateName | TemplateDescription | TemplateGenProdPostingGroup | TemplateDimensions | TemplateAddress | TemplateContactInfo;
+
+TemplateName:
+	{TemplateName} 'Name';
+	
+TemplateDescription:
+	{TemplateDescription} 'Description';
 
 TemplateGenProdPostingGroup:
 	{TemplateGenProdPostingGroup} 'GenProductPostingGroup';

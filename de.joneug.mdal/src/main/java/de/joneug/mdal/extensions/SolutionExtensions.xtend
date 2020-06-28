@@ -5,6 +5,7 @@ import de.joneug.mdal.generator.MdalGenerator
 import de.joneug.mdal.mdal.Solution
 import org.eclipse.xtext.generator.IFileSystemAccess2
 
+import static extension de.joneug.mdal.extensions.EntityExtensions.*
 import static extension de.joneug.mdal.extensions.MasterExtensions.*
 import static extension de.joneug.mdal.extensions.StringExtensions.*
 import static extension de.joneug.mdal.extensions.ObjectExtensions.*
@@ -19,7 +20,7 @@ class SolutionExtensions {
 
 	static def getInferredPrefix(Solution solution) {
 		if (solution.prefix.isNullOrEmpty) {
-			return solution.master.shortName.onlyAlphabetic.toUpperCase
+			return solution.master.shortName.toOnlyAlphabetic.toUpperCase
 		} else {
 			return solution.prefix
 		}
@@ -132,7 +133,7 @@ class SolutionExtensions {
 		
 		// Master
 		solution.logInfo("Generating master files")
-		solution.master.doGenerate(solution, fsa)
+		solution.master.doGenerate(fsa)
 		
 		// Supplemental
 		

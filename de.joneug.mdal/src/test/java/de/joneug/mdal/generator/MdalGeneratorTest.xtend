@@ -4,6 +4,7 @@ import com.google.inject.Inject
 import de.joneug.mdal.mdal.Model
 import de.joneug.mdal.test.util.GeneratorContextStub
 import de.joneug.mdal.tests.MdalInjectorProvider
+import de.joneug.mdal.util.ExampleContentGenerator
 import org.eclipse.xtext.generator.InMemoryFileSystemAccess
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
@@ -12,12 +13,11 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
 
-import static extension de.joneug.mdal.extensions.ObjectExtensions.*
-import static extension de.joneug.mdal.extensions.InMemoryFileSystemAccessExtensions.*
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue
-import de.joneug.mdal.test.util.ExampleContentGenerator
-import static org.junit.Assert.fail
+
+import static extension de.joneug.mdal.extensions.InMemoryFileSystemAccessExtensions.*
+import static extension de.joneug.mdal.extensions.ObjectExtensions.*
 
 @ExtendWith(InjectionExtension)
 @InjectWith(MdalInjectorProvider)
@@ -59,8 +59,13 @@ class MdalGeneratorTest {
 			"Table/SEMSeminar.Table.al",
 			#[
 				'table 123456701 "SEM Seminar"',
+				'DataCaptionFields = Description, "No.";',
 				'DrillDownPageID = "SEM Seminar List";',
-				'field(10; "Duration Days"; Decimal)',
+				'field(3; Description; Text[100])',
+				'field(7; "Duration Days"; Decimal)',
+				'key(Key2; "Search Description") { }',
+				'fieldgroup(DropDown; Description, "Description 2", "No.") { }',
+				'fieldgroup(Brick; Description, "No.") { }',
 				'SeminarReg: Record "SEM Seminar Reg. Header";',
 				'if NoSeriesMgt.SelectSeries(SemSetup."Seminar Nos.", OldSem."No. Series", "No. Series") then begin',
 				'local procedure OnAfterGetSemSetup(var SemSetup: Record "SEM Seminar Setup")'

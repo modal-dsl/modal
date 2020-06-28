@@ -1,6 +1,6 @@
 package de.joneug.mdal.ide
 
-import de.joneug.mdal.ide.test.util.ExampleContentGenerator
+import de.joneug.mdal.util.ExampleContentGenerator
 import org.eclipse.xtext.testing.AbstractLanguageServerTest
 import org.junit.jupiter.api.Test
 
@@ -15,7 +15,6 @@ class MdalLanguageServerTest extends AbstractLanguageServerTest {
 	@Test
 	def void testInitialize() {
 		val capabilities = initialize().capabilities
-		print(capabilities)
 		assertTrue(capabilities.definitionProvider && capabilities.documentFormattingProvider)
 	}
 
@@ -25,7 +24,8 @@ class MdalLanguageServerTest extends AbstractLanguageServerTest {
 
 		val file = 'seminar.mdal'.writeFile("")
 		file.open(ExampleContentGenerator.generateCorrectModel.toString)
-		assertTrue(diagnostics.get(file).empty)
+		val diagnostics = diagnostics.get(file)
+		assertTrue('''Unexpected errors: «diagnostics»''', diagnostics.empty)
 	}
 
 }

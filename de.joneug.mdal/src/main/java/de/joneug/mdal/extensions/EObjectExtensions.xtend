@@ -1,6 +1,7 @@
 package de.joneug.mdal.extensions
 
 import de.joneug.mdal.mdal.Model
+import de.joneug.mdal.mdal.Solution
 import java.util.List
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.EcoreUtil2
@@ -30,5 +31,13 @@ class EObjectExtensions {
 		val root = EcoreUtil2.getContainerOfType(object, Model)
 		return EcoreUtil2.getAllContentsOfType(root, type)
 	}
-
+	
+	def static getSolution(EObject object) {
+		return EcoreUtil2.getContainerOfType(object, Solution)
+	}
+	
+	def static <T extends EObject> getContainerOfType(EObject object, Class<T> type) {
+		return EcoreUtil2.getContainerOfType(object, type)
+	}
+	
 }

@@ -2,7 +2,6 @@ package de.joneug.mdal.extensions
 
 import de.joneug.mdal.mdal.CustomField
 import de.joneug.mdal.mdal.FieldType
-import de.joneug.mdal.mdal.Solution
 import de.joneug.mdal.mdal.TypeBigInteger
 import de.joneug.mdal.mdal.TypeBlob
 import de.joneug.mdal.mdal.TypeBoolean
@@ -24,12 +23,13 @@ import de.joneug.mdal.mdal.TypeText
 import de.joneug.mdal.mdal.TypeTime
 import org.eclipse.xtext.generator.IFileSystemAccess2
 
-import static extension de.joneug.mdal.extensions.TypeEnumExtensions.*
 import static extension de.joneug.mdal.extensions.CustomFieldExtensions.*
+import static extension de.joneug.mdal.extensions.EObjectExtensions.*
+import static extension de.joneug.mdal.extensions.TypeEnumExtensions.*
 
 class FieldTypeExtensions {
 
-	static def String doGenerate(FieldType fieldType, CustomField customField, Solution solution, IFileSystemAccess2 fsa) {
+	static def String doGenerate(FieldType fieldType, IFileSystemAccess2 fsa) {
 		if (fieldType instanceof TypeBoolean) {
 			return 'Boolean'
 		} else if (fieldType instanceof TypeInteger) {
@@ -53,8 +53,8 @@ class FieldTypeExtensions {
 		} else if (fieldType instanceof TypeBlob) {
 			return 'Blob'
 		} else if (fieldType instanceof TypeEnum) {
-			(fieldType as TypeEnum).doGenerate(customField, solution, fsa)
-			return '''Enum "«customField.getEnumName(solution)»"'''
+			fieldType.doGenerate(fsa)
+			return '''Enum "«fieldType.getContainerOfType(CustomField).getEnumName()»"'''
 		} else if (fieldType instanceof TypeOption) {
 			return 'Option'
 		} else if (fieldType instanceof TypeMedia) {

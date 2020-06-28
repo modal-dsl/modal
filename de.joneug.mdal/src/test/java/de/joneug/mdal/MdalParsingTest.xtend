@@ -3,8 +3,9 @@ package de.joneug.mdal
 import com.google.inject.Inject
 import de.joneug.mdal.mdal.MdalPackage
 import de.joneug.mdal.mdal.Model
-import de.joneug.mdal.test.util.ExampleContentGenerator
 import de.joneug.mdal.tests.MdalInjectorProvider
+import de.joneug.mdal.util.ExampleContentGenerator
+import de.joneug.mdal.validation.MdalValidator
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
 import org.eclipse.xtext.testing.util.ParseHelper
@@ -16,7 +17,6 @@ import static org.junit.Assert.assertNotNull
 import static org.junit.Assert.assertTrue
 
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
-import de.joneug.mdal.validation.MdalValidator
 
 @ExtendWith(InjectionExtension)
 @InjectWith(MdalInjectorProvider)
@@ -47,6 +47,10 @@ class MdalParsingTest {
 		
 		// Unknown field
 		model.assertError(MdalPackage.eINSTANCE.includeField, MdalValidator.INCLUDE_FIELD_UNKNOWN_FIELD)
+		
+		// Entity name already exists
+		model.assertError(MdalPackage.eINSTANCE.documentHeader, MdalValidator.ENTITY_NAME_EXISTS)
+		model.assertError(MdalPackage.eINSTANCE.documentLine, MdalValidator.ENTITY_NAME_EXISTS)
 	}
 	
 }

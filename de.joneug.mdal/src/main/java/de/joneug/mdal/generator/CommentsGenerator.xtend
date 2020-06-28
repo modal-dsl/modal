@@ -3,7 +3,7 @@ package de.joneug.mdal.generator
 import de.joneug.mdal.mdal.Solution
 import org.eclipse.xtext.generator.IFileSystemAccess2
 
-import static extension de.joneug.mdal.extensions.MasterExtensions.*
+import static extension de.joneug.mdal.extensions.EntityExtensions.*
 import static extension de.joneug.mdal.extensions.SolutionExtensions.*
 
 class CommentsGenerator {

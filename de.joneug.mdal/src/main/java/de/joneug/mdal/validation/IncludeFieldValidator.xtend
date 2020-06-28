@@ -10,11 +10,21 @@ class IncludeFieldValidator extends AbstractMdalValidator {
 
 	@Check
 	def checkEntityAndField(IncludeField includeField) {
-		if(includeField.getEntityObject === null) {
+		val entity = includeField.entityObject
+		
+		if(entity === null) {
 			error("Entity '" + includeField.entity + "' is unknown.", MdalPackage.Literals.INCLUDE_FIELD__ENTITY, MdalValidator.INCLUDE_FIELD_UNKNOWN_ENTITY)
-		} else if(!includeField.field.isNullOrEmpty && !includeField.getEntityObject.fields.exists[it.name == includeField.field]) {
-			error("Field '" + includeField.field + "' is unknown.", MdalPackage.Literals.INCLUDE_FIELD__FIELD, MdalValidator.INCLUDE_FIELD_UNKNOWN_FIELD)
+		} else if(!includeField.field.isNullOrEmpty && !entity.fields.exists[it.name == includeField.field]) {
+			generateFieldUnknownError(includeField.field)
 		}
+	}
+
+	def generateEntityUnknownError(String entityName) {
+		error("Entity '" + entityName + "' is unknown.", MdalPackage.Literals.INCLUDE_FIELD__ENTITY, MdalValidator.INCLUDE_FIELD_UNKNOWN_ENTITY)
+	}
+
+	def generateFieldUnknownError(String fieldName) {
+		error("Field '" + fieldName + "' is unknown.", MdalPackage.Literals.INCLUDE_FIELD__FIELD, MdalValidator.INCLUDE_FIELD_UNKNOWN_FIELD)
 	}
 
 }

@@ -15,8 +15,12 @@ class StringExtensions {
 		return input.toLowerCase.replace(' ', '_')
 	}
 	
-	static def onlyAlphabetic(String input) {
+	static def toOnlyAlphabetic(String input) {
 		return Normalizer.normalize(input, Normalizer.Form.NFD).replaceAll("[^a-zA-Z ]", "")
+	}
+	
+	static def boolean isOnlyAlphabetic(String input) {
+		return input.chars().allMatch[Character::isLetter(it)]
 	}
 	
 	def static quote(String input) {
@@ -25,6 +29,14 @@ class StringExtensions {
 	
 	def static unquote(String input) {
 		return input.replace('"', "")
+	}
+	
+	def static saveQuote(String input) {
+		if(input.isOnlyAlphabetic) {
+			return input
+		} else {
+			return input.quote
+		}
 	}
 	
 }

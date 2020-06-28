@@ -10,7 +10,7 @@ class IncludeFieldExtensions {
 	def static Entity getEntityObject(IncludeField includeField) {
 		for (entity : includeField.getAllContentsOfTypeFromRoot(Entity)) {
 			if(entity.name == includeField.entity) {
-				return entity				
+				return entity
 			}
 		}
 

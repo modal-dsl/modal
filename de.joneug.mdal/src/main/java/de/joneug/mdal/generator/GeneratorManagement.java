@@ -41,6 +41,7 @@ public class GeneratorManagement {
 
 	protected TreeSet<ObjectRange> alObjectRanges;
 	protected HashMap<EObject, Integer> lastFieldNoMap;
+	protected HashMap<EObject, Integer> lastKeyNoMap;
 	protected HashMap<ALObjectType, Integer> lastALObjectNoMap;
 	protected List<SymbolReference> symbolReferences;
 	protected IFileSystemAccess2 fsa;
@@ -48,6 +49,7 @@ public class GeneratorManagement {
 	private GeneratorManagement() {
 		alObjectRanges = new TreeSet<ObjectRange>();
 		lastFieldNoMap = new HashMap<EObject, Integer>();
+		lastKeyNoMap = new HashMap<EObject, Integer>();
 		lastALObjectNoMap = new HashMap<ALObjectType, Integer>();
 		symbolReferences = new ArrayList<SymbolReference>();
 	}
@@ -99,7 +101,7 @@ public class GeneratorManagement {
 					parallel().filter(it -> it.hashCode() == MdalUtils.calcFileHashCode(file)).findAny();
 			
 			if (symbolReference.isPresent()) {
-				ObjectExtensions.logInfo(this, "App file " + file.getName() + " has already been parsed");
+				ObjectExtensions.logDebug(this, "App file " + file.getName() + " has already been parsed");
 				symbolReferencesNew.add(symbolReference.get());
 				
 			} else {
@@ -117,6 +119,7 @@ public class GeneratorManagement {
 
 	public void reset() {
 		lastFieldNoMap.clear();
+		lastKeyNoMap.clear();
 		lastALObjectNoMap.clear();
 	}
 	
@@ -154,6 +157,24 @@ public class GeneratorManagement {
 			return lastFieldNoMap.get(object);
 		}
 	}
+	
+	public int getNewKeyNo(EObject object) {
+		if (!lastKeyNoMap.containsKey(object)) {
+			lastKeyNoMap.put(object, 1);
+		} else {
+			lastKeyNoMap.put(object, lastKeyNoMap.get(object) + 1);
+		}
+
+		return lastKeyNoMap.get(object);
+	}
+
+	public int getLastKeyNo(EObject object) {
+		if (!lastKeyNoMap.containsKey(object)) {
+			return -1;
+		} else {
+			return lastKeyNoMap.get(object);
+		}
+	}
 
 	public int getNewTableNo() {
 		return getNewObjectNo(ALObjectType.TABLE);
@@ -185,7 +206,7 @@ public class GeneratorManagement {
 		if (!lastALObjectNoMap.containsKey(objectType)) {
 			newObjectNo = getNewObjectNo(-1);
 		} else {
-			newObjectNo = lastALObjectNoMap.get(objectType) + 1;
+			newObjectNo = getNewObjectNo(lastALObjectNoMap.get(objectType));
 		}
 
 		lastALObjectNoMap.put(objectType, newObjectNo);
