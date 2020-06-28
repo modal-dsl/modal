@@ -32,12 +32,12 @@ class EObjectExtensions {
 		return EcoreUtil2.getAllContentsOfType(root, type)
 	}
 	
-	def static getSolution(EObject object) {
-		return EcoreUtil2.getContainerOfType(object, Solution)
-	}
-	
 	def static <T extends EObject> getContainerOfType(EObject object, Class<T> type) {
 		return EcoreUtil2.getContainerOfType(object, type)
+	}
+
+	def static getSolution(EObject object) {
+		return object.getContainerOfType(Solution)
 	}
 	
 }

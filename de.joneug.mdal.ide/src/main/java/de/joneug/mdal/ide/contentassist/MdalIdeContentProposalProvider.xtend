@@ -12,7 +12,6 @@ import de.joneug.mdal.mdal.Master
 import de.joneug.mdal.mdal.Supplemental
 import de.joneug.mdal.services.MdalGrammarAccess
 import org.eclipse.xtext.AbstractElement
-import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.RuleCall
 import org.eclipse.xtext.ide.editor.contentassist.ContentAssistContext
 import org.eclipse.xtext.ide.editor.contentassist.ContentAssistEntry
@@ -33,20 +32,22 @@ class MdalIdeContentProposalProvider extends IdeContentProposalProvider {
 
 	override protected createProposals(AbstractElement assignment, ContentAssistContext context, IIdeContentProposalAcceptor acceptor) {
 		switch (assignment) {
-			case grammarAccess.includeFieldAccess.entityAssignment_2: {
+			case grammarAccess.includeFieldAccess.entityNameAssignment_2: {
 				logInfo("Adding Entity proposals for IncludeField")
+				
+				val currentModel = context.currentModel
 
-				if(EcoreUtil2.getContainerOfType(context.currentModel, DocumentHeader) !== null) {
+				if(currentModel.getContainerOfType(DocumentHeader) !== null) {
 					addEntityProposals(context, acceptor, #[Master, Supplemental])
-				} else if(EcoreUtil2.getContainerOfType(context.currentModel, DocumentLine) !== null) {
+				} else if(currentModel.getContainerOfType(DocumentLine) !== null) {
 					addEntityProposals(context, acceptor, #[Master, Supplemental, DocumentHeader])
-				} else if(EcoreUtil2.getContainerOfType(context.currentModel, Journal) !== null) {
+				} else if(currentModel.getContainerOfType(Journal) !== null) {
 					addEntityProposals(context, acceptor, #[Master, Supplemental, DocumentHeader, DocumentLine])
 				} else {
 					super.createProposals(assignment, context, acceptor)
 				}
 			}
-			case grammarAccess.includeFieldAccess.fieldAssignment_4: {
+			case grammarAccess.includeFieldAccess.fieldNameAssignment_4: {
 				logInfo("Adding Field proposals for IncludeField")
 				
 				if(!(context.currentModel instanceof IncludeField)) {
@@ -54,7 +55,7 @@ class MdalIdeContentProposalProvider extends IdeContentProposalProvider {
 				}
 
 				val includeField = context.currentModel as IncludeField
-				val entity = includeField.entityObject
+				val entity = includeField.entity
 
 				if(entity === null) {
 					super.createProposals(assignment, context, acceptor)

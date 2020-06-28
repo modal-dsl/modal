@@ -94,7 +94,7 @@ TemplateField:
 ;
 
 IncludeField:
-	'include' '(' entity=STRING '.' field=STRING ')'// ('{' &
+	'include' '(' entityName=STRING '.' fieldName=STRING ')'// ('{' &
 		//('CardGroup' cardGroup = STRING)?
 	//'}')?
 ;

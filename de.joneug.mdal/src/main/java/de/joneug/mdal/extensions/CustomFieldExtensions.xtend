@@ -38,7 +38,7 @@ class CustomFieldExtensions {
 	}
 
 	static def doGenerate(CustomField customField) '''
-		field(«management.getNewFieldNo(customField.entityObject)»; "«customField.getName()»"; «customField.type.doGenerate»)
+		field(«management.getNewFieldNo(customField.entity)»; "«customField.getName()»"; «customField.type.doGenerate»)
 		{
 			Caption = '«customField.inferredCaption»';
 			««« Option

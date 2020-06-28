@@ -45,8 +45,14 @@ class MdalParsingTest {
 
 		assertNotNull(model)
 		
+		// Master should have name or description
+		model.assertWarning(MdalPackage.eINSTANCE.master, MdalValidator.ENTITY_NAME_DESCRIPTION)
+		
 		// Unknown field
 		model.assertError(MdalPackage.eINSTANCE.includeField, MdalValidator.INCLUDE_FIELD_UNKNOWN_FIELD)
+		
+		// Unknown table
+		model.assertError(MdalPackage.eINSTANCE.customField, MdalValidator.CUSTOM_FIELD_UNKNOWN_TABLE)
 		
 		// Entity name already exists
 		model.assertError(MdalPackage.eINSTANCE.documentHeader, MdalValidator.ENTITY_NAME_EXISTS)

@@ -7,9 +7,9 @@ import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 
 class IncludeFieldExtensions {
 
-	def static Entity getEntityObject(IncludeField includeField) {
+	def static Entity getEntity(IncludeField includeField) {
 		for (entity : includeField.getAllContentsOfTypeFromRoot(Entity)) {
-			if(entity.name == includeField.entity) {
+			if(entity.name == includeField.entityName) {
 				return entity
 			}
 		}

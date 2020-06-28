@@ -11,6 +11,7 @@ import org.eclipse.xtext.validation.ComposedChecks;
 public class MdalValidator extends AbstractMdalValidator {
 	
 	public static final String ENTITY_NAME_EXISTS = "e-name-exists";
+	public static final String ENTITY_NAME_DESCRIPTION = "e-name-description";
 	public static final String INCLUDE_FIELD_UNKNOWN_ENTITY = "if-unknown-entity";
 	public static final String INCLUDE_FIELD_UNKNOWN_FIELD = "if-unknown-field";
 	public static final String CUSTOM_FIELD_UNKNOWN_TABLE = "cf-unknown-table";

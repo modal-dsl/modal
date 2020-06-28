@@ -55,7 +55,9 @@ class ExampleContentGenerator {
 					field("Duration Days"; Decimal)
 					field("Minimum Participants"; Integer)
 					field("Maximum Participants"; Integer)
-					field("Language Code"; Code[10])
+					field("Language Code"; Code[10]) {
+						TableRelation = "Language1";
+					}
 					field("Seminar Price"; Decimal)
 				}
 			}

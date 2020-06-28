@@ -1,17 +1,23 @@
 package de.joneug.mdal.extensions
 
 import de.joneug.mdal.generator.GeneratorManagement
+import de.joneug.mdal.mdal.Field
 import de.joneug.mdal.mdal.TemplateDescription
 import de.joneug.mdal.mdal.TemplateDimensions
 import de.joneug.mdal.mdal.TemplateGenProdPostingGroup
 import de.joneug.mdal.mdal.TemplateName
 import de.joneug.mdal.mdal.TemplateType
 
+import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.FieldExtensions.*
 
 class TemplateTypeExtensions {
 	
 	static GeneratorManagement management = GeneratorManagement.getInstance()
+	
+	static def getField(TemplateType templateType) {
+		return templateType.getContainerOfType(Field)
+	}
 	
 	/*
 	 * Polymorphic dispatch for "getDataCaptionFields" on TemplateType subtypes 
@@ -82,7 +88,7 @@ class TemplateTypeExtensions {
 	 */
 	
 	static def dispatch doGenerate(TemplateName templateType) '''
-		field(«management.getNewFieldNo(templateType.entityObject)»; Name; Text[100])
+		field(«management.getNewFieldNo(templateType.field.entity)»; Name; Text[100])
 		{
 			Caption = 'Name';
 			
@@ -92,18 +98,18 @@ class TemplateTypeExtensions {
 					"Search Name" := CopyStr(Name, 1, MaxStrLen("Search Name"));
 			end;
 		}
-		field(«management.getNewFieldNo(templateType.entityObject)»; "Search Name"; Code[100])
+		field(«management.getNewFieldNo(templateType.field.entity)»; "Search Name"; Code[100])
 		{
 			Caption = 'Search Name';
 		}
-		field(«management.getNewFieldNo(templateType.entityObject)»; "Name 2"; Text[50])
+		field(«management.getNewFieldNo(templateType.field.entity)»; "Name 2"; Text[50])
 		{
 			Caption = 'Name 2';
 		}
 	'''
 	
 	static def dispatch doGenerate(TemplateDescription templateType) '''
-		field(«management.getNewFieldNo(templateType.entityObject)»; Description; Text[100])
+		field(«management.getNewFieldNo(templateType.field.entity)»; Description; Text[100])
 		{
 			Caption = 'Description';
 			
@@ -113,18 +119,18 @@ class TemplateTypeExtensions {
 					"Search Description" := CopyStr(Description, 1, MaxStrLen("Search Description"));
 			end;
 		}
-		field(«management.getNewFieldNo(templateType.entityObject)»; "Search Description"; Code[100])
+		field(«management.getNewFieldNo(templateType.field.entity)»; "Search Description"; Code[100])
 		{
 			Caption = 'Search Description';
 		}
-		field(«management.getNewFieldNo(templateType.entityObject)»; "Description 2"; Text[50])
+		field(«management.getNewFieldNo(templateType.field.entity)»; "Description 2"; Text[50])
 		{
 			Caption = 'Description 2';
 		}
 	'''
 	
 	static def dispatch doGenerate(TemplateGenProdPostingGroup templateType) '''
-		field(«management.getNewFieldNo(templateType.entityObject)»; "Gen. Prod. Posting Group"; Code[20])
+		field(«management.getNewFieldNo(templateType.field.entity)»; "Gen. Prod. Posting Group"; Code[20])
 		{
 			Caption = 'Gen. Prod. Posting Group';
 			TableRelation = "Gen. Product Posting Group";
@@ -132,7 +138,7 @@ class TemplateTypeExtensions {
 	'''
 
 	static def dispatch doGenerate(TemplateDimensions templateType) '''
-		field(«management.getNewFieldNo(templateType.entityObject)»; "Global Dimension 1 Code"; Code[20])
+		field(«management.getNewFieldNo(templateType.field.entity)»; "Global Dimension 1 Code"; Code[20])
 		{
 			CaptionClass = '1,1,1';
 			Caption = 'Global Dimension 1 Code';
@@ -143,7 +149,7 @@ class TemplateTypeExtensions {
 				ValidateShortcutDimCode(1, "Global Dimension 1 Code");
 			end;
 		}
-		field(«management.getNewFieldNo(templateType.entityObject)»; "Global Dimension 2 Code"; Code[20])
+		field(«management.getNewFieldNo(templateType.field.entity)»; "Global Dimension 2 Code"; Code[20])
 		{
 			CaptionClass = '1,1,2';
 			Caption = 'Global Dimension 2 Code';

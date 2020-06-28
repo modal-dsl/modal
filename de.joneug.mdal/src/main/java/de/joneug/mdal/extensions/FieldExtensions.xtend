@@ -1,13 +1,14 @@
 package de.joneug.mdal.extensions
 
 import de.joneug.mdal.mdal.Entity
-import org.eclipse.emf.ecore.EObject
-import org.eclipse.xtext.EcoreUtil2
+import de.joneug.mdal.mdal.Field
+
+import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 
 class FieldExtensions {
 	
-	def static Entity getEntityObject(EObject object) {
-		return EcoreUtil2.getContainerOfType(object, Entity)
+	def static Entity getEntity(Field field) {
+		return field.getContainerOfType(Entity)
 	}
 	
 }
