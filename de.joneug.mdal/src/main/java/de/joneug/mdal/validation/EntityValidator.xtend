@@ -38,10 +38,24 @@ class EntityValidator extends AbstractDeclarativeValidator {
 		if(!entity.templateFields.exists[it.type instanceof TemplateDescription || it.type instanceof TemplateName]) {
 			warning(
 				'''Entity «entity.name.saveQuote» should have a name or description.''',
-				MdalPackage.Literals.ENTITY__NAME,
+				MdalPackage.Literals.ENTITY__FIELDS,
 				MdalValidator.ENTITY_NAME_DESCRIPTION
 			)
 		}
+	}
+	
+	@Check
+	def checkFieldNamesAreUnique(Entity entity) {
+		entity.fields.forEach[field |
+			if(entity.fields.exists[it !== field && it.name == field.name]) {
+				error(
+					'''Field with name «field.name.saveQuote» already exists.''',
+					field,
+					MdalPackage.Literals.FIELD__NAME,
+					MdalValidator.FIELD_NAME_EXISTS
+				)
+			}
+		]
 	}
 
 }

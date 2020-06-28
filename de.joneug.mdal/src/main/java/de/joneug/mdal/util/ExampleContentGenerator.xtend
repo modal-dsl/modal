@@ -59,6 +59,7 @@ class ExampleContentGenerator {
 						TableRelation = "Language1";
 					}
 					field("Seminar Price"; Decimal)
+					template("Seminar Price" ; Dimensions)
 				}
 			}
 			

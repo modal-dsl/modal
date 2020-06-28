@@ -10,6 +10,7 @@ import org.eclipse.xtext.validation.ComposedChecks;
 @ComposedChecks(validators = {IncludeFieldValidator.class, CustomFieldValidator.class, EntityValidator.class})
 public class MdalValidator extends AbstractMdalValidator {
 	
+	public static final String FIELD_NAME_EXISTS = "f-name-exists";
 	public static final String ENTITY_NAME_EXISTS = "e-name-exists";
 	public static final String ENTITY_NAME_DESCRIPTION = "e-name-description";
 	public static final String INCLUDE_FIELD_UNKNOWN_ENTITY = "if-unknown-entity";
