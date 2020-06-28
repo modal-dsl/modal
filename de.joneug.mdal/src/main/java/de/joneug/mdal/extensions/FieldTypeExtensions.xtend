@@ -1,7 +1,6 @@
 package de.joneug.mdal.extensions
 
 import de.joneug.mdal.mdal.CustomField
-import de.joneug.mdal.mdal.FieldType
 import de.joneug.mdal.mdal.TypeBigInteger
 import de.joneug.mdal.mdal.TypeBlob
 import de.joneug.mdal.mdal.TypeBoolean
@@ -27,48 +26,50 @@ import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.TypeEnumExtensions.*
 
 class FieldTypeExtensions {
+	
+	/*
+	 * Polymorphic dispatch for "doGenerate" on FieldType subtypes 
+	 */
 
-	static def String doGenerate(FieldType fieldType) {
-		if (fieldType instanceof TypeBoolean) {
-			return 'Boolean'
-		} else if (fieldType instanceof TypeInteger) {
-			return 'Integer'
-		} else if (fieldType instanceof TypeBigInteger) {
-			return 'BigInteger'
-		} else if (fieldType instanceof TypeDecimal) {
-			return 'Decimal'
-		} else if (fieldType instanceof TypeCode) {
-			return '''Code[«fieldType.length»]'''
-		} else if (fieldType instanceof TypeText) {
-			return '''Text[«fieldType.length»]'''
-		} else if (fieldType instanceof TypeDate) {
-			return 'Date'
-		} else if (fieldType instanceof TypeTime) {
-			return 'Time'
-		} else if (fieldType instanceof TypeDateTime) {
-			return 'DateTime'
-		} else if (fieldType instanceof TypeGuid) {
-			return 'Guid'
-		} else if (fieldType instanceof TypeBlob) {
-			return 'Blob'
-		} else if (fieldType instanceof TypeEnum) {
-			fieldType.doGenerate
-			return '''Enum "«fieldType.getContainerOfType(CustomField).getEnumName()»"'''
-		} else if (fieldType instanceof TypeOption) {
-			return 'Option'
-		} else if (fieldType instanceof TypeMedia) {
-			return 'Media'
-		} else if (fieldType instanceof TypeMediaSet) {
-			return 'MediaSet'
-		} else if (fieldType instanceof TypeDateFormula) {
-			return 'DateFormula'
-		} else if (fieldType instanceof TypeDuration) {
-			return 'Duration'
-		} else if (fieldType instanceof TypeRecordId) {
-			return 'RecordId'
-		} else if (fieldType instanceof TypeTableFilter) {
-			return 'TableFilter'
-		}
+	static def dispatch CharSequence doGenerate(TypeBoolean fieldType) '''Boolean'''
+
+	static def dispatch CharSequence doGenerate(TypeInteger fieldType) '''Integer'''
+
+	static def dispatch CharSequence doGenerate(TypeBigInteger fieldType) '''BigInteger'''
+
+	static def dispatch CharSequence doGenerate(TypeDecimal fieldType) '''Decimal'''
+
+	static def dispatch CharSequence doGenerate(TypeCode fieldType) '''Code[«fieldType.length»]'''
+
+	static def dispatch CharSequence doGenerate(TypeText fieldType) '''Text[«fieldType.length»]'''
+
+	static def dispatch CharSequence doGenerate(TypeDate fieldType) '''Date'''
+
+	static def dispatch CharSequence doGenerate(TypeTime fieldType) '''Time'''
+
+	static def dispatch CharSequence doGenerate(TypeDateTime fieldType) '''DateTime'''
+
+	static def dispatch CharSequence doGenerate(TypeGuid fieldType) '''Guid'''
+
+	static def dispatch CharSequence doGenerate(TypeBlob fieldType) '''Blob'''
+
+	static def dispatch CharSequence doGenerate(TypeEnum fieldType) {
+		fieldType.doGenerate
+		return '''Enum "«fieldType.getContainerOfType(CustomField).getEnumName()»"'''
 	}
+
+	static def dispatch CharSequence doGenerate(TypeOption fieldType) '''Option'''
+
+	static def dispatch CharSequence doGenerate(TypeMedia fieldType) '''Media'''
+
+	static def dispatch CharSequence doGenerate(TypeMediaSet fieldType) '''MediaSet'''
+
+	static def dispatch CharSequence doGenerate(TypeDateFormula fieldType) '''DateFormula'''
+
+	static def dispatch CharSequence doGenerate(TypeDuration fieldType) '''Duration'''
+
+	static def dispatch CharSequence doGenerate(TypeRecordId fieldType) '''RecordId'''
+
+	static def dispatch CharSequence doGenerate(TypeTableFilter fieldType) '''TableFilter'''
 
 }
