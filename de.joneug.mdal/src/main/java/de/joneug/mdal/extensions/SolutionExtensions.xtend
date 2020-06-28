@@ -3,12 +3,11 @@ package de.joneug.mdal.extensions
 import de.joneug.mdal.generator.GeneratorManagement
 import de.joneug.mdal.generator.MdalGenerator
 import de.joneug.mdal.mdal.Solution
-import org.eclipse.xtext.generator.IFileSystemAccess2
 
 import static extension de.joneug.mdal.extensions.EntityExtensions.*
 import static extension de.joneug.mdal.extensions.MasterExtensions.*
-import static extension de.joneug.mdal.extensions.StringExtensions.*
 import static extension de.joneug.mdal.extensions.ObjectExtensions.*
+import static extension de.joneug.mdal.extensions.StringExtensions.*
 import static extension de.joneug.mdal.generator.SetupGenerator.*
 
 /**
@@ -54,28 +53,28 @@ class SolutionExtensions {
 		return pageName.removeSpaces + '.TableExt.al'
 	}
 
-	static def saveTable(Solution solution, IFileSystemAccess2 fsa, String fileName, CharSequence fileContent) {
-		fsa.generateFile(MdalGenerator.TABLE_PATH + '/' + fileName, fileContent)
+	static def saveTable(Solution solution, String fileName, CharSequence fileContent) {
+		management.generatorFsa.generateFile(MdalGenerator.TABLE_PATH + '/' + fileName, fileContent)
 	}
 	
-	static def savePage(Solution solution, IFileSystemAccess2 fsa, String fileName, CharSequence fileContent) {
-		fsa.generateFile(MdalGenerator.PAGE_PATH + '/' + fileName, fileContent)
+	static def savePage(Solution solution, String fileName, CharSequence fileContent) {
+		management.generatorFsa.generateFile(MdalGenerator.PAGE_PATH + '/' + fileName, fileContent)
 	}
 	
-	static def saveCodeunit(Solution solution, IFileSystemAccess2 fsa, String fileName, CharSequence fileContent) {
-		fsa.generateFile(MdalGenerator.CODEUNIT_PATH + '/' + fileName, fileContent)
+	static def saveCodeunit(Solution solution, String fileName, CharSequence fileContent) {
+		management.generatorFsa.generateFile(MdalGenerator.CODEUNIT_PATH + '/' + fileName, fileContent)
 	}
 	
-	static def saveEnum(Solution solution, IFileSystemAccess2 fsa, String fileName, CharSequence fileContent) {
-		fsa.generateFile(MdalGenerator.ENUM_PATH + '/' + fileName, fileContent)
+	static def saveEnum(Solution solution, String fileName, CharSequence fileContent) {
+		management.generatorFsa.generateFile(MdalGenerator.ENUM_PATH + '/' + fileName, fileContent)
 	}
 	
-	static def saveTableExt(Solution solution, IFileSystemAccess2 fsa, String fileName, CharSequence fileContent) {
-		fsa.generateFile(MdalGenerator.TABLE_EXT_PATH + '/' + fileName, fileContent)
+	static def saveTableExt(Solution solution, String fileName, CharSequence fileContent) {
+		management.generatorFsa.generateFile(MdalGenerator.TABLE_EXT_PATH + '/' + fileName, fileContent)
 	}
 	
-	static def saveEnumExt(Solution solution, IFileSystemAccess2 fsa, String fileName, CharSequence fileContent) {
-		fsa.generateFile(MdalGenerator.ENUM_EXT_PATH + '/' + fileName, fileContent)
+	static def saveEnumExt(Solution solution, String fileName, CharSequence fileContent) {
+		management.generatorFsa.generateFile(MdalGenerator.ENUM_EXT_PATH + '/' + fileName, fileContent)
 	}
 
 	/*
@@ -121,7 +120,7 @@ class SolutionExtensions {
 	 * Generator extensions
 	 */
 	 
-	static def doGenerate(Solution solution, IFileSystemAccess2 fsa) {
+	static def doGenerate(Solution solution) {
 		solution.logInfo('''Generating solution "«solution.name»"''')
 		management.reset()
 		management.readAppJson()
@@ -129,11 +128,11 @@ class SolutionExtensions {
 		
 		// Setup
 		solution.logInfo("Generating setup files")
-		solution.doGenerateSetup(fsa)
+		solution.doGenerateSetup
 		
 		// Master
 		solution.logInfo("Generating master files")
-		solution.master.doGenerate(fsa)
+		solution.master.doGenerate
 		
 		// Supplemental
 		

@@ -4,7 +4,6 @@ import de.joneug.mdal.mdal.CustomField
 import de.joneug.mdal.mdal.Entity
 import de.joneug.mdal.mdal.TemplateDimensions
 import de.joneug.mdal.mdal.TemplateField
-import org.eclipse.xtext.generator.IFileSystemAccess2
 
 import static extension de.joneug.mdal.extensions.CustomFieldExtensions.*
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
@@ -78,10 +77,10 @@ class EntityExtensions {
 		return fields
 	}
 	
-	static def doGenerateFields(Entity entity, IFileSystemAccess2 fsa) '''
+	static def doGenerateFields(Entity entity) '''
 		«FOR field : entity.fields»
 			«IF field instanceof CustomField»
-				«field.doGenerate(fsa)»
+				«field.doGenerate»
 			«ELSEIF field instanceof TemplateField »
 				«field.doGenerate»
 			«ENDIF»

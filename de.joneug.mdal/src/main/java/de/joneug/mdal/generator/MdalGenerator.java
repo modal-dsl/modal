@@ -12,6 +12,8 @@ import de.joneug.mdal.mdal.Model;
 
 public class MdalGenerator extends AbstractGenerator {
 	
+	protected static GeneratorManagement management = GeneratorManagement.getInstance();
+	
 	public static final String APP_JSON_FILENAME = "app.json";
 	public static final String OUTPUT_FOLDER = "src-gen" ;
 	public static final String TABLE_PATH = "Table";
@@ -24,8 +26,9 @@ public class MdalGenerator extends AbstractGenerator {
 	@Override
 	public void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		ObjectExtensions.logInfo(this, "Generator called with resource '" + resource.getURI() + "'");
+		management.setGeneratorFsa(fsa);
 		Model model = (Model)IterableExtensions.head(resource.getContents());
-		SolutionExtensions.doGenerate(model.getSolution(), fsa);
+		SolutionExtensions.doGenerate(model.getSolution());
 	}
 	
 }

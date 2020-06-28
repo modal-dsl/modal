@@ -1,24 +1,23 @@
 package de.joneug.mdal.generator
 
 import de.joneug.mdal.mdal.Solution
-import org.eclipse.xtext.generator.IFileSystemAccess2
 
 import static extension de.joneug.mdal.extensions.EntityExtensions.*
-import static extension de.joneug.mdal.extensions.SolutionExtensions.*
 import static extension de.joneug.mdal.extensions.ObjectExtensions.*
+import static extension de.joneug.mdal.extensions.SolutionExtensions.*
 
 class SetupGenerator {
 
 	static GeneratorManagement management = GeneratorManagement.getInstance()
 
-	static def void doGenerateSetup(Solution solution, IFileSystemAccess2 fsa) {
+	static def void doGenerateSetup(Solution solution) {
 		// Table
 		solution.logDebug("Generating setup table")
-		solution.saveTable(fsa, solution.setupTableFileName, solution.doGenerateSetupTable)
+		solution.saveTable(solution.setupTableFileName, solution.doGenerateSetupTable)
 
 		// Page
 		solution.logDebug("Generating setup page")
-		solution.savePage(fsa, solution.setupPageFileName, solution.doGenerateSetupPage)
+		solution.savePage(solution.setupPageFileName, solution.doGenerateSetupPage)
 	}
 
 	static def doGenerateSetupTable(Solution solution) '''

@@ -1,16 +1,15 @@
 package de.joneug.mdal.generator
 
 import de.joneug.mdal.mdal.Solution
-import org.eclipse.xtext.generator.IFileSystemAccess2
 
 import static extension de.joneug.mdal.extensions.EntityExtensions.*
 import static extension de.joneug.mdal.extensions.SolutionExtensions.*
 
 class CommentsGenerator {
 	
-	static def void doGenerateSetup(Solution solution, IFileSystemAccess2 fsa) {
+	static def void doGenerateSetup(Solution solution) {
 		// EnumExt
-		solution.saveEnumExt(fsa, solution.getInferredPrefix + 'CommentLineTableNameExt', solution.doGenerateCommentLineTableNameEnumExt)
+		solution.saveEnumExt(solution.getInferredPrefix + 'CommentLineTableNameExt', solution.doGenerateCommentLineTableNameEnumExt)
 
 	}
 	

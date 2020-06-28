@@ -3,7 +3,6 @@ package de.joneug.mdal.extensions
 import de.joneug.mdal.generator.GeneratorManagement
 import de.joneug.mdal.mdal.CustomField
 import de.joneug.mdal.mdal.TypeEnum
-import org.eclipse.xtext.generator.IFileSystemAccess2
 
 import static extension de.joneug.mdal.extensions.CustomFieldExtensions.*
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
@@ -13,8 +12,8 @@ class TypeEnumExtensions {
 	
 	static GeneratorManagement management = GeneratorManagement.getInstance()
 	
-	static def void doGenerate(TypeEnum typeEnum, IFileSystemAccess2 fsa) {
-		typeEnum.solution.saveEnum(fsa, typeEnum.getContainerOfType(CustomField).getEnumFileName(), typeEnum.doGenerateEnum)
+	static def void doGenerate(TypeEnum typeEnum) {
+		typeEnum.solution.saveEnum(typeEnum.getContainerOfType(CustomField).getEnumFileName(), typeEnum.doGenerateEnum)
 	}
 	
 	static def doGenerateEnum(TypeEnum typeEnum) '''

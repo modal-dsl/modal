@@ -3,12 +3,11 @@ package de.joneug.mdal.extensions
 import de.joneug.mdal.generator.GeneratorManagement
 import de.joneug.mdal.mdal.Entity
 import de.joneug.mdal.mdal.Master
-import org.eclipse.xtext.generator.IFileSystemAccess2
 
-import static extension de.joneug.mdal.extensions.StringExtensions.*
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.EntityExtensions.*
 import static extension de.joneug.mdal.extensions.SolutionExtensions.*
+import static extension de.joneug.mdal.extensions.StringExtensions.*
 
 /**
  * This is an extension library for all {@link Master objects}.
@@ -35,15 +34,15 @@ class MasterExtensions {
 		return fields
 	}
 	
-	static def void doGenerate(Master master, IFileSystemAccess2 fsa) {
+	static def void doGenerate(Master master) {
 		// Table
-		master.solution.saveTable(fsa, master.tableFileName, master.doGenerateTable(fsa))
+		master.solution.saveTable(master.tableFileName, master.doGenerateTable)
 		
 		// List Page
 		// Card Page
 	}
 
-	static def doGenerateTable(Master master, IFileSystemAccess2 fsa) '''
+	static def doGenerateTable(Master master) '''
 		«val solution = master.solution»
 		table «management.getNewTableNo()» "«master.tableName»"
 		{
@@ -67,7 +66,7 @@ class MasterExtensions {
 						end;
 					end;
 				}
-				«master.doGenerateFields(fsa)»
+				«master.doGenerateFields»
 				field(«management.getNewFieldNo(master)»; Blocked; Boolean)
 				{
 					Caption = 'Blocked';

@@ -4,7 +4,6 @@ import de.joneug.mdal.generator.GeneratorManagement
 import de.joneug.mdal.mdal.CustomField
 import de.joneug.mdal.mdal.TypeEnum
 import de.joneug.mdal.mdal.TypeOption
-import org.eclipse.xtext.generator.IFileSystemAccess2
 
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.FieldExtensions.*
@@ -38,8 +37,8 @@ class CustomFieldExtensions {
 		}
 	}
 
-	static def doGenerate(CustomField customField, IFileSystemAccess2 fsa) '''
-		field(«management.getNewFieldNo(customField.entityObject)»; "«customField.getName()»"; «customField.type.doGenerate(fsa)»)
+	static def doGenerate(CustomField customField) '''
+		field(«management.getNewFieldNo(customField.entityObject)»; "«customField.getName()»"; «customField.type.doGenerate»)
 		{
 			Caption = '«customField.inferredCaption»';
 			««« Option

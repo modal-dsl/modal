@@ -21,7 +21,6 @@ import de.joneug.mdal.mdal.TypeRecordId
 import de.joneug.mdal.mdal.TypeTableFilter
 import de.joneug.mdal.mdal.TypeText
 import de.joneug.mdal.mdal.TypeTime
-import org.eclipse.xtext.generator.IFileSystemAccess2
 
 import static extension de.joneug.mdal.extensions.CustomFieldExtensions.*
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
@@ -29,7 +28,7 @@ import static extension de.joneug.mdal.extensions.TypeEnumExtensions.*
 
 class FieldTypeExtensions {
 
-	static def String doGenerate(FieldType fieldType, IFileSystemAccess2 fsa) {
+	static def String doGenerate(FieldType fieldType) {
 		if (fieldType instanceof TypeBoolean) {
 			return 'Boolean'
 		} else if (fieldType instanceof TypeInteger) {
@@ -53,7 +52,7 @@ class FieldTypeExtensions {
 		} else if (fieldType instanceof TypeBlob) {
 			return 'Blob'
 		} else if (fieldType instanceof TypeEnum) {
-			fieldType.doGenerate(fsa)
+			fieldType.doGenerate
 			return '''Enum "«fieldType.getContainerOfType(CustomField).getEnumName()»"'''
 		} else if (fieldType instanceof TypeOption) {
 			return 'Option'

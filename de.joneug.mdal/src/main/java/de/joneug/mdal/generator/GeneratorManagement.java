@@ -45,6 +45,7 @@ public class GeneratorManagement {
 	protected HashMap<ALObjectType, Integer> lastALObjectNoMap;
 	protected List<SymbolReference> symbolReferences;
 	protected IFileSystemAccess2 fsa;
+	protected IFileSystemAccess2 generatorFsa;
 
 	private GeneratorManagement() {
 		alObjectRanges = new TreeSet<ObjectRange>();
@@ -68,6 +69,14 @@ public class GeneratorManagement {
 		if(this.fsa == null) {
 			initializeFileSystemAccess();
 		}
+	}
+	
+	public void setGeneratorFsa(IFileSystemAccess2 generatorFsa) {
+		this.generatorFsa = generatorFsa;
+	}
+	
+	public IFileSystemAccess2 getGeneratorFsa() {
+		return this.generatorFsa;
 	}
 
 	public void readAppJson() {		
