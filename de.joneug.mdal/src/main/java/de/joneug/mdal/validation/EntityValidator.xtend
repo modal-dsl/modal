@@ -49,7 +49,7 @@ class EntityValidator extends AbstractDeclarativeValidator {
 		entity.fields.forEach[field |
 			if(entity.fields.exists[it !== field && it.name == field.name]) {
 				error(
-					'''Field with name «field.name.saveQuote» already exists.''',
+					'''Field with name «field.name.saveQuote» already exists in «entity.name.saveQuote».''',
 					field,
 					MdalPackage.Literals.FIELD__NAME,
 					MdalValidator.FIELD_NAME_EXISTS
