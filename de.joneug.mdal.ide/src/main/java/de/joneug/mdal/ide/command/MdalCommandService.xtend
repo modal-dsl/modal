@@ -1,6 +1,7 @@
 package de.joneug.mdal.ide.command
 
 import com.google.gson.JsonPrimitive
+import de.joneug.mdal.generator.GeneratorManagement
 import de.joneug.mdal.generator.MdalGenerator
 import de.joneug.mdal.util.MdalUtils
 import org.eclipse.lsp4j.ExecuteCommandParams
@@ -16,20 +17,24 @@ import static extension de.joneug.mdal.extensions.ObjectExtensions.*
 
 class MdalCommandService implements IExecutableCommandService {
 
-	public static final String RETURN_PREFIX_SUCCESS = "mdal.command.success";
-	public static final String RETURN_PREFIX_ERROR = "mdal.command.error";
+	public static final String RETURN_PREFIX_SUCCESS = "mdal.command.success"
+	public static final String RETURN_PREFIX_ERROR = "mdal.command.error"
 
-	public static final String GENERATE = "mdal.generate";
-	public static final String CLEAN = "mdal.clean";
+	public static final String GENERATE = "mdal.generate"
+	public static final String CLEAN = "mdal.clean"
+	public static final String LOAD_SYMBOL_REFERENCES = 'mdal.loadSymbolReferences'
+	
+	public static final String PROXY_SUFFIX = '.proxy'
 
-	IGenerator2 generator = new MdalGenerator()
+	protected IGenerator2 generator = new MdalGenerator()
+	protected GeneratorManagement management = GeneratorManagement.getInstance()
 
 	override initialize() {
-		#[GENERATE, CLEAN]
+		#[GENERATE, CLEAN, LOAD_SYMBOL_REFERENCES]
 	}
 
 	override execute(ExecuteCommandParams params, ILanguageServerAccess access, CancelIndicator cancelIndicator) {
-		logInfo("LSP command has been called: " + params.command + " (" + params.arguments + ")");
+		logInfo("LSP command has been called: " + params.command + " (" + params.arguments + ")")
 		
 		switch (params.command) {
 			case GENERATE: {
@@ -50,6 +55,10 @@ class MdalCommandService implements IExecutableCommandService {
 			case CLEAN: {
 				forceDeleteDirectory(MdalGenerator.OUTPUT_FOLDER)
 				return constructSuccessMessage('''The «MdalGenerator.OUTPUT_FOLDER» folder has been cleaned successfully.''')
+			}
+			case LOAD_SYMBOL_REFERENCES: {
+				management.readSymbolReferences()
+				return constructSuccessMessage('''The symbol references have been loaded successfully.''')
 			}
 			default: {
 				return constructErrorMessage('''Command "«params.command»" is unknown.''')				
