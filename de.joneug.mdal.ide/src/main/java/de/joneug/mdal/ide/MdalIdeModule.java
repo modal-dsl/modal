@@ -3,13 +3,17 @@
  */
 package de.joneug.mdal.ide;
 
+import org.eclipse.xtext.documentation.IEObjectDocumentationProvider;
 import org.eclipse.xtext.ide.editor.contentassist.IdeContentProposalProvider;
 import org.eclipse.xtext.ide.server.codeActions.ICodeActionService2;
 import org.eclipse.xtext.ide.server.commands.IExecutableCommandService;
+import org.eclipse.xtext.ide.server.hover.HoverService;
 
 import de.joneug.mdal.ide.action.MdalCodeActionService;
 import de.joneug.mdal.ide.command.MdalCommandService;
 import de.joneug.mdal.ide.contentassist.MdalIdeContentProposalProvider;
+import de.joneug.mdal.ide.documentation.MdalIEObjectDocumentationProvider;
+import de.joneug.mdal.ide.hover.MdalHoverService;
 
 /**
  * Use this class to register ide components.
@@ -27,5 +31,13 @@ public class MdalIdeModule extends AbstractMdalIdeModule {
 	public Class<? extends IdeContentProposalProvider> bindIdeContentProposalProvider() {
 		return MdalIdeContentProposalProvider.class;
 	}
-		
+	
+	public Class<? extends HoverService> bindHoverService() {
+		return MdalHoverService.class;
+	}
+	
+	public Class<? extends IEObjectDocumentationProvider> bindIEObjectDocumentationProviderr() {
+        return MdalIEObjectDocumentationProvider.class;
+    }
+	
 }

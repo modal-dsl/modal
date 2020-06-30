@@ -1,6 +1,7 @@
 package de.joneug.mdal.extensions
 
 import java.text.Normalizer
+import com.google.common.base.Strings
 
 /**
  * This is an extension library for all {@link String objects}.
@@ -38,5 +39,9 @@ class StringExtensions {
 			return input.quote
 		}
 	}
+	
+	def static padEnd(String input, int length) {
+		return Strings.padEnd(input, length, ' ')
+	}  
 	
 }

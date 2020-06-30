@@ -15,4 +15,5 @@ public class MdalRuntimeModule extends AbstractMdalRuntimeModule {
 	public Class<? extends IParser> bindIParser() {
 		return MdalParser.class;
 	}
+	
 }
