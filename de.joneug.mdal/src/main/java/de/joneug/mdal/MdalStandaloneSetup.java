@@ -12,4 +12,5 @@ public class MdalStandaloneSetup extends MdalStandaloneSetupGenerated {
 	public static void doSetup() {
 		new MdalStandaloneSetup().createInjectorAndDoEMFRegistration();
 	}
+	
 }

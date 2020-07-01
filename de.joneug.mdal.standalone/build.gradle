@@ -1,0 +1,34 @@
+dependencies {
+	testImplementation 'org.junit.jupiter:junit-jupiter-api'
+	testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+	implementation project(':de.joneug.mdal')
+	implementation "org.eclipse.xtext:org.eclipse.xtext:${xtextVersion}"
+	implementation "org.eclipse.xtext:org.eclipse.xtext.xbase:${xtextVersion}"
+	implementation "com.google.code.gson:gson:2.8.6"
+	implementation 'info.picocli:picocli:4.3.2'
+}
+
+apply plugin: 'application'
+mainClassName = "de.joneug.mdal.standalone.MdalStandaloneGenerator"
+
+startScripts {
+	applicationName = 'mdal-standalone'
+}
+
+test {
+	useJUnitPlatform()
+}
+
+// Omit parent directory in distributions
+distZip {
+    eachFile { file ->
+        String path = file.relativePath
+        file.setPath(path.substring(path.indexOf("/") + 1, path.length()))
+    }
+}
+distTar {
+	eachFile { file ->
+        String path = file.relativePath
+        file.setPath(path.substring(path.indexOf("/") + 1, path.length()))
+    }
+}

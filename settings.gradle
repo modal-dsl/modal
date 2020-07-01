@@ -1,2 +1,3 @@
 include 'de.joneug.mdal'
 include 'de.joneug.mdal.ide'
+include 'de.joneug.mdal.standalone'
