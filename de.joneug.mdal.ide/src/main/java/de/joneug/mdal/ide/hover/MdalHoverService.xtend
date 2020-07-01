@@ -14,7 +14,7 @@ import static extension org.eclipse.xtext.nodemodel.util.NodeModelUtils.*
 class MdalHoverService extends HoverService {
 	
 	@Inject
-	MdalHoverContextContent mdalHoverContextContent;
+	MdalHoverContextContent mdalHoverContextContent
 
 	override protected createContext(Document document, XtextResource resource, int offset) {
 		var context = super.createContext(document, resource, offset)

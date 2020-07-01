@@ -1,9 +1,12 @@
 coverage:
   status:
     project:
-      DSL:
+      dsl:
         paths:
           - de.joneug.mdal
-      IDE:
+      ide:
         paths:
           - de.joneug.mdal.ide
+      standalone:
+        paths:
+          - de.joneug.mdal.standalone
