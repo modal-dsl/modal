@@ -14,7 +14,6 @@ import org.eclipse.xtext.util.CancelIndicator
 import static de.joneug.mdal.util.MdalUtils.*
 
 import static extension de.joneug.mdal.extensions.ObjectExtensions.*
-import javax.inject.Inject
 
 class MdalCommandService implements IExecutableCommandService {
 
@@ -27,8 +26,7 @@ class MdalCommandService implements IExecutableCommandService {
 	
 	public static final String PROXY_SUFFIX = '.proxy'
 	
-	@Inject
-	protected IGenerator2 generator
+	protected IGenerator2 generator = new MdalGenerator
 	protected GeneratorManagement management = GeneratorManagement.getInstance()
 
 	override initialize() {

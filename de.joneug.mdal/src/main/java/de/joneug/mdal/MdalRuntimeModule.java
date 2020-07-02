@@ -3,10 +3,8 @@
  */
 package de.joneug.mdal;
 
-import org.eclipse.xtext.generator.IGenerator2;
 import org.eclipse.xtext.parser.IParser;
 
-import de.joneug.mdal.generator.MdalGenerator;
 import de.joneug.mdal.parser.antlr.MdalParser;
 
 /**
@@ -16,10 +14,6 @@ public class MdalRuntimeModule extends AbstractMdalRuntimeModule {
 	
 	public Class<? extends IParser> bindIParser() {
 		return MdalParser.class;
-	}
-	
-	public Class<? extends IGenerator2> bindIGenerator2() {
-		return MdalGenerator.class;
 	}
 	
 }

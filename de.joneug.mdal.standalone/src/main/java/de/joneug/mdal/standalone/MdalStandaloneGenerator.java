@@ -33,8 +33,7 @@ public class MdalStandaloneGenerator implements Callable<Integer> {
 	
 	protected final Logger LOGGER = Logger.getLogger(MdalStandaloneGenerator.class);
 	
-	@Inject
-	protected IGenerator2 generator;
+	protected IGenerator2 generator = new MdalGenerator();
 	
 	@Inject
 	protected IResourceValidator validator;
