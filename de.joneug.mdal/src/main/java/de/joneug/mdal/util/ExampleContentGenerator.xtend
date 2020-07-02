@@ -28,13 +28,26 @@ class ExampleContentGenerator {
 		            template("Address"; Address)
 		            template("Contact Information"; ContactInfo)
 		            template("Salesperson"; Salesperson)
-		            field("Resource No."; Code[20]) {
-		                TableRelation = "Resource" where("Type" = const("Machine"));
-		            }
+		            field("Resource No."; Code[20])
 		            field("Internal/External"; Option[" ", "Internal", "External"])
 		            field("Maximum Participants"; Integer)
 		            template("Dimensions"; Dimensions)
 		        }
+		    }
+		    
+		    supplemental "Instructor" {
+		    	ShortName = "Inst.";
+		    	
+		    	fields {
+		    		template("Name"; Name)
+		    		template("Contact Information"; ContactInfo)
+		    		field("Contact No."; Code[20])
+		    		field("Resource No."; Code[20])
+		    		template("Salesperson"; Salesperson)
+		    		field("Internal/External"; Option[" ", "Internal", "External"])
+		    		field("Language Code"; Code[10])
+		    		template("Dimensions"; Dimensions)
+		    	}
 		    }
 			
 			document {
