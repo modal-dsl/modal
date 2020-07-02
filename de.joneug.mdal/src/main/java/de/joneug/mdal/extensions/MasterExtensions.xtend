@@ -3,6 +3,7 @@ package de.joneug.mdal.extensions
 import de.joneug.mdal.generator.GeneratorManagement
 import de.joneug.mdal.mdal.Entity
 import de.joneug.mdal.mdal.Master
+import de.joneug.mdal.mdal.TemplateDimensions
 
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.EntityExtensions.*
@@ -36,7 +37,7 @@ class MasterExtensions {
 	
 	static def void doGenerate(Master master) {
 		// Table
-		master.solution.saveTable(master.tableFileName, master.doGenerateTable)
+		master.saveTable(master.tableName, master.doGenerateTable)
 		
 		// List Page
 		// Card Page
@@ -44,7 +45,8 @@ class MasterExtensions {
 
 	static def doGenerateTable(Master master) '''
 		«val solution = master.solution»
-		table «management.getNewTableNo()» "«master.tableName»"
+		«val document = solution.document»
+		table «management.newTableNo» «master.tableName.saveQuote»
 		{
 			Caption = '«master.name»';
 			DataCaptionFields = «FOR field : master.dataCaptionFields SEPARATOR ', '»«field.saveQuote»«ENDFOR»;
@@ -115,7 +117,7 @@ class MasterExtensions {
 					NoSeriesMgt.InitSeries(«solution.setupTableVariableName»."«master.cleanedName» Nos.", xRec."No. Series", 0D, "No.", "No. Series");
 				end;
 				
-				«IF master.addDimensions»
+				«IF master.hasTemplateOfType(TemplateDimensions)»
 					DimMgt.UpdateDefaultDim(Database::"«master.tableName»", "No.", "Global Dimension 1 Code", "Global Dimension 2 Code");
 				«ENDIF»
 			end;
@@ -127,7 +129,7 @@ class MasterExtensions {
 			
 			trigger OnDelete()
 			begin
-				«IF master.addDimensions»
+				«IF master.hasTemplateOfType(TemplateDimensions)»
 					DimMgt.DeleteDefaultDim(Database::"«master.tableName»", "No.");
 					
 				«ENDIF»
@@ -135,12 +137,12 @@ class MasterExtensions {
 				CommentLine.SetRange("No.", "No.");
 				CommentLine.DeleteAll();
 				
-				«solution.documentHeaderTableVariableName».SetCurrentKey("«master.cleanedName» No.");
-				«solution.documentHeaderTableVariableName».SetRange("«master.cleanedName» No.", "No.");
-				IF NOT «solution.documentHeaderTableVariableName».IsEmpty THEN
+				«document.header.tableVariableName».SetCurrentKey("«master.cleanedName» No.");
+				«document.header.tableVariableName».SetRange("«master.cleanedName» No.", "No.");
+				IF NOT «document.header.tableVariableName».IsEmpty THEN
 					Error(
 						ExistingDocumentsErr,
-						TableCaption, "No.", «solution.documentHeaderTableVariableName».TableCaption);
+						TableCaption, "No.", «document.header.tableVariableName».TableCaption);
 			end;
 			
 			trigger OnRename()
@@ -152,12 +154,12 @@ class MasterExtensions {
 				«solution.setupTableVariableName»Read: Boolean;
 				«solution.setupTableVariableName»: Record "«solution.setupTableName»";
 				NoSeriesMgt: Codeunit NoSeriesManagement;
-				«IF master.addDimensions»
+				«IF master.hasTemplateOfType(TemplateDimensions)»
 					DimMgt: Codeunit DimensionManagement;
 				«ENDIF»
 				CommentLine: Record "Comment Line";
 				«master.tableVariableName»: Record "«master.tableName»";
-				«solution.documentHeaderTableVariableName»: Record "«solution.documentHeaderTableName»";
+				«document.header.tableVariableName»: Record "«document.header.tableName»";
 				ExistingDocumentsErr: Label 'You cannot delete %1 %2 because there is at least one outstanding %3 for this «master.name».';
 				
 			procedure AssistEdit(Old«master.tableVariableName»: Record "«master.tableName»"): Boolean
@@ -174,7 +176,7 @@ class MasterExtensions {
 				end;
 			end;
 			
-			«IF master.addDimensions»
+			«IF master.hasTemplateOfType(TemplateDimensions)»
 				procedure ValidateShortcutDimCode(FieldNumber: Integer; var ShortcutDimCode: Code[20])
 				begin
 					OnBeforeValidateShortcutDimCode(Rec, xRec, FieldNumber, ShortcutDimCode);
@@ -197,8 +199,8 @@ class MasterExtensions {
 				local procedure OnAfterValidateShortcutDimCode(var «master.tableVariableName»: Record "«master.tableName»"; var x«master.tableVariableName»: Record "«master.tableName»"; FieldNumber: Integer; var ShortcutDimCode: Code[20])
 				begin
 				end;
+				
 			«ENDIF»
-			
 			local procedure Get«solution.setupTableVariableName»()
 			begin
 				if not «solution.setupTableVariableName»Read then

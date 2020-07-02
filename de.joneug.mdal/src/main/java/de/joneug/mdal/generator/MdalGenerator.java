@@ -12,7 +12,7 @@ import de.joneug.mdal.mdal.Model;
 
 public class MdalGenerator extends AbstractGenerator {
 	
-	protected static GeneratorManagement management = GeneratorManagement.getInstance();
+	protected GeneratorManagement management = GeneratorManagement.getInstance();
 	
 	public static final String APP_JSON_FILENAME = "app.json";
 	public static final String OUTPUT_FOLDER = "src-gen" ;
@@ -22,13 +22,14 @@ public class MdalGenerator extends AbstractGenerator {
 	public static final String ENUM_PATH = "Enum";
 	public static final String ENUM_EXT_PATH = "EnumExt";
 	public static final String TABLE_EXT_PATH = "TableExt";
-
+	
 	@Override
-	public void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
+	public void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {		
 		ObjectExtensions.logInfo(this, "Generator called with resource '" + resource.getURI() + "'");
 		management.setGeneratorFsa(fsa);
 		Model model = (Model)IterableExtensions.head(resource.getContents());
 		SolutionExtensions.doGenerate(model.getSolution());
+		ObjectExtensions.logInfo(this, "Done");
 	}
 	
 }

@@ -42,6 +42,30 @@ class StringExtensions {
 	
 	def static padEnd(String input, int length) {
 		return Strings.padEnd(input, length, ' ')
-	}  
+	}
+	
+	def static toTableFileName(String tableName) {
+		return tableName.removeSpaces + '.Table.al'
+	}
+
+	def static toPageFileName(String pageName) {
+		return pageName.removeSpaces + '.Page.al'
+	}
+	
+	def static toCodeunitFileName(String codeunitName) {
+		return codeunitName.removeSpaces + '.Codeunit.al'
+	}
+	
+	def static toEnumFileName(String enumName) {
+		return enumName.removeSpaces + '.Enum.al'
+	}
+	
+	def static toEnumExtFileName(String enumExtName) {
+		return enumExtName.removeSpaces + '.EnumExt.al'
+	}
+	
+	def static toTableExtFileName(String tableExtName) {
+		return tableExtName.removeSpaces + '.TableExt.al'
+	}
 	
 }

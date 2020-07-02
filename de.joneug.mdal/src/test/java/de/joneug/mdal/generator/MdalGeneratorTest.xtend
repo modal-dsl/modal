@@ -16,6 +16,7 @@ import org.junit.jupiter.api.^extension.ExtendWith
 import static org.junit.Assert.assertEquals
 import static org.junit.Assert.assertTrue
 
+import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.InMemoryFileSystemAccessExtensions.*
 import static extension de.joneug.mdal.extensions.ObjectExtensions.*
 
@@ -62,11 +63,11 @@ class MdalGeneratorTest {
 				'DataCaptionFields = Description, "No.";',
 				'DrillDownPageID = "SEM Seminar List";',
 				'field(3; Description; Text[100])',
-				'field(7; "Duration Days"; Decimal)',
+				'field(6; "Duration Days"; Decimal)',
 				'key(Key2; "Search Description") { }',
 				'fieldgroup(DropDown; Description, "Description 2", "No.") { }',
 				'fieldgroup(Brick; Description, "No.") { }',
-				'SeminarReg: Record "SEM Seminar Reg. Header";',
+				'SeminarRegHeader: Record "SEM Seminar Reg. Header";',
 				'if NoSeriesMgt.SelectSeries(SemSetup."Seminar Nos.", OldSem."No. Series", "No. Series") then begin',
 				'local procedure OnAfterGetSemSetup(var SemSetup: Record "SEM Seminar Setup")'
 			]
@@ -87,7 +88,9 @@ class MdalGeneratorTest {
 
 	def doGenerate(String modelString) {
 		val model = parseHelper.parse(modelString)
+		logDebug(model.dump())
 		generator.doGenerate(model.eResource, fsa, new GeneratorContextStub)
+		logDebug(fsa.allFiles)
 	}
 
 	def checkFileContents(String filePath, String expectedContent) {

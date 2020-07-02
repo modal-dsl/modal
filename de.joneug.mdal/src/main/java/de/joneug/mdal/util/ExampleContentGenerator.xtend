@@ -12,7 +12,6 @@ class ExampleContentGenerator {
 				fields { 
 					field("Picture"; Media)
 					template("Description" ; Description)
-					template("Gen. Product Posting Group" ; GenProductPostingGroup)
 					field("Duration Days"; Decimal)
 					field("Minimum Participants"; Integer)
 					field("Maximum Participants"; Integer)
@@ -21,18 +20,35 @@ class ExampleContentGenerator {
 				}
 			}
 			
+			supplemental "Seminar Room" {
+		        ShortName = "Sem. Room";
+		
+		        fields {
+		            template("Name"; Name)
+		            template("Address"; Address)
+		            template("Contact Information"; ContactInfo)
+		            template("Salesperson"; Salesperson)
+		            field("Resource No."; Code[20]) {
+		                TableRelation = "Resource" where("Type" = const("Machine"));
+		            }
+		            field("Internal/External"; Option[" ", "Internal", "External"])
+		            field("Maximum Participants"; Integer)
+		            template("Dimensions"; Dimensions)
+		        }
+		    }
+			
 			document {
 				header "Seminar Registration Header" {
-					ShortName = "Sem. Reg. Header";
+					ShortName = "Seminar Reg. Header";
 				}
 				
 				line "Seminar Registration Line" {
-					ShortName = "Sem. Reg. Line";
+					ShortName = "Seminar Reg. Line";
 				}
 			}
 			
 			journal "Seminar Journal Line" {
-				ShortName = "Sem. Jnl. Line";
+				ShortName = "Seminar Jnl. Line";
 				
 				fields {
 					include("Seminar"."Language Code")
@@ -51,7 +67,6 @@ class ExampleContentGenerator {
 				
 				fields { 
 					field("Picture"; Media)
-					template("Gen. Product Posting Group" ; GenProductPostingGroup)
 					field("Duration Days"; Decimal)
 					field("Minimum Participants"; Integer)
 					field("Maximum Participants"; Integer)

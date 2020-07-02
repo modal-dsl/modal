@@ -2,8 +2,8 @@ package de.joneug.mdal.extensions
 
 import de.joneug.mdal.mdal.CustomField
 import de.joneug.mdal.mdal.Entity
-import de.joneug.mdal.mdal.TemplateDimensions
 import de.joneug.mdal.mdal.TemplateField
+import de.joneug.mdal.mdal.TemplateType
 
 import static extension de.joneug.mdal.extensions.CustomFieldExtensions.*
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
@@ -22,11 +22,11 @@ class EntityExtensions {
 	}
 
 	static def getTableName(Entity entity) {
-		return entity.solution.constructObjectName(entity.name)
-	}
-
-	static def getTableFileName(Entity entity) {
-		return constructTableFileName(entity.tableName)
+		var name = entity.solution.constructObjectName(entity.name)
+		if(name.length > 30) {
+			name = entity.solution.constructObjectName(entity.shortName)
+		}
+		return name
 	}
 	
 	static def getTableVariableName(Entity entity) {
@@ -34,11 +34,19 @@ class EntityExtensions {
 	}
 
 	static def getCardPageName(Entity entity) {
-		return entity.solution.constructObjectName(entity.name + ' Card')
+		var name = entity.solution.constructObjectName(entity.name + ' Card')
+		if(name.length > 30) {
+			name = entity.solution.constructObjectName(entity.shortName + ' Card')
+		}
+		return name
 	}
 
 	static def getListPageName(Entity entity) {
-		return entity.solution.constructObjectName(entity.name + ' List')
+		var name = entity.solution.constructObjectName(entity.name + ' List')
+		if(name.length > 30) {
+			name = entity.solution.constructObjectName(entity.shortName + ' List')
+		}
+		return name
 	}
 	
 	static def getCustomFields(Entity entity) {
@@ -49,8 +57,8 @@ class EntityExtensions {
 		return entity.fields.filter(TemplateField)
 	}
 	
-	static def addDimensions(Entity entity) {
-		entity.templateFields.exists[it.type instanceof TemplateDimensions]
+	static def <T extends TemplateType> hasTemplateOfType(Entity entity, Class<T> templateType) {
+		entity.templateFields.exists[templateType.isInstance(it.type)]
 	}
 	
 	static def getDataCaptionFields(Entity entity) {

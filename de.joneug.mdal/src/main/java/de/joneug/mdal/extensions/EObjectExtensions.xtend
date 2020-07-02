@@ -1,12 +1,18 @@
 package de.joneug.mdal.extensions
 
+import de.joneug.mdal.generator.GeneratorManagement
+import de.joneug.mdal.generator.MdalGenerator
 import de.joneug.mdal.mdal.Model
 import de.joneug.mdal.mdal.Solution
 import java.util.List
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.xtext.EcoreUtil2
 
+import static extension de.joneug.mdal.extensions.StringExtensions.*
+
 class EObjectExtensions {
+	
+	static GeneratorManagement management = GeneratorManagement.getInstance()
 
 	def static String dump(EObject object) {
 		return object.dump("")
@@ -38,6 +44,31 @@ class EObjectExtensions {
 
 	def static getSolution(EObject object) {
 		return object.getContainerOfType(Solution)
+	}
+	
+	static def saveTable(EObject object, String fileName, CharSequence fileContent) {
+		management.generatorFsa.generateFile(MdalGenerator.TABLE_PATH + '/' + fileName.toTableFileName, fileContent)
+	}
+	
+	static def savePage(EObject object, String fileName, CharSequence fileContent) {
+		management.generatorFsa.generateFile(MdalGenerator.PAGE_PATH + '/' + fileName.toPageFileName, fileContent)
+	}
+	
+	static def saveCodeunit(EObject object, String fileName, CharSequence fileContent) {
+		management.generatorFsa.generateFile(MdalGenerator.CODEUNIT_PATH + '/' + fileName.toCodeunitFileName, fileContent)
+	}
+	
+	static def saveEnum(EObject object, String fileName, CharSequence fileContent) {
+		management.generatorFsa.generateFile(MdalGenerator.ENUM_PATH + '/' + fileName.toEnumFileName, fileContent
+		)
+	}
+	
+	static def saveTableExt(EObject object, String fileName, CharSequence fileContent) {
+		management.generatorFsa.generateFile(MdalGenerator.TABLE_EXT_PATH + '/' + fileName.toTableExtFileName, fileContent)
+	}
+	
+	static def saveEnumExt(EObject object, String fileName, CharSequence fileContent) {
+		management.generatorFsa.generateFile(MdalGenerator.ENUM_EXT_PATH + '/' + fileName.toEnumExtFileName, fileContent)
 	}
 	
 }

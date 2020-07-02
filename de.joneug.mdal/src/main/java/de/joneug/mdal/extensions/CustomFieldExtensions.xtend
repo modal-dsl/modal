@@ -9,6 +9,7 @@ import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.FieldExtensions.*
 import static extension de.joneug.mdal.extensions.FieldTypeExtensions.*
 import static extension de.joneug.mdal.extensions.SolutionExtensions.*
+import static extension de.joneug.mdal.extensions.StringExtensions.*
 
 class CustomFieldExtensions {
 
@@ -26,7 +27,7 @@ class CustomFieldExtensions {
 		if(!(customField.type instanceof TypeEnum)) {
 			throw new IllegalArgumentException("CustomField must be of type TypeEnum")
 		}
-		return constructEnumFileName(customField.getEnumName())
+		return customField.enumName.toEnumFileName
 	}
 	
 	static def getInferredCaption(CustomField customField) {
@@ -43,8 +44,12 @@ class CustomFieldExtensions {
 			Caption = '«customField.inferredCaption»';
 			««« Option
 			«IF customField.type instanceof TypeOption»
-				OptionCaption = '«FOR member : (customField.type as TypeEnum).getMembers() SEPARATOR ','»«member»«ENDFOR»';
-				OptionMembers = «FOR member : (customField.type as TypeEnum).getMembers() SEPARATOR ','»"«member»"«ENDFOR»;
+				OptionCaption = '«FOR member : (customField.type as TypeOption).getMembers() SEPARATOR ','»«member»«ENDFOR»';
+				OptionMembers = «FOR member : (customField.type as TypeOption).getMembers() SEPARATOR ','»"«member»"«ENDFOR»;
+			«ENDIF»
+			««« Table Relation
+			«IF !customField.tableRelation.isNullOrEmpty»
+				TableRelation = «customField.tableRelation.saveQuote»«IF !customField.tableRelationField.isNullOrEmpty».«customField.tableRelationField.saveQuote»«ENDIF»«IF !customField.whereConditionField.isNullOrEmpty» where(«customField.whereConditionField.saveQuote» = const(«customField.whereConditionConst.saveQuote»))«ENDIF»;
 			«ENDIF»
 		}
 	'''

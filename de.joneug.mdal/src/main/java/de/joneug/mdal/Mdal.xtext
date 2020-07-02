@@ -10,7 +10,7 @@ Solution:
 		(
 			('Prefix' '=' prefix=STRING ';')? &
 			(master=Master) &
-			(supplemental+=Supplemental)* &
+			(supplementals+=Supplemental)* &
 			(document=Document) &
 			(journal=Journal)
 		)
@@ -41,8 +41,8 @@ Supplemental:
 Document:
 	'document' '{'
 		(
-			(documentHeader=DocumentHeader) &
-			(documentLine=DocumentLine)
+			(header=DocumentHeader) &
+			(line=DocumentLine)
 		)
 	'}'
 ;
@@ -83,7 +83,7 @@ CustomField:
 		'{'
 			(
 				('Caption' '=' caption=STRING ';')? &
-				('TableRelation' '=' tableRelation=STRING ';')?
+				('TableRelation' '=' tableRelation=STRING ('.' tableRelationField=STRING)? ('where' '(' whereConditionField=STRING '=' 'const' '(' whereConditionConst=STRING ')' ')')? ';')?
 			)
 		'}'
 	)?
@@ -103,16 +103,13 @@ IncludeField:
  * Template Types
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 TemplateType:
-	TemplateName | TemplateDescription | TemplateGenProdPostingGroup | TemplateDimensions | TemplateAddress | TemplateContactInfo;
+	TemplateName | TemplateDescription | TemplateDimensions | TemplateAddress | TemplateContactInfo | TemplateSalesperson;
 
 TemplateName:
 	{TemplateName} 'Name';
-	
+
 TemplateDescription:
 	{TemplateDescription} 'Description';
-
-TemplateGenProdPostingGroup:
-	{TemplateGenProdPostingGroup} 'GenProductPostingGroup';
 
 TemplateDimensions:
 	{TemplateDimensions} 'Dimensions';
@@ -122,6 +119,9 @@ TemplateAddress:
 
 TemplateContactInfo:
 	{TemplateContactInfo} 'ContactInfo';
+
+TemplateSalesperson:
+	{TemplateSalesperson} 'Salesperson';
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Field Types
@@ -168,7 +168,7 @@ TypeEnum:
 	{TypeEnum} 'Enum' '[' members+=STRING (',' members+=STRING)* ']';
 
 TypeOption:
-	{TypeOption} 'Option' '[' members+=STRING* ']';
+	{TypeOption} 'Option' '[' members+=STRING (',' members+=STRING)* ']';
 
 TypeMedia:
 	{TypeMedia} 'Media';

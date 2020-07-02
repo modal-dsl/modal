@@ -4,12 +4,14 @@ import de.joneug.mdal.generator.GeneratorManagement
 import de.joneug.mdal.mdal.Field
 import de.joneug.mdal.mdal.TemplateDescription
 import de.joneug.mdal.mdal.TemplateDimensions
-import de.joneug.mdal.mdal.TemplateGenProdPostingGroup
 import de.joneug.mdal.mdal.TemplateName
 import de.joneug.mdal.mdal.TemplateType
 
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.FieldExtensions.*
+import de.joneug.mdal.mdal.TemplateSalesperson
+import de.joneug.mdal.mdal.TemplateAddress
+import de.joneug.mdal.mdal.TemplateContactInfo
 
 class TemplateTypeExtensions {
 	
@@ -128,14 +130,6 @@ class TemplateTypeExtensions {
 			Caption = 'Description 2';
 		}
 	'''
-	
-	static def dispatch doGenerate(TemplateGenProdPostingGroup templateType) '''
-		field(«management.getNewFieldNo(templateType.field.entity)»; "Gen. Prod. Posting Group"; Code[20])
-		{
-			Caption = 'Gen. Prod. Posting Group';
-			TableRelation = "Gen. Product Posting Group";
-		}
-	'''
 
 	static def dispatch doGenerate(TemplateDimensions templateType) '''
 		field(«management.getNewFieldNo(templateType.field.entity)»; "Global Dimension 1 Code"; Code[20])
@@ -159,6 +153,130 @@ class TemplateTypeExtensions {
 			begin
 				ValidateShortcutDimCode(2, "Global Dimension 2 Code");
 			end;
+		}
+	'''
+	
+	static def dispatch doGenerate(TemplateSalesperson templateType) '''
+		field(«management.getNewFieldNo(templateType.field.entity)»; "Salesperson Code"; Code[20])
+		{
+			Caption = 'Salesperson Code';
+			TableRelation = "Salesperson/Purchaser";
+			
+			trigger OnValidate()
+			begin
+				ValidateSalesPersonCode();
+			end;
+		}
+	'''
+	
+	static def dispatch doGenerate(TemplateAddress templateType) '''
+		field(«management.getNewFieldNo(templateType.field.entity)»; Address; Text[100])
+		{
+			Caption = 'Address';
+		}
+		field(«management.getNewFieldNo(templateType.field.entity)»; "Address 2"; Text[50])
+		{
+			Caption = 'Address 2';
+		}
+		field(«management.getNewFieldNo(templateType.field.entity)»; City; Text[30])
+		{
+			Caption = 'City';
+			TableRelation = if ("Country/Region Code" = const('')) "Post Code".City
+			else
+			if ("Country/Region Code" = filter(<> '')) "Post Code".City where("Country/Region Code" = field("Country/Region Code"));
+			ValidateTableRelation = false;
+			
+			trigger OnLookup()
+			begin
+				OnBeforeLookupCity(Rec, PostCode);
+				
+				PostCode.LookupPostCode(City, "Post Code", County, "Country/Region Code");
+			end;
+			
+			trigger OnValidate()
+			begin
+			OnBeforeValidateCity(Rec, PostCode);
+			
+			PostCode.ValidateCity(City, "Post Code", County, "Country/Region Code", (CurrFieldNo <> 0) and GuiAllowed);
+			end;
+		}
+		field(«management.getNewFieldNo(templateType.field.entity)»; "Country/Region Code"; Code[10])
+		{
+			Caption = 'Country/Region Code';
+			TableRelation = "Country/Region";
+			
+			trigger OnValidate()
+			begin
+				PostCode.CheckClearPostCodeCityCounty(City, "Post Code", County, "Country/Region Code", xRec."Country/Region Code");
+			end;
+		}
+		field(«management.getNewFieldNo(templateType.field.entity)»; "Post Code"; Code[20])
+		{
+			Caption = 'Post Code';
+			TableRelation = if ("Country/Region Code" = const('')) "Post Code"
+			else
+			if ("Country/Region Code" = filter(<> '')) "Post Code" where("Country/Region Code" = field("Country/Region Code"));
+			ValidateTableRelation = false;
+			
+			trigger OnLookup()
+			begin
+				OnBeforeLookupPostCode(Rec, PostCode);
+				
+				PostCode.LookupPostCode(City, "Post Code", County, "Country/Region Code");
+			end;
+			
+			trigger OnValidate()
+			begin
+				OnBeforeValidatePostCode(Rec, PostCode);
+				
+				PostCode.ValidatePostCode(City, "Post Code", County, "Country/Region Code", (CurrFieldNo <> 0) and GuiAllowed);
+			end;
+		}
+		field(«management.getNewFieldNo(templateType.field.entity)»; County; Text[30])
+		{
+			CaptionClass = '5,1,' + "Country/Region Code";
+			Caption = 'County';
+		}
+	'''
+	
+	static def dispatch doGenerate(TemplateContactInfo templateType) '''
+		field(«management.getNewFieldNo(templateType.field.entity)»; "Contact Person"; Text[50])
+		{
+			Caption = 'Contact Person';
+		}
+		field(«management.getNewFieldNo(templateType.field.entity)»; "Phone No."; Text[30])
+		{
+			Caption = 'Phone No.';
+			ExtendedDatatype = PhoneNo;
+		}
+		field(«management.getNewFieldNo(templateType.field.entity)»; "Telex No."; Text[30])
+		{
+			Caption = 'Telex No.';
+		}
+		field(«management.getNewFieldNo(templateType.field.entity)»; "Fax No."; Text[30])
+		{
+			Caption = 'Fax No.';
+		}
+		field(«management.getNewFieldNo(templateType.field.entity)»; "Telex Answer Back"; Text[20])
+		{
+			Caption = 'Telex Answer Back';
+		}
+		field(«management.getNewFieldNo(templateType.field.entity)»; "E-Mail"; Text[80])
+		{
+			Caption = 'Email';
+			ExtendedDatatype = EMail;
+			
+			trigger OnValidate()
+			var
+				MailManagement: Codeunit "Mail Management";
+			begin
+				MailManagement.ValidateEmailAddressField("E-Mail");
+			end;
+		}
+		field(«management.getNewFieldNo(templateType.field.entity)»; "Home Page"; Text[80])
+		{
+			Caption = 'Home Page';
+			ExtendedDatatype = URL;
 		}
 	'''
 	
