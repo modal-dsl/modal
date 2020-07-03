@@ -9,6 +9,7 @@ import static extension de.joneug.mdal.extensions.ObjectExtensions.*
 import static extension de.joneug.mdal.extensions.StringExtensions.*
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.SupplementalExtensions.*
+import static extension de.joneug.mdal.extensions.DocumentHeaderExtensions.*
 
 /**
  * This is an extension library for all {@link Solution objects}.
@@ -104,19 +105,19 @@ class SolutionExtensions {
 		            Caption = '«solution.master.cleanedName» Nos.';
 		            TableRelation = "No. Series";
 		        }
-		        field(3; "Seminar Registration Nos."; Code[20])
+		        field(3; "«solution.document.header.cleanedShortName» Nos."; Code[20])
 		        {
-		            Caption = 'Seminar Registration Nos.';
+		            Caption = '«solution.document.header.name» Nos.';
 		            TableRelation = "No. Series";
 		        }
-		        field(4; "Posted Seminar Reg. Nos."; Code[20])
+		        field(4; "Posted «solution.document.header.cleanedShortName» Nos."; Code[20])
 		        {
-		            Caption = 'Posted Seminar Reg. Nos.';
+		            Caption = 'Posted «solution.document.header.cleanedShortName» Nos.';
 		            TableRelation = "No. Series";
 		        }
 		        field(10; "Copy Comments"; Boolean)
 		        {
-		            AccessByPermission = TableData "SEM Posted Seminar Reg. Header" = R;
+		            AccessByPermission = TableData «solution.document.header.tableNamePosted.saveQuote» = R;
 		            Caption = 'Copy Comments To Posted Reg.';
 		            InitValue = true;
 		        }
@@ -175,11 +176,11 @@ class SolutionExtensions {
 		                {
 		                    ApplicationArea = All;
 		                }
-		                field(SeminarRegistrationNos; "Seminar Registration Nos.")
+		                field(«solution.document.header.cleanedShortName»Nos; "«solution.document.header.cleanedShortName» Nos.")
 		                {
 		                    ApplicationArea = All;
 		                }
-		                field(PostedSeminarRegNos; "Posted Seminar Reg. Nos.")
+		                field(Posted«solution.document.header.cleanedShortName»Nos; "Posted «solution.document.header.cleanedShortName» Nos.")
 		                {
 		                    ApplicationArea = All;
 		                }
@@ -210,6 +211,9 @@ class SolutionExtensions {
 		solution.saveEnumExt(solution.commentLineTableNameEnumExtName, solution.doGenerateCommentLineTableNameEnumExt)
 		solution.saveEnum(solution.commentDocumentTypeEnumName, solution.doGenerateCommentDocumentTypeEnum)
 		solution.saveTableExt(solution.commentLineTableExtName, solution.doGenerateCommentLineTableExtName)
+		solution.saveTable(solution.commentLineTableName, solution.doGenerateCommentLineTable)
+		solution.savePage(solution.commentListPageName, solution.doGenerateCommentListPage)
+		solution.savePage(solution.commentSheetPageName, solution.doGenerateCommentSheetPage)
 	}
 	
 	static def getCommentLineTableNameEnumExtName(Solution solution) {
@@ -220,21 +224,6 @@ class SolutionExtensions {
 		enumextension «management.newEnumExtNo» «solution.commentLineTableNameEnumExtName.saveQuote» extends "Comment Line Table Name"
 		{
 			value(50000; "«solution.master.cleanedName»") { }
-		}
-	'''
-	
-	static def getCommentDocumentTypeEnumName(Solution solution) {
-		return solution.constructObjectName(solution.master.name + ' Comment Document Type')
-	}
-	
-	static def doGenerateCommentDocumentTypeEnum(Solution solution) '''
-		«val document = solution.document»
-		enum «management.newEnumNo» «solution.commentDocumentTypeEnumName.saveQuote»
-		{
-			Extensible = true;
-			
-			value(0; «document.header.name.saveQuote») { Caption = '«document.header.name»'; }
-			value(1; "Posted «document.header.name»") { Caption = 'Posted «document.header.name»'; }
 		}
 	'''
 	
@@ -255,6 +244,310 @@ class SolutionExtensions {
 		}
 	'''
 	
+	static def getCommentDocumentTypeEnumName(Solution solution) {
+		return solution.constructObjectName(solution.master.name + ' Comment Document Type')
+	}
+	
+	static def doGenerateCommentDocumentTypeEnum(Solution solution) '''
+		«val document = solution.document»
+		enum «management.newEnumNo» «solution.commentDocumentTypeEnumName.saveQuote»
+		{
+			Extensible = true;
+			
+			value(0; «document.header.name.saveQuote») { Caption = '«document.header.name»'; }
+			value(1; "Posted «document.header.name»") { Caption = 'Posted «document.header.name»'; }
+		}
+	'''
+	
+	static def getCommentLineTableName(Solution solution) {
+		return solution.constructObjectName(solution.master.name + ' Comment Line')
+	}
+	
+	static def getCommentLineTableVariableName(Solution solution) {
+		return solution.master.cleanedShortName + 'CommentLine'
+	}
+	
+	static def doGenerateCommentLineTable(Solution solution) '''
+		table «management.newTableNo» «solution.commentLineTableName.saveQuote»
+		{
+		    Caption = '«solution.master.name» Comment Line';
+		    DrillDownPageID = «solution.commentListPageName.saveQuote»;
+		    LookupPageID = «solution.commentListPageName.saveQuote»;
+		
+		    fields
+		    {
+		        field(1; "Document Type"; Enum "«solution.commentDocumentTypeEnumName»")
+		        {
+		            Caption = 'Document Type';
+		        }
+		        field(2; "No."; Code[20])
+		        {
+		            Caption = 'No.';
+		        }
+		        field(3; "Line No."; Integer)
+		        {
+		            Caption = 'Line No.';
+		        }
+		        field(4; "Date"; Date)
+		        {
+		            Caption = 'Date';
+		        }
+		        field(5; "Code"; Code[10])
+		        {
+		            Caption = 'Code';
+		        }
+		        field(6; Comment; Text[80])
+		        {
+		            Caption = 'Comment';
+		        }
+		        field(7; "Document Line No."; Integer)
+		        {
+		            Caption = 'Document Line No.';
+		        }
+		    }
+		
+		    keys
+		    {
+		        key(Key1; "Document Type", "No.", "Document Line No.", "Line No.")
+		        {
+		            Clustered = true;
+		        }
+		    }
+		
+		    fieldgroups
+		    {
+		    }
+		
+		    procedure SetUpNewLine()
+		    var
+		        «solution.commentLineTableVariableName»: Record «solution.commentLineTableName.saveQuote»;
+		    begin
+		        «solution.commentLineTableVariableName».SetRange("Document Type", "Document Type");
+		        «solution.commentLineTableVariableName».SetRange("No.", "No.");
+		        «solution.commentLineTableVariableName».SetRange("Document Line No.", "Document Line No.");
+		        «solution.commentLineTableVariableName».SetRange(Date, WorkDate);
+		        if not «solution.commentLineTableVariableName».FindFirst then
+		            Date := WorkDate;
+		
+		        OnAfterSetUpNewLine(Rec, «solution.commentLineTableVariableName»);
+		    end;
+		
+		    procedure CopyComments(FromDocumentType: Enum «solution.commentDocumentTypeEnumName.saveQuote»; ToDocumentType: Enum «solution.commentDocumentTypeEnumName.saveQuote»; FromNumber: Code[20]; ToNumber: Code[20])
+		    var
+		        «solution.commentLineTableVariableName»: Record «solution.commentLineTableName.saveQuote»;
+		        «solution.commentLineTableVariableName»2: Record «solution.commentLineTableName.saveQuote»;
+		        IsHandled: Boolean;
+		    begin
+		        IsHandled := false;
+		        OnBeforeCopyComments(«solution.commentLineTableVariableName», ToDocumentType, IsHandled, FromDocumentType, FromNumber, ToNumber);
+		        if IsHandled then
+		            exit;
+		
+		        «solution.commentLineTableVariableName».SetRange("Document Type", FromDocumentType);
+		        «solution.commentLineTableVariableName».SetRange("No.", FromNumber);
+		        if «solution.commentLineTableVariableName».FindSet() then
+		            repeat
+		                «solution.commentLineTableVariableName»2 := «solution.commentLineTableVariableName»;
+		                «solution.commentLineTableVariableName»2."Document Type" := ToDocumentType;
+		                «solution.commentLineTableVariableName»2."No." := ToNumber;
+		                «solution.commentLineTableVariableName»2.Insert();
+		            until «solution.commentLineTableVariableName».Next() = 0;
+		    end;
+		
+		    procedure CopyLineComments(FromDocumentType: Enum «solution.commentDocumentTypeEnumName.saveQuote»; ToDocumentType: Enum «solution.commentDocumentTypeEnumName.saveQuote»; FromNumber: Code[20]; ToNumber: Code[20]; FromDocumentLineNo: Integer; ToDocumentLineNo: Integer)
+		    var
+		        «solution.commentLineTableVariableName»Source: Record «solution.commentLineTableName.saveQuote»;
+		        «solution.commentLineTableVariableName»Target: Record «solution.commentLineTableName.saveQuote»;
+		        IsHandled: Boolean;
+		    begin
+		        IsHandled := false;
+		        OnBeforeCopyLineComments(
+		          «solution.commentLineTableVariableName»Target, IsHandled, FromDocumentType, ToDocumentType, FromNumber, ToNumber, FromDocumentLineNo, ToDocumentLineNo);
+		        if IsHandled then
+		            exit;
+		
+		        «solution.commentLineTableVariableName»Source.SetRange("Document Type", FromDocumentType);
+		        «solution.commentLineTableVariableName»Source.SetRange("No.", FromNumber);
+		        «solution.commentLineTableVariableName»Source.SetRange("Document Line No.", FromDocumentLineNo);
+		        if «solution.commentLineTableVariableName»Source.FindSet() then
+		            repeat
+		                «solution.commentLineTableVariableName»Target := «solution.commentLineTableVariableName»Source;
+		                «solution.commentLineTableVariableName»Target."Document Type" := ToDocumentType;
+		                «solution.commentLineTableVariableName»Target."No." := ToNumber;
+		                «solution.commentLineTableVariableName»Target."Document Line No." := ToDocumentLineNo;
+		                «solution.commentLineTableVariableName»Target.Insert();
+		            until «solution.commentLineTableVariableName»Source.Next() = 0;
+		    end;
+		
+		    procedure CopyHeaderComments(FromDocumentType: Enum «solution.commentDocumentTypeEnumName.saveQuote»; ToDocumentType: Enum «solution.commentDocumentTypeEnumName.saveQuote»; FromNumber: Code[20]; ToNumber: Code[20])
+		    var
+		        «solution.commentLineTableVariableName»Source: Record «solution.commentLineTableName.saveQuote»;
+		        «solution.commentLineTableVariableName»Target: Record «solution.commentLineTableName.saveQuote»;
+		        IsHandled: Boolean;
+		    begin
+		        IsHandled := false;
+		        OnBeforeCopyHeaderComments(«solution.commentLineTableVariableName»Target, IsHandled, FromDocumentType, ToDocumentType, FromNumber, ToNumber);
+		        if IsHandled then
+		            exit;
+		
+		        «solution.commentLineTableVariableName»Source.SetRange("Document Type", FromDocumentType);
+		        «solution.commentLineTableVariableName»Source.SetRange("No.", FromNumber);
+		        «solution.commentLineTableVariableName»Source.SetRange("Document Line No.", 0);
+		        if «solution.commentLineTableVariableName»Source.FindSet() then
+		            repeat
+		                «solution.commentLineTableVariableName»Target := «solution.commentLineTableVariableName»Source;
+		                «solution.commentLineTableVariableName»Target."Document Type" := ToDocumentType;
+		                «solution.commentLineTableVariableName»Target."No." := ToNumber;
+		                «solution.commentLineTableVariableName»Target.Insert();
+		            until «solution.commentLineTableVariableName»Source.Next() = 0;
+		    end;
+		
+		    procedure DeleteComments(DocType: Enum «solution.commentDocumentTypeEnumName.saveQuote»; DocNo: Code[20])
+		    begin
+		        SetRange("Document Type", DocType);
+		        SetRange("No.", DocNo);
+		        if not IsEmpty then
+		            DeleteAll();
+		    end;
+		
+		    procedure ShowComments(DocType: Enum «solution.commentDocumentTypeEnumName.saveQuote»; DocNo: Code[20]; DocLineNo: Integer)
+		    var
+		        «solution.commentSheetPageVariableName»: Page «solution.commentSheetPageName.saveQuote»;
+		    begin
+		        SetRange("Document Type", DocType);
+		        SetRange("No.", DocNo);
+		        SetRange("Document Line No.", DocLineNo);
+		        Clear(«solution.commentSheetPageVariableName»);
+		        «solution.commentSheetPageVariableName».SetTableView(Rec);
+		        «solution.commentSheetPageVariableName».RunModal;
+		    end;
+		
+		    [IntegrationEvent(false, false)]
+		    local procedure OnAfterSetUpNewLine(var «solution.commentLineTableVariableName»Rec: Record «solution.commentLineTableName.saveQuote»; var «solution.commentLineTableVariableName»Filter: Record «solution.commentLineTableName.saveQuote»)
+		    begin
+		    end;
+		
+		    [IntegrationEvent(false, false)]
+		    local procedure OnBeforeCopyComments(var «solution.commentLineTableVariableName»: Record «solution.commentLineTableName.saveQuote»; ToDocumentType: Enum «solution.commentDocumentTypeEnumName.saveQuote»; var IsHandled: Boolean; FromDocumentType: Enum «solution.commentDocumentTypeEnumName.saveQuote»; FromNumber: Code[20]; ToNumber: Code[20])
+		    begin
+		    end;
+		
+		    [IntegrationEvent(false, false)]
+		    local procedure OnBeforeCopyLineComments(var «solution.commentLineTableVariableName»: Record «solution.commentLineTableName.saveQuote»; var IsHandled: Boolean; FromDocumentType: Enum «solution.commentDocumentTypeEnumName.saveQuote»; ToDocumentType: Enum «solution.commentDocumentTypeEnumName.saveQuote»; FromNumber: Code[20]; ToNumber: Code[20]; FromDocumentLineNo: Integer; ToDocumentLine: Integer)
+		    begin
+		    end;
+		
+		    [IntegrationEvent(false, false)]
+		    local procedure OnBeforeCopyHeaderComments(var «solution.commentLineTableVariableName»: Record «solution.commentLineTableName.saveQuote»; var IsHandled: Boolean; FromDocumentType: Enum «solution.commentDocumentTypeEnumName.saveQuote»; ToDocumentType: Enum «solution.commentDocumentTypeEnumName.saveQuote»; FromNumber: Code[20]; ToNumber: Code[20])
+		    begin
+		    end;
+		}
+	'''
+	
+	static def getCommentListPageName(Solution solution) {
+		return solution.constructObjectName(solution.master.name + ' Comment List')
+	}
+	
+	static def doGenerateCommentListPage(Solution solution) '''
+		page «management.newTableNo» «solution.commentListPageName.saveQuote»
+		{
+		    Caption = 'Comment List';
+		    DataCaptionFields = "No.";
+		    Editable = false;
+		    LinksAllowed = false;
+		    PageType = List;
+		    SourceTable = «solution.commentLineTableName.saveQuote»;
+		
+		    layout
+		    {
+		        area(content)
+		        {
+		            repeater(Control1)
+		            {
+		                ShowCaption = false;
+		                field("No."; "No.")
+		                {
+		                    ApplicationArea = Comments;
+		                    ToolTip = 'Specifies the number of the involved entry or record, according to the specified number series.';
+		                }
+		                field("Date"; Date)
+		                {
+		                    ApplicationArea = Comments;
+		                    ToolTip = 'Specifies the date the comment was created.';
+		                }
+		                field(Comment; Comment)
+		                {
+		                    ApplicationArea = Comments;
+		                    ToolTip = 'Specifies the comment itself.';
+		                }
+		            }
+		        }
+		    }
+		
+		    actions
+		    {
+		    }
+		}
+	'''
+	
+	static def getCommentSheetPageName(Solution solution) {
+		return solution.constructObjectName(solution.master.name + ' Comment Sheet')
+	}
+	
+	static def getCommentSheetPageVariableName(Solution solution) {
+		return solution.master.cleanedShortName + 'CommentSheet'
+	}
+	
+	static def doGenerateCommentSheetPage(Solution solution) '''
+		page «management.newTableNo» «solution.commentSheetPageName.saveQuote»
+		{
+		    AutoSplitKey = true;
+		    Caption = 'Comment Sheet';
+		    DataCaptionFields = "No.";
+		    DelayedInsert = true;
+		    LinksAllowed = false;
+		    MultipleNewLines = true;
+		    PageType = List;
+		    SourceTable = «solution.commentLineTableName.saveQuote»;
+		
+		    layout
+		    {
+		        area(content)
+		        {
+		            repeater(Control1)
+		            {
+		                ShowCaption = false;
+		                field("Date"; Date)
+		                {
+		                    ApplicationArea = Comments;
+		                    ToolTip = 'Specifies the date the comment was created.';
+		                }
+		                field(Comment; Comment)
+		                {
+		                    ApplicationArea = Comments;
+		                    ToolTip = 'Specifies the comment itself.';
+		                }
+		                field("Code"; Code)
+		                {
+		                    ApplicationArea = Comments;
+		                    ToolTip = 'Specifies a code for the comment.';
+		                    Visible = false;
+		                }
+		            }
+		        }
+		    }
+		
+		    actions
+		    {
+		    }
+		
+		    trigger OnNewRecord(BelowxRec: Boolean)
+		    begin
+		        SetUpNewLine;
+		    end;
+		}
+	'''
+	
 	/*
 	 * Source Code Setup
 	 */
@@ -268,7 +561,7 @@ class SolutionExtensions {
 	}
 	
 	static def doGenerateSourceCodeSetupTableExt(Solution solution) '''
-	«val document = solution.document»
+		«val document = solution.document»
 		tableextension «management.newTableExtNo» «solution.sourceCodeSetupTableExtName.saveQuote» extends "Source Code Setup"
 		{
 		    fields
