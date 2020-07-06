@@ -51,6 +51,8 @@ class ExampleContentGenerator {
 		    }
 			
 			document "Seminar Registration" {
+				ShortName = "Sem. Reg.";
+				
 				header "Seminar Registration Header" {
 					ShortName = "Seminar Reg. Header";
 				}
@@ -98,6 +100,8 @@ class ExampleContentGenerator {
 			}
 			
 			document "Seminar Registration" {
+				ShortName = "Sem. Reg.";
+				
 				header "Seminar Registration Header" {
 					ShortName = "Sem. Reg. Header";
 				}
