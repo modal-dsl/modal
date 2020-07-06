@@ -3,14 +3,15 @@ package de.joneug.mdal.extensions
 import de.joneug.mdal.generator.GeneratorManagement
 import de.joneug.mdal.mdal.Entity
 import de.joneug.mdal.mdal.Supplemental
+import de.joneug.mdal.mdal.TemplateAddress
+import de.joneug.mdal.mdal.TemplateDimensions
+import de.joneug.mdal.mdal.TemplateSalesperson
 
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.EntityExtensions.*
+import static extension de.joneug.mdal.extensions.PageFieldExtensions.*
 import static extension de.joneug.mdal.extensions.SolutionExtensions.*
 import static extension de.joneug.mdal.extensions.StringExtensions.*
-import de.joneug.mdal.mdal.TemplateDimensions
-import de.joneug.mdal.mdal.TemplateSalesperson
-import de.joneug.mdal.mdal.TemplateAddress
 
 class SupplementalExtensions {
 	
@@ -33,11 +34,8 @@ class SupplementalExtensions {
 	}
 	
 	static def void doGenerate(Supplemental supplemental) {
-		// Table
 		supplemental.saveTable(supplemental.tableName, supplemental.doGenerateTable)
-		
-		// List Page
-		// Card Page
+		supplemental.savePage(supplemental.listPageName, supplemental.doGenerateListPage)
 	}
 	
 	static def doGenerateTable(Supplemental supplemental) '''
@@ -158,6 +156,53 @@ class SupplementalExtensions {
 			begin
 			end;
 		«ENDIF»
+	}
+	'''
+	
+	static def doGenerateListPage(Supplemental supplemental) '''
+	page «management.newPageNo» «supplemental.listPageName.saveQuote»
+	{
+	    ApplicationArea = All;
+	    Caption = '«supplemental.name»s';
+	    PageType = List;
+	    SourceTable = «supplemental.tableName.saveQuote»;
+	    UsageCategory = Lists;
+	
+	    layout
+	    {
+	        area(content)
+	        {
+	            repeater(Control1)
+	            {
+	            	ShowCaption = false;
+	                field("Code"; "Code")
+	                {
+	                    ApplicationArea = All;
+	                }
+	                «FOR pageField : supplemental.listPageFields»
+	                	«pageField.doGenerate»
+	                «ENDFOR»
+	                field(Blocked; Blocked)
+	                {
+	                    ApplicationArea = All;
+	                    Visible = false;
+	                }
+	            }
+	        }
+	        area(factboxes)
+	        {
+	            systempart(Control1900383207; Links)
+	            {
+	                ApplicationArea = RecordLinks;
+	                Visible = false;
+	            }
+	            systempart(Control1905767507; Notes)
+	            {
+	                ApplicationArea = Notes;
+	                Visible = true;
+	            }
+	        }
+	    }
 	}
 	'''
 	
