@@ -59,7 +59,7 @@ class MdalGeneratorTest {
 		checkFileContains(
 			"Table/SEMSeminar.Table.al",
 			#[
-				'table 123456704 "SEM Seminar"',
+				'table 123456702 "SEM Seminar"',
 				'DataCaptionFields = Description, "No.";',
 				'DrillDownPageID = "SEM Seminar List";',
 				'field(3; Description; Text[100])',

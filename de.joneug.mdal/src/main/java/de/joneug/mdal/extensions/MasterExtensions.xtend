@@ -5,8 +5,10 @@ import de.joneug.mdal.mdal.Entity
 import de.joneug.mdal.mdal.Master
 import de.joneug.mdal.mdal.TemplateDimensions
 
+import static extension de.joneug.mdal.extensions.DocumentExtensions.*
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.EntityExtensions.*
+import static extension de.joneug.mdal.extensions.PageFieldExtensions.*
 import static extension de.joneug.mdal.extensions.SolutionExtensions.*
 import static extension de.joneug.mdal.extensions.StringExtensions.*
 
@@ -40,13 +42,16 @@ class MasterExtensions {
 		master.saveTable(master.tableName, master.doGenerateTable)
 		
 		// List Page
+		
+		
 		// Card Page
+		master.savePage(master.cardPageName, master.doGenerateCardPage)
 	}
 
 	static def doGenerateTable(Master master) '''
 		«val solution = master.solution»
 		«val document = solution.document»
-		table «management.newTableNo» «master.tableName.saveQuote»
+		table «management.getNewTableNo(master)» «master.tableName.saveQuote»
 		{
 			Caption = '«master.name»';
 			DataCaptionFields = «FOR field : master.dataCaptionFields SEPARATOR ', '»«field.saveQuote»«ENDFOR»;
@@ -68,7 +73,7 @@ class MasterExtensions {
 						end;
 					end;
 				}
-				«master.doGenerateFields»
+				«master.doGenerateTableFields»
 				field(«management.getNewFieldNo(master)»; Blocked; Boolean)
 				{
 					Caption = 'Blocked';
@@ -226,6 +231,147 @@ class MasterExtensions {
 			begin
 				TestField(Blocked, false);
 			end;
+		}
+	'''
+	
+	static def doGenerateCardPage(Master master) '''
+		«val document = master.solution.document»
+		page «management.newPageNo» «master.cardPageName.saveQuote»
+		{
+		    Caption = '«master.name» Card';
+		    PageType = Card;
+		    PromotedActionCategories = 'New,Process,Report,New Document,«master.name»,Navigate';
+		    RefreshOnActivate = true;
+		    SourceTable = «master.tableName.saveQuote»;
+		
+		    layout
+		    {
+		        area(content)
+		        {
+		        	group(General)
+		        	{
+		        		Caption = 'General';
+		        		
+		        		field("No."; "No.")
+		                {
+		                    ApplicationArea = All;
+		                    Importance = Standard;
+		
+		                    trigger OnAssistEdit()
+		                    begin
+		                        if AssistEdit(xRec) then
+		                            CurrPage.Update;
+		                    end;
+		                }
+		                «FOR pageField : master.getPageFieldsInGroup('General')»
+		                	«pageField.doGenerate»
+		                «ENDFOR»
+		                field(Blocked; Blocked)
+		                {
+		                    ApplicationArea = All;
+		                }
+		                field(LastDateModified; "Last Date Modified")
+		                {
+		                    ApplicationArea = All;
+		                    Importance = Additional;
+		                }
+		        	}
+		        	«FOR group : master.cardPageGroups.filter[it.name != 'General']»
+		        		group(«group.name.saveQuote»)
+		        		{
+		        			Caption = '«group.name»';
+		        			
+		        			«FOR pageField : group.pageFields»
+		        				«pageField.doGenerate»
+		        			«ENDFOR»
+		        		}
+		        	«ENDFOR»
+		        }
+		        area(factboxes)
+		        {
+		        	«IF master.hasTemplateOfType(TemplateDimensions)»
+		        	part(Control1905532107; "Dimensions FactBox")
+		        	{
+		        		ApplicationArea = All;
+		        		SubPageLink = "Table ID" = const(«management.getTableNo(master)»),
+		        					  "No." = field("No.");
+		        	}
+		        	«ENDIF»
+		            systempart(Control1900383207; Links)
+		            {
+		                ApplicationArea = RecordLinks;
+		            }
+		            systempart(Control1905767507; Notes)
+		            {
+		                ApplicationArea = Notes;
+		            }
+		        }
+		    }
+		
+		    actions
+		    {
+		        area(navigation)
+		        {
+		            group("&«master.name»")
+		            {
+		                Caption = '&«master.name»';
+		                «IF master.hasTemplateOfType(TemplateDimensions)»
+		                action(Dimensions)
+		                {
+		                    ApplicationArea = Dimensions;
+		                    Caption = 'Dimensions';
+		                    Image = Dimensions;
+		                    Promoted = true;
+		                    PromotedCategory = Category5;
+		                    PromotedIsBig = true;
+		                    RunObject = Page "Default Dimensions";
+		                    RunPageLink = "Table ID" = CONST(«management.getTableNo(master)»),
+		                                  "No." = FIELD("No.");
+		                    ShortCutKey = 'Alt+D';
+		                    ToolTip = 'View or edit dimensions, such as area, project, or department, that you can assign to sales and purchase documents to distribute costs and analyze transaction history.';
+		                }
+		                «ENDIF»
+		                action("Co&mments")
+		                {
+		                    ApplicationArea = Comments;
+		                    Caption = 'Co&mments';
+		                    Image = ViewComments;
+		                    Promoted = true;
+		                    PromotedCategory = Category6;
+		                    RunObject = Page "Comment Sheet";
+		                    RunPageLink = "Table Name" = const(«master.name»),
+		                                  "No." = field("No.");
+		                    ToolTip = 'View or add comments for the record.';
+		                }
+		            }
+		        }
+		        area(creation)
+		        {
+		            action(New«document.cleanedName»)
+		            {
+		                AccessByPermission = tabledata «document.header.tableName.saveQuote» = RIM;
+		                ApplicationArea = All;
+		                Caption = '«document.name»';
+		                Image = NewDocument;
+		                Promoted = true;
+		                PromotedCategory = Category4;
+		                RunObject = Page «document.documentPageName.saveQuote»;
+		                RunPageLink = "«master.name» No." = field("No.");
+		                RunPageMode = Create;
+		                Visible = NOT IsOfficeAddin;
+		            }
+		        }
+		    }
+		
+		    var
+		        IsOfficeAddin: Boolean;
+		
+		    local procedure ActivateFields()
+		    var
+		        OfficeManagement: Codeunit "Office Management";
+		    begin
+		        IsOfficeAddin := OfficeManagement.IsAvailable;
+		    end;
 		}
 	'''
 

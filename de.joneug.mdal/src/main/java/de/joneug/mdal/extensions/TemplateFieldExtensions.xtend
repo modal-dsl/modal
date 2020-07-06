@@ -21,9 +21,5 @@ class TemplateFieldExtensions {
 	static def String[] getFieldGroupBrick(TemplateField templateField) {	
 		templateField.type.fieldGroupBrick
 	}
-	
-	static def doGenerate(TemplateField templateField) {
-		return templateField.type.doGenerate
-	}
 
 }

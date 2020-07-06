@@ -50,7 +50,7 @@ class ExampleContentGenerator {
 		    	}
 		    }
 			
-			document {
+			document "Seminar Registration" {
 				header "Seminar Registration Header" {
 					ShortName = "Seminar Reg. Header";
 				}
@@ -60,12 +60,18 @@ class ExampleContentGenerator {
 				}
 			}
 			
-			journal "Seminar Journal Line" {
-				ShortName = "Seminar Jnl. Line";
+			ledgerEntry "Seminar Ledger Entry" {
+				ShortName = "Sem. Ledger Entry";
 				
 				fields {
-					include("Seminar"."Language Code")
 					field("Picture"; Media)
+					include("Language Code"; "Seminar"."Language Code")
+					include("Maximum Participants"; "Seminar"."Maximum Participants")
+				}
+				
+				listPage {
+					field("Picture")
+					field("Maximum Participants")
 				}
 			}
 		}
@@ -91,7 +97,7 @@ class ExampleContentGenerator {
 				}
 			}
 			
-			document {
+			document "Seminar Registration" {
 				header "Seminar Registration Header" {
 					ShortName = "Sem. Reg. Header";
 				}
@@ -101,12 +107,19 @@ class ExampleContentGenerator {
 				}
 			}
 			
-			journal "Seminar Journal Line" {
-				ShortName = "Sem. Jnl. Line";
+			ledgerEntry "Seminar Ledger Entry" {
+				ShortName = "Sem. Ledger Entry";
 				
 				fields {
-					include("Seminar"."Language Code1")
 					field("Picture"; Media)
+					include("Language Code"; "Seminar"."Language Code1")
+					include("Language Code"; "Seminar"."Maximum Participants")
+				}
+				
+				listPage {
+					field("Picture")
+					field("ABC")
+					field("Language Code")
 				}
 			}
 		}

@@ -20,6 +20,7 @@ import com.google.gson.JsonParser;
 import de.joneug.al.ObjectRange;
 import de.joneug.al.SymbolReference;
 import de.joneug.mdal.extensions.ObjectExtensions;
+import de.joneug.mdal.mdal.Entity;
 import de.joneug.mdal.mdal.TypeEnum;
 import de.joneug.mdal.util.MdalUtils;
 
@@ -40,6 +41,7 @@ public class GeneratorManagement {
 	}
 
 	protected TreeSet<ObjectRange> alObjectRanges;
+	protected HashMap<EObject, Integer> assignedObjectNoMap;
 	protected HashMap<EObject, Integer> lastFieldNoMap;
 	protected HashMap<EObject, Integer> lastKeyNoMap;
 	protected HashMap<ALObjectType, Integer> lastALObjectNoMap;
@@ -47,11 +49,12 @@ public class GeneratorManagement {
 	protected IFileSystemAccess2 fsa;
 	protected IFileSystemAccess2 generatorFsa;
 
-	private GeneratorManagement() {
+	protected GeneratorManagement() {
 		alObjectRanges = new TreeSet<ObjectRange>();
 		lastFieldNoMap = new HashMap<EObject, Integer>();
 		lastKeyNoMap = new HashMap<EObject, Integer>();
 		lastALObjectNoMap = new HashMap<ALObjectType, Integer>();
+		assignedObjectNoMap = new HashMap<EObject, Integer>();
 		symbolReferences = new ArrayList<SymbolReference>();
 	}
 
@@ -79,7 +82,7 @@ public class GeneratorManagement {
 		return this.generatorFsa;
 	}
 
-	public void readAppJson() {		
+	public synchronized void readAppJson() {	
 		alObjectRanges.clear();
 		ensureFileSystemAccess();
 		
@@ -92,11 +95,11 @@ public class GeneratorManagement {
 		ObjectExtensions.logInfo(this, "Parsed object ranges " + getObjectRanges());
 	}
 
-	public void readSymbolReferences() {
+	public synchronized void readSymbolReferences() {
 		readSymbolReferences(".alpackages");
 	}
 
-	public void readSymbolReferences(String directory) {
+	protected void readSymbolReferences(String directory) {		
 		if(!new File(directory).exists()) {
 			ObjectExtensions.logInfo(this, "No symbol references found");
 			this.symbolReferences.clear();
@@ -133,7 +136,6 @@ public class GeneratorManagement {
 	}
 	
 	public List<SymbolReference> getSymbolReferences() {
-		readSymbolReferences();
 		return this.symbolReferences;
 	}
 
@@ -184,13 +186,33 @@ public class GeneratorManagement {
 			return lastKeyNoMap.get(object);
 		}
 	}
+	
+	public int getTableNo(Entity entity) {
+		if(!assignedObjectNoMap.containsKey(entity)) {
+			return -1;
+		} else {
+			return assignedObjectNoMap.get(entity);
+		}
+	}
 
+	public int getNewTableNo(Entity entity) {
+		int objectNo = getNewObjectNo(ALObjectType.TABLE);
+		
+		assignedObjectNoMap.put(entity, objectNo);
+		
+		return objectNo;
+	}
+	
 	public int getNewTableNo() {
 		return getNewObjectNo(ALObjectType.TABLE);
 	}
 
 	public int getNewPageNo() {
 		return getNewObjectNo(ALObjectType.PAGE);
+	}
+	
+	public int getLastPageNo() {
+		return getLastObjectNo(ALObjectType.PAGE);
 	}
 
 	public int getNewCodeunitNo() {
@@ -237,6 +259,14 @@ public class GeneratorManagement {
 		}
 
 		throw new RuntimeException("No Object IDs left. Please add ID ranges in app.json.");
+	}
+	
+	protected int getLastObjectNo(ALObjectType objectType) {
+		if (!lastALObjectNoMap.containsKey(objectType)) {
+			return -1;
+		} else {
+			return lastALObjectNoMap.get(objectType);
+		}
 	}
 
 }

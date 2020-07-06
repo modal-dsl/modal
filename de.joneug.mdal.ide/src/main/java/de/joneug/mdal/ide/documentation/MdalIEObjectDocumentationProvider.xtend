@@ -6,7 +6,7 @@ import de.joneug.mdal.mdal.DocumentHeader
 import de.joneug.mdal.mdal.DocumentLine
 import de.joneug.mdal.mdal.Entity
 import de.joneug.mdal.mdal.Field
-import de.joneug.mdal.mdal.Journal
+import de.joneug.mdal.mdal.LedgerEntry
 import de.joneug.mdal.mdal.Master
 import de.joneug.mdal.mdal.Solution
 import de.joneug.mdal.mdal.Supplemental
@@ -70,11 +70,11 @@ class MdalIEObjectDocumentationProvider implements IEObjectDocumentationProvider
 	```
 	'''
 	
-	protected def dispatch String getDocumentationInternal(Journal journal) '''
+	protected def dispatch String getDocumentationInternal(LedgerEntry ledgerEntry) '''
 	```mdal
-	journal «journal.name.saveQuote»
+	ledgerEntry «ledgerEntry.name.saveQuote»
 	
-	«journal.fieldsDocumentation»
+	«ledgerEntry.fieldsDocumentation»
 	```
 	'''
 	

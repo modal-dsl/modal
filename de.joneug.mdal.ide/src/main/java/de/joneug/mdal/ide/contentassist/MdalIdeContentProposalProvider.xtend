@@ -7,8 +7,9 @@ import de.joneug.mdal.mdal.DocumentHeader
 import de.joneug.mdal.mdal.DocumentLine
 import de.joneug.mdal.mdal.Entity
 import de.joneug.mdal.mdal.IncludeField
-import de.joneug.mdal.mdal.Journal
+import de.joneug.mdal.mdal.LedgerEntry
 import de.joneug.mdal.mdal.Master
+import de.joneug.mdal.mdal.PageField
 import de.joneug.mdal.mdal.Supplemental
 import de.joneug.mdal.services.MdalGrammarAccess
 import org.eclipse.xtext.AbstractElement
@@ -19,8 +20,10 @@ import org.eclipse.xtext.ide.editor.contentassist.IIdeContentProposalAcceptor
 import org.eclipse.xtext.ide.editor.contentassist.IdeContentProposalProvider
 
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
+import static extension de.joneug.mdal.extensions.EntityExtensions.*
 import static extension de.joneug.mdal.extensions.IncludeFieldExtensions.*
 import static extension de.joneug.mdal.extensions.ObjectExtensions.*
+import static extension de.joneug.mdal.extensions.PageFieldExtensions.*
 import static extension de.joneug.mdal.extensions.StringExtensions.*
 
 class MdalIdeContentProposalProvider extends IdeContentProposalProvider {
@@ -28,11 +31,11 @@ class MdalIdeContentProposalProvider extends IdeContentProposalProvider {
 	protected GeneratorManagement management = GeneratorManagement.getInstance()
 
 	@Inject
-	extension MdalGrammarAccess grammarAccess
+	extension MdalGrammarAccess ga
 
 	override protected createProposals(AbstractElement assignment, ContentAssistContext context, IIdeContentProposalAcceptor acceptor) {
 		switch (assignment) {
-			case grammarAccess.includeFieldAccess.entityNameAssignment_2: {
+			case ga.includeFieldAccess.entityNameAssignment_4: {
 				logInfo("Adding Entity proposals for IncludeField")
 				
 				val currentModel = context.currentModel
@@ -41,13 +44,13 @@ class MdalIdeContentProposalProvider extends IdeContentProposalProvider {
 					addEntityProposals(context, acceptor, #[Master, Supplemental])
 				} else if(currentModel.getContainerOfType(DocumentLine) !== null) {
 					addEntityProposals(context, acceptor, #[Master, Supplemental, DocumentHeader])
-				} else if(currentModel.getContainerOfType(Journal) !== null) {
+				} else if(currentModel.getContainerOfType(LedgerEntry) !== null) {
 					addEntityProposals(context, acceptor, #[Master, Supplemental, DocumentHeader, DocumentLine])
 				} else {
 					super.createProposals(assignment, context, acceptor)
 				}
 			}
-			case grammarAccess.includeFieldAccess.fieldNameAssignment_4: {
+			case ga.includeFieldAccess.fieldNameAssignment_6: {
 				logInfo("Adding Field proposals for IncludeField")
 				
 				if(!(context.currentModel instanceof IncludeField)) {
@@ -65,7 +68,7 @@ class MdalIdeContentProposalProvider extends IdeContentProposalProvider {
 					addProposal(context, acceptor, it.name, ContentAssistEntry.KIND_FIELD)
 				]
 			}
-			case grammarAccess.customFieldAccess.tableRelationAssignment_6_1_1_2: {
+			case ga.customFieldAccess.tableRelationAssignment_6_1_1_2: {
 				management.symbolReferences.forEach [symbolReference |
 					var tables = symbolReference.tables
 					
@@ -85,6 +88,25 @@ class MdalIdeContentProposalProvider extends IdeContentProposalProvider {
 					]
 				]
 			}
+			case ga.pageFieldAccess.fieldNameAssignment_2: {
+				if(!(context.currentModel instanceof PageField)) {
+					super.createProposals(assignment, context, acceptor)
+				}
+				
+				val pageField = context.currentModel as PageField
+				val entity = pageField.entity
+				
+				if(entity === null) {
+					super.createProposals(assignment, context, acceptor)
+				}
+				
+				entity.fields.forEach [
+					addProposal(context, acceptor, it.name, ContentAssistEntry.KIND_FIELD)
+				]
+				entity.inferredIncludeFields.forEach[
+					addProposal(context, acceptor, it.name, ContentAssistEntry.KIND_FIELD)
+				]
+			}
 			default: {
 				super.createProposals(assignment, context, acceptor)
 			}
@@ -93,7 +115,7 @@ class MdalIdeContentProposalProvider extends IdeContentProposalProvider {
 
 	override protected _createProposals(RuleCall ruleCall, ContentAssistContext context, IIdeContentProposalAcceptor acceptor) {
 		switch (ruleCall.rule) {
-			case grammarAccess.solutionRule: {
+			case ga.modelAccess.solutionSolutionParserRuleCall_0: {
 				addSnippet(context, acceptor, '''
 					solution "Seminar Management" {
 						Prefix = "SEM";
@@ -104,7 +126,7 @@ class MdalIdeContentProposalProvider extends IdeContentProposalProvider {
 					}
 				''', "mdAL Solution", "Solution")
 			}
-			case grammarAccess.templateFieldRule: {
+			case ga.fieldAccess.templateFieldParserRuleCall_1: {
 				addSnippet(context, acceptor, '''template(${1:FieldName}; ${1:TemplateName})''', "Template Field", "Template Field")
 			}
 			default: {

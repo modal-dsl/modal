@@ -1,12 +1,21 @@
 package de.joneug.mdal.extensions
 
 import de.joneug.mdal.mdal.CustomField
+import de.joneug.mdal.mdal.DocumentHeader
+import de.joneug.mdal.mdal.DocumentLine
 import de.joneug.mdal.mdal.Entity
+import de.joneug.mdal.mdal.Group
+import de.joneug.mdal.mdal.IncludeField
+import de.joneug.mdal.mdal.LedgerEntry
+import de.joneug.mdal.mdal.Master
+import de.joneug.mdal.mdal.PageField
 import de.joneug.mdal.mdal.TemplateField
 import de.joneug.mdal.mdal.TemplateType
+import java.util.List
 
-import static extension de.joneug.mdal.extensions.CustomFieldExtensions.*
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
+import static extension de.joneug.mdal.extensions.FieldExtensions.*
+import static extension de.joneug.mdal.extensions.IncludeFieldExtensions.*
 import static extension de.joneug.mdal.extensions.SolutionExtensions.*
 import static extension de.joneug.mdal.extensions.StringExtensions.*
 import static extension de.joneug.mdal.extensions.TemplateFieldExtensions.*
@@ -61,6 +70,46 @@ class EntityExtensions {
 		entity.templateFields.exists[templateType.isInstance(it.type)]
 	}
 	
+	static def getInferredIncludeFields(Entity entity) {
+		var List<IncludeField> includeFields = <IncludeField>newArrayList
+		
+		if(entity instanceof DocumentHeader) {
+			includeFields = entity.includeFields
+		} else if(entity instanceof DocumentLine) {
+			includeFields = entity.includeFields
+		} else if(entity instanceof LedgerEntry) {
+			includeFields = entity.includeFields
+		}
+		
+		return includeFields
+	}
+	
+	static def getInferredGroups(Entity entity) {
+		var List<Group> groups = <Group>newArrayList
+		
+		if(entity instanceof Master) {
+			groups = entity.cardPageGroups
+		} else if(entity instanceof DocumentHeader) {
+			groups = entity.documentPageGroups
+		}
+		
+		return groups
+	}
+	
+	static def getGroupsExceptGeneral(Entity entity) {
+		return entity.inferredGroups.filter[it.name != 'General']
+	}
+	
+	static def getPageFieldsInGroup(Entity entity, String groupName) {		
+		val filteredGroups = entity.inferredGroups.filter[it.name == groupName]
+		
+		if(filteredGroups.length == 0) {
+			return <PageField>newArrayList
+		} else {
+			return filteredGroups.get(0).pageFields
+		}
+	}
+	
 	static def getDataCaptionFields(Entity entity) {
 		val fields = newArrayList
 		entity.templateFields.forEach[fields.addAll(it.dataCaptionFields)]
@@ -85,13 +134,12 @@ class EntityExtensions {
 		return fields
 	}
 	
-	static def doGenerateFields(Entity entity) '''
+	static def doGenerateTableFields(Entity entity) '''
 		«FOR field : entity.fields»
-			«IF field instanceof CustomField»
-				«field.doGenerate»
-			«ELSEIF field instanceof TemplateField »
-				«field.doGenerate»
-			«ENDIF»
+			«field.doGenerateTableField»
+		«ENDFOR»
+		«FOR includeField : entity.inferredIncludeFields»
+			«includeField.doGenerateTableField»
 		«ENDFOR»
 	'''
 

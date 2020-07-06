@@ -12,20 +12,22 @@ Solution:
 			(master=Master) &
 			(supplementals+=Supplemental)* &
 			(document=Document) &
-			(journal=Journal)
+			(ledgerEntry=LedgerEntry)
 		)
 	'}'
 ;
 
 Entity:
-	Master | Supplemental | DocumentHeader | DocumentLine | Journal
+	Master | Supplemental | DocumentHeader | DocumentLine | LedgerEntry
 ;
 
 Master:
 	'master' name=STRING '{'
 		(
 			('ShortName' '=' shortName=STRING ';') &
-			('fields' '{' fields+=Field* '}')?
+			('fields' '{' (fields+=Field)* '}')? &
+			('cardPage' '{' (cardPageGroups+=Group)* '}')? &
+			('listPage' '{' (listPageFields+=PageField)* '}')?
 		)
 	'}';
 
@@ -33,14 +35,16 @@ Supplemental:
 	'supplemental' name=STRING '{'
 		(
 			('ShortName' '=' shortName=STRING ';') &
-			('fields' '{' fields+=Field* '}')?
+			('fields' '{' (fields+=Field)* '}')? &
+			('listPage' '{' (listPageFields+=PageField)* '}')?
 		)
 	'}'
 ;
 
 Document:
-	'document' '{'
+	'document' name=STRING '{'
 		(
+			('ShortName' '=' shortName=STRING ';') &
 			(header=DocumentHeader) &
 			(line=DocumentLine)
 		)
@@ -51,7 +55,9 @@ DocumentHeader:
 	{DocumentHeader} 'header' name=STRING '{'
 		(
 			('ShortName' '=' shortName=STRING ';') &
-			('fields' '{' ((fields+=Field)* & (includeFields+=IncludeField)*) '}')?	
+			('fields' '{' (fields+=Field | includeFields+=IncludeField)* '}')? &
+			('documentPage' '{' (documentPageGroups+=Group)* '}')? &
+			('listPage' '{' (listPageFields+=PageField)* '}')?
 		)
 	'}'
 ;
@@ -60,16 +66,18 @@ DocumentLine:
 	{DocumentLine} 'line' name=STRING '{'
 		(
 			('ShortName' '=' shortName=STRING ';') &
-			('fields' '{' ((fields+=Field)* & (includeFields+=IncludeField)*) '}')?	
+			('fields' '{' (fields+=Field | includeFields+=IncludeField)* '}')? &
+			('listPartPage' '{' (listPartPageFields+=PageField)* '}')?
 		)
 	'}'
 ;
 
-Journal:
-	{Journal} 'journal' name=STRING '{'
+LedgerEntry:
+	{LedgerEntry} 'ledgerEntry' name=STRING '{'
 		(
 			('ShortName' '=' shortName=STRING ';') &
-			('fields' '{' ((fields+=Field)* & (includeFields+=IncludeField)*) '}')?	
+			('fields' '{' (fields+=Field | includeFields+=IncludeField)* '}')? &
+			('listPage' '{' (listPageFields+=PageField)* '}')?
 		)
 	'}'
 ;
@@ -94,9 +102,22 @@ TemplateField:
 ;
 
 IncludeField:
-	'include' '(' entityName=STRING '.' fieldName=STRING ')'// ('{' &
-		//('CardGroup' cardGroup = STRING)?
-	//'}')?
+	'include' '(' name=STRING ';' entityName=STRING '.' fieldName=STRING ')'
+;
+
+Group:
+	'group' '(' name=STRING ')'
+	(
+		'{'
+			(
+				(pageFields+=PageField)*
+			)
+		'}'
+	)?
+;
+
+PageField:
+	'field' '(' fieldName=STRING ')'
 ;
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

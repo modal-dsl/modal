@@ -29,10 +29,6 @@ class SolutionExtensions {
 	static def String constructObjectName(Solution solution, String objectName) {
 		return solution.inferredPrefix + ' ' + objectName
 	}
-	
-	/*
-	 * Generator extensions
-	 */
 	 
 	static def doGenerate(Solution solution) {
 		solution.logInfo('''Generating solution "«solution.name»"''')
@@ -449,7 +445,7 @@ class SolutionExtensions {
 	}
 	
 	static def doGenerateCommentListPage(Solution solution) '''
-		page «management.newTableNo» «solution.commentListPageName.saveQuote»
+		page «management.newPageNo» «solution.commentListPageName.saveQuote»
 		{
 		    Caption = 'Comment List';
 		    DataCaptionFields = "No.";
@@ -499,7 +495,7 @@ class SolutionExtensions {
 	}
 	
 	static def doGenerateCommentSheetPage(Solution solution) '''
-		page «management.newTableNo» «solution.commentSheetPageName.saveQuote»
+		page «management.newPageNo» «solution.commentSheetPageName.saveQuote»
 		{
 		    AutoSplitKey = true;
 		    Caption = 'Comment Sheet';
@@ -575,7 +571,4 @@ class SolutionExtensions {
 		}
 	'''
 	
-	
-	
-
 }

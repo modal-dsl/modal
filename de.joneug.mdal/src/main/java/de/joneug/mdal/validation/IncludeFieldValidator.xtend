@@ -18,18 +18,18 @@ class IncludeFieldValidator extends AbstractDeclarativeValidator {
 		val entity = includeField.entity
 		
 		if(entity === null) {
-			generateEntityUnknownError(includeField.entityName)
+			error(
+				'''Entity «includeField.entityName.saveQuote» is unknown.''',
+				MdalPackage.Literals.INCLUDE_FIELD__ENTITY_NAME,
+				MdalValidator.INCLUDE_FIELD_UNKNOWN_ENTITY
+			)
 		} else if(!includeField.fieldName.isNullOrEmpty && !entity.fields.exists[it.name == includeField.fieldName]) {
-			generateFieldUnknownError(includeField.entityName, includeField.fieldName)
+			error(
+				'''Field «includeField.entityName.saveQuote».«includeField.fieldName.saveQuote» is unknown.''',
+				MdalPackage.Literals.INCLUDE_FIELD__FIELD_NAME,
+				MdalValidator.INCLUDE_FIELD_UNKNOWN_FIELD
+			)
 		}
-	}
-
-	def generateEntityUnknownError(String entityName) {
-		error('''Entity «entityName.saveQuote» is unknown.''', MdalPackage.Literals.INCLUDE_FIELD__ENTITY_NAME, MdalValidator.INCLUDE_FIELD_UNKNOWN_ENTITY)
-	}
-
-	def generateFieldUnknownError(String entityName, String fieldName) {
-		error('''Field «entityName.saveQuote».«fieldName.saveQuote» is unknown.''', MdalPackage.Literals.INCLUDE_FIELD__FIELD_NAME, MdalValidator.INCLUDE_FIELD_UNKNOWN_FIELD)
 	}
 
 }

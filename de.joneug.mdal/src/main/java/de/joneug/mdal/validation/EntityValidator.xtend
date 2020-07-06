@@ -46,14 +46,45 @@ class EntityValidator extends AbstractDeclarativeValidator {
 	
 	@Check
 	def checkFieldNamesAreUnique(Entity entity) {
+		val fieldNamesWithError = <String>newArrayList
+		
 		entity.fields.forEach[field |
-			if(entity.fields.exists[it !== field && it.name == field.name]) {
-				error(
-					'''Field with name «field.name.saveQuote» already exists in «entity.name.saveQuote».''',
-					field,
-					MdalPackage.Literals.FIELD__NAME,
-					MdalValidator.FIELD_NAME_EXISTS
-				)
+			if(!fieldNamesWithError.contains(field.name)) {
+				// Duplicates within regular fields
+				if(entity.fields.exists[it !== field && it.name == field.name]) {
+					error(
+						'''Field with name «field.name.saveQuote» already exists in «entity.name.saveQuote».''',
+						field,
+						MdalPackage.Literals.FIELD__NAME,
+						MdalValidator.FIELD_NAME_EXISTS
+					)
+					fieldNamesWithError.add(field.name)
+				}
+				// Duplicates between regular fields and include fields
+				if (entity.inferredIncludeFields.exists[it.name == field.name]) {
+					error(
+						'''Field with name «field.name.saveQuote» already exists in «entity.name.saveQuote».''',
+						field,
+						MdalPackage.Literals.FIELD__NAME,
+						MdalValidator.FIELD_NAME_EXISTS
+					)
+					fieldNamesWithError.add(field.name)
+				}
+			}
+		]
+		
+		entity.inferredIncludeFields.forEach[includeField |
+			if(!fieldNamesWithError.contains(includeField.name)) {
+				// Duplicates within include fields
+				if (entity.inferredIncludeFields.exists[it !== includeField && it.name == includeField.name]) {
+					error(
+						'''Field with name «includeField.name.saveQuote» already exists in «entity.name.saveQuote».''',
+						includeField,
+						MdalPackage.Literals.INCLUDE_FIELD__NAME,
+						MdalValidator.FIELD_NAME_EXISTS
+					)
+					fieldNamesWithError.add(includeField.name)
+				}
 			}
 		]
 	}

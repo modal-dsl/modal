@@ -20,7 +20,7 @@ class MdalHoverContextContent {
 		val element = context.element
 		
 		switch (directGrammarElement) {
-			case ga.includeFieldAccess.entityNameSTRINGTerminalRuleCall_2_0: {
+			case ga.includeFieldAccess.entityNameSTRINGTerminalRuleCall_4_0: {
 				if(element instanceof IncludeField) {
 					return documentationProvider.getDocumentation((element as IncludeField).entity)
 				}

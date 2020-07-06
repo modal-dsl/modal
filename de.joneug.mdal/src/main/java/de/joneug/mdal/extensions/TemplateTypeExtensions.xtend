@@ -86,10 +86,10 @@ class TemplateTypeExtensions {
 	}
 	
 	/*
-	 * Polymorphic dispatch for "doGenerate" on TemplateType subtypes 
+	 * Polymorphic dispatch for "doGenerateTableFields" on TemplateType subtypes 
 	 */
 	
-	static def dispatch doGenerate(TemplateName templateType) '''
+	static def dispatch doGenerateTableFields(TemplateName templateType) '''
 		field(«management.getNewFieldNo(templateType.field.entity)»; Name; Text[100])
 		{
 			Caption = 'Name';
@@ -110,7 +110,7 @@ class TemplateTypeExtensions {
 		}
 	'''
 	
-	static def dispatch doGenerate(TemplateDescription templateType) '''
+	static def dispatch doGenerateTableFields(TemplateDescription templateType) '''
 		field(«management.getNewFieldNo(templateType.field.entity)»; Description; Text[100])
 		{
 			Caption = 'Description';
@@ -131,7 +131,7 @@ class TemplateTypeExtensions {
 		}
 	'''
 
-	static def dispatch doGenerate(TemplateDimensions templateType) '''
+	static def dispatch doGenerateTableFields(TemplateDimensions templateType) '''
 		field(«management.getNewFieldNo(templateType.field.entity)»; "Global Dimension 1 Code"; Code[20])
 		{
 			CaptionClass = '1,1,1';
@@ -156,7 +156,7 @@ class TemplateTypeExtensions {
 		}
 	'''
 	
-	static def dispatch doGenerate(TemplateSalesperson templateType) '''
+	static def dispatch doGenerateTableFields(TemplateSalesperson templateType) '''
 		field(«management.getNewFieldNo(templateType.field.entity)»; "Salesperson Code"; Code[20])
 		{
 			Caption = 'Salesperson Code';
@@ -169,7 +169,7 @@ class TemplateTypeExtensions {
 		}
 	'''
 	
-	static def dispatch doGenerate(TemplateAddress templateType) '''
+	static def dispatch doGenerateTableFields(TemplateAddress templateType) '''
 		field(«management.getNewFieldNo(templateType.field.entity)»; Address; Text[100])
 		{
 			Caption = 'Address';
@@ -239,7 +239,7 @@ class TemplateTypeExtensions {
 		}
 	'''
 	
-	static def dispatch doGenerate(TemplateContactInfo templateType) '''
+	static def dispatch doGenerateTableFields(TemplateContactInfo templateType) '''
 		field(«management.getNewFieldNo(templateType.field.entity)»; "Contact Person"; Text[50])
 		{
 			Caption = 'Contact Person';
@@ -280,4 +280,132 @@ class TemplateTypeExtensions {
 		}
 	'''
 	
+	/*
+	 * Polymorphic dispatch for "doGeneratePageFields" on TemplateType subtypes 
+	 */
+	 
+	static def dispatch doGeneratePageFields(TemplateName templateType) '''
+		field(Name; Name)
+		{
+			ApplicationArea = All;
+			Importance = Promoted;
+			ShowMandatory = true;
+			
+			trigger OnValidate()
+			begin
+				CurrPage.SaveRecord;
+			end;
+		}
+		field("Name 2"; "Name 2")
+		{
+			ApplicationArea = All;
+			Importance = Additional;
+			Visible = false;
+		}
+		field("Search Name"; "Search Name")
+		{
+			ApplicationArea = All;
+			Importance = Additional;
+			Visible = false;
+		}
+	'''
+	
+	static def dispatch doGeneratePageFields(TemplateDescription templateType) '''
+	    field(Description; Description)
+	    {
+	        ApplicationArea = All;
+	        Importance = Promoted;
+	        ShowMandatory = true;
+	        
+	        trigger OnValidate()
+	        begin
+	            CurrPage.SaveRecord;
+	        end;
+	    }
+	    field("Description 2"; "Description 2")
+	    {
+	        ApplicationArea = All;
+	        Importance = Additional;
+	        Visible = false;
+	    }
+	    field("Search Description"; "Search Description")
+	    {
+	        ApplicationArea = All;
+	        Importance = Additional;
+	        Visible = false;
+	    }
+	'''
+	
+	static def dispatch doGeneratePageFields(TemplateDimensions templateType) ''''''
+
+	static def dispatch doGeneratePageFields(TemplateSalesperson templateType) '''
+		field("Salesperson Code"; "Salesperson Code")
+		{
+		    ApplicationArea = All;
+		}
+	'''
+	
+	static def dispatch doGeneratePageFields(TemplateAddress templateType) '''
+		field(Address; Address)
+		{
+			ApplicationArea = All;
+			QuickEntry = false;
+		}
+		field(Address2; "Address 2")
+		{
+			ApplicationArea = All;
+			QuickEntry = false;
+		}
+		field(City; City)
+		{
+			ApplicationArea = All;
+			QuickEntry = false;
+		}
+		field(County; County)
+		{
+			ApplicationArea = All;
+			QuickEntry = false;
+		}
+		field(PostCode; "Post Code")
+		{
+			ApplicationArea = All;
+			QuickEntry = false;
+		}
+		field(CountryRegionCode; "Country/Region Code")
+		{
+			ApplicationArea = All;
+			QuickEntry = false;
+		}
+	'''
+	
+	static def dispatch doGeneratePageFields(TemplateContactInfo templateType) '''
+		field(PhoneNo; "Phone No.")
+		{
+			ApplicationArea = All;
+		}
+		field(TelexNo; "Telex No.")
+		{
+			ApplicationArea = All;
+			Visible = false;
+		}
+		field(FaxNo; "Fax No.")
+		{
+			ApplicationArea = All;
+			Visible = false;
+		}
+		field(TelexAnswerBack; "Telex Answer Back")
+		{
+			ApplicationArea = All;
+			Visible = false;
+		}
+		field(EMail; "E-Mail")
+		{
+			ApplicationArea = All;
+		}
+		field(HomePage; "Home Page")
+		{
+			ApplicationArea = All;
+		}
+	'''
+
 }

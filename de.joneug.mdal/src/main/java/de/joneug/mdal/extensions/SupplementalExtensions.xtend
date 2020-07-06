@@ -41,7 +41,7 @@ class SupplementalExtensions {
 	}
 	
 	static def doGenerateTable(Supplemental supplemental) '''
-	table «management.getNewTableNo()» "«supplemental.tableName»" {
+	table «management.getNewTableNo(supplemental)» "«supplemental.tableName»" {
 		Caption = '«supplemental.name»';
 		DataCaptionFields = «FOR field : supplemental.dataCaptionFields SEPARATOR ', '»«field.saveQuote»«ENDFOR»;
 		LookupPageId = "«supplemental.listPageName»";
@@ -53,7 +53,7 @@ class SupplementalExtensions {
 				Caption = 'Code';
 				NotBlank = true;
 			}
-			«supplemental.doGenerateFields»
+			«supplemental.doGenerateTableFields»
 			field(«management.getNewFieldNo(supplemental)»; Blocked; Boolean)
 			{
 				Caption = 'Blocked';
