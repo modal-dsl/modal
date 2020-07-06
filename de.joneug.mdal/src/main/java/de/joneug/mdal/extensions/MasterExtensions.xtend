@@ -38,14 +38,9 @@ class MasterExtensions {
 	}
 	
 	static def void doGenerate(Master master) {
-		// Table
 		master.saveTable(master.tableName, master.doGenerateTable)
-		
-		// List Page
-		
-		
-		// Card Page
 		master.savePage(master.cardPageName, master.doGenerateCardPage)
+		master.savePage(master.listPageName, master.doGenerateListPage)
 	}
 
 	static def doGenerateTable(Master master) '''
@@ -339,7 +334,7 @@ class MasterExtensions {
 		                    Promoted = true;
 		                    PromotedCategory = Category6;
 		                    RunObject = Page "Comment Sheet";
-		                    RunPageLink = "Table Name" = const(«master.name»),
+		                    RunPageLink = "Table Name" = const(«master.cleanedName»),
 		                                  "No." = field("No.");
 		                    ToolTip = 'View or add comments for the record.';
 		                }
@@ -373,6 +368,78 @@ class MasterExtensions {
 		        IsOfficeAddin := OfficeManagement.IsAvailable;
 		    end;
 		}
+	'''
+	
+	static def doGenerateListPage(Master master) '''
+	page «management.newPageNo» «master.listPageName.saveQuote»
+	{
+	    ApplicationArea = All;
+	    Caption = '«master.name»s';
+	    CardPageID = «master.cardPageName.saveQuote»;
+	    Editable = false;
+	    PageType = List;
+	    PromotedActionCategories = 'New,Process,Report,«master.name»,Navigate';
+	    SourceTable = «master.tableName.saveQuote»;
+	    UsageCategory = Lists;
+	
+	    layout
+	    {
+	        area(content)
+	        {
+	            repeater(Control1)
+	            {
+	                field("No."; "No.")
+	                {
+	                    ApplicationArea = All;
+	                }
+	                «FOR pageField : master.listPageFields»
+	                	«pageField.doGenerate»
+	                «ENDFOR»
+	                field(Blocked; Blocked)
+	                {
+	                    ApplicationArea = All;
+	                    Visible = false;
+	                }
+	            }
+	        }
+	        area(factboxes)
+	        {
+	            systempart(Control1900383207; Links)
+	            {
+	                ApplicationArea = RecordLinks;
+	                Visible = false;
+	            }
+	            systempart(Control1905767507; Notes)
+	            {
+	                ApplicationArea = Notes;
+	                Visible = true;
+	            }
+	        }
+	    }
+	
+	    actions
+	    {
+	        area(navigation)
+	        {
+	            group("&«master.name»")
+	            {
+	                Caption = '&«master.name»';
+	                action("Co&mments")
+	                {
+	                    ApplicationArea = Comments;
+	                    Caption = 'Co&mments';
+	                    Image = ViewComments;
+	                    Promoted = true;
+	                    PromotedCategory = Category4;
+	                    RunObject = Page "Comment Sheet";
+	                    RunPageLink = "Table Name" = const(«master.cleanedName»),
+	                                  "No." = field("No.");
+	                    ToolTip = 'View or add comments for the record.';
+	                }
+	            }
+	        }
+	    }
+	}
 	'''
 
 }
