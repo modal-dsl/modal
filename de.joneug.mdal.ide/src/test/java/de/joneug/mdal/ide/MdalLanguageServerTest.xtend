@@ -51,15 +51,15 @@ class MdalLanguageServerTest extends AbstractLanguageServerTest {
 	def void testCompletion() {
     	testCompletion [
 	        model = ExampleContentGenerator.generateCorrectModel.toString
-	        line = 63
+	        line = 65
 	        column = 44
 	        expectedCompletionItems = '''
-	            "Instructor" -> "Instructor" [[63, 44] .. [63, 44]]
-	            "Seminar Registration Header" -> "Seminar Registration Header" [[63, 44] .. [63, 44]]
-	            "Seminar Registration Line" -> "Seminar Registration Line" [[63, 44] .. [63, 44]]
-	            "Seminar Room" -> "Seminar Room" [[63, 44] .. [63, 44]]
-	            "Seminar" -> "Seminar" [[63, 44] .. [63, 44]]
-	            . -> . [[63, 44] .. [63, 44]]
+	            "Instructor" -> "Instructor" [[«line», «column»] .. [«line», «column»]]
+	            "Seminar Registration Header" -> "Seminar Registration Header" [[«line», «column»] .. [«line», «column»]]
+	            "Seminar Registration Line" -> "Seminar Registration Line" [[«line», «column»] .. [«line», «column»]]
+	            "Seminar Room" -> "Seminar Room" [[«line», «column»] .. [«line», «column»]]
+	            "Seminar" -> "Seminar" [[«line», «column»] .. [«line», «column»]]
+	            . -> . [[«line», «column»] .. [«line», «column»]]
 	        '''
     	]
 	}
@@ -71,7 +71,7 @@ class MdalLanguageServerTest extends AbstractLanguageServerTest {
 			line = 0
 			column = 0
 			expectedHover = '''
-				[[0, 0] .. [0, 8]]
+				[[«line», «column»] .. [«line», «column + 8»]]
 				kind: markdown
 				value: The `solution` keyword starts a solution definition.
 			'''
@@ -85,7 +85,7 @@ class MdalLanguageServerTest extends AbstractLanguageServerTest {
 			line = 3
 			column = 1
 			expectedHover = '''
-				[[3, 1] .. [3, 7]]
+				[[«line», «column»] .. [«line», «column + 6»]]
 				kind: markdown
 				value: ```mdal
 				master Seminar
