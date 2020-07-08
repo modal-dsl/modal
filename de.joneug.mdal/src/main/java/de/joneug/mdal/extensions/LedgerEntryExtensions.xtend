@@ -7,17 +7,26 @@ import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.EntityExtensions.*
 import static extension de.joneug.mdal.extensions.SolutionExtensions.*
 import static extension de.joneug.mdal.extensions.StringExtensions.*
+import static extension de.joneug.mdal.extensions.PageFieldExtensions.*
 
 class LedgerEntryExtensions {
 	
 	static GeneratorManagement management = GeneratorManagement.getInstance()
+	
+	def static getNamePlural(LedgerEntry ledgerEntry) {
+		return ledgerEntry.name.replace('Entry', 'Entries')
+	}
+	
+	def static getShortNamePlural(LedgerEntry ledgerEntry) {
+		return ledgerEntry.shortName.replace('Entry', 'Entries')
+	}
 	
 	def static getNameRegister(LedgerEntry ledgerEntry) {
 		return ledgerEntry.solution.master.name + ' Register'
 	}
 	
 	def static getShortNameRegister(LedgerEntry ledgerEntry) {
-		return ledgerEntry.solution.master.shortName + ' Register'
+		return ledgerEntry.solution.master.name + ' Reg.'
 	}
 	
 	def static getTableNameRegister(LedgerEntry ledgerEntry) {
@@ -53,11 +62,23 @@ class LedgerEntryExtensions {
 	}
 	
 	static def getListPageName(LedgerEntry ledgerEntry) {
-		var name = ledgerEntry.solution.constructObjectName(ledgerEntry.name.replace('Entry', 'Entries'))
+		var name = ledgerEntry.solution.constructObjectName(ledgerEntry.namePlural)
 		if(name.length > 30) {
-			name = ledgerEntry.solution.constructObjectName(ledgerEntry.shortName.replace('Entry', 'Entries'))
+			name = ledgerEntry.solution.constructObjectName(ledgerEntry.shortNamePlural)
 		}
 		return name
+	}
+	
+	static def getRegistersPageName(LedgerEntry ledgerEntry) {
+		var name = ledgerEntry.solution.constructObjectName(ledgerEntry.nameRegister + 's')
+		if(name.length > 30) {
+			name = ledgerEntry.solution.constructObjectName(ledgerEntry.shortNameRegister + 's')
+		}
+		return name
+	}
+	
+	static def getCodeunitNameShowLedger(LedgerEntry ledgerEntry) {
+		return ledgerEntry.solution.constructObjectName(ledgerEntry.shortNameRegister + '-Show Ledger')
 	}
 	
 	def static doGenerate(LedgerEntry ledgerEntry) {
@@ -67,6 +88,11 @@ class LedgerEntryExtensions {
 		ledgerEntry.saveTable(ledgerEntry.tableNameRegister, ledgerEntry.doGenerateTableRegister)
 		
 		// Pages
+		ledgerEntry.savePage(ledgerEntry.registersPageName, ledgerEntry.doGeneratePageRegister)
+		ledgerEntry.savePage(ledgerEntry.listPageName, ledgerEntry.doGenerateListPage)
+		
+		// Codeunits
+		ledgerEntry.saveCodeunit(ledgerEntry.codeunitNameShowLedger, ledgerEntry.doGenerateCodeunitShowLedger)
 	}
 	
 	def static doGenerateTable(LedgerEntry ledgerEntry) '''
@@ -85,7 +111,6 @@ class LedgerEntryExtensions {
 		        {
 		            Caption = 'Entry No.';
 		        }
-		        
 		        field(«management.getNewFieldNo(ledgerEntry)»; "Posting Date"; Date)
 		        {
 		            Caption = 'Posting Date';
@@ -156,7 +181,8 @@ class LedgerEntryExtensions {
 		        {
 		            Clustered = true;
 		        }
-		        key(Key2; "Document No.") {}
+		        key(Key2; "«master.name» No.", "Posting Date") {}
+		        key(Key3; "Document No.") {}
 		    }
 		
 		    fieldgroups
@@ -364,7 +390,6 @@ class LedgerEntryExtensions {
 		«management.resetFieldNo(ledgerEntry)»
 		table «management.newTableNo» «ledgerEntry.tableNameRegister.saveQuote»
 		{
-		
 		    Caption = '«ledgerEntry.nameRegister»';
 		
 		    fields
@@ -454,5 +479,281 @@ class LedgerEntryExtensions {
 		    end;
 		}
 	'''
+	
+	static def doGenerateListPage(LedgerEntry ledgerEntry) '''
+		«val master = ledgerEntry.solution.master»
+		«val document = ledgerEntry.solution.document»
+		page «management.newPageNo» «ledgerEntry.listPageName.saveQuote»
+		{
+		    ApplicationArea = All;
+		    Caption = '«ledgerEntry.namePlural»';
+		    DataCaptionFields = "«master.name» No.";
+		    Editable = false;
+		    PageType = List;
+		    SourceTable = «ledgerEntry.tableName.saveQuote»;
+		    SourceTableView = SORTING("«master.name» No.", "Posting Date")
+		                      ORDER(Descending);
+		    UsageCategory = History;
+		
+		    layout
+		    {
+		        area(content)
+		        {
+		            repeater(Control1)
+		            {
+		                ShowCaption = false;
+		                field("Posting Date"; "Posting Date")
+		                {
+		                    ApplicationArea = All;
+		                    ToolTip = 'Specifies the date when the entry was posted.';
+		                }
+		                field("Document Date"; "Document Date")
+		                {
+		                    Visible = false;
+		                }
+		                field("Document No."; "Document No.")
+		                {
+		                    ApplicationArea = All;
+		                    ToolTip = 'Specifies the document number on the «master.name» ledger entry.';
+		                }
+		                field(Description; Description)
+		                {
+		                    ApplicationArea = All;
+		                    ToolTip = 'Specifies the description of the posted entry.';
+		                }
+		                field("Source No."; "Source No.")
+		                {
+		                    ApplicationArea = All;
+		                }
+		                field("«master.name» No."; "«master.name» No.")
+		                {
+		                    ApplicationArea = All;
+		                    ToolTip = 'Specifies the number of the «master.name».';
+		                }
+		                field("«document.name» No."; "«document.name» No.")
+		                {
+		                    ApplicationArea = All;
+		                    ToolTip = 'Specifies the number of the «document.name».';
+		                }
+		                «FOR pageField : ledgerEntry.listPageFields»
+    	                	«pageField.doGenerate»
+    	                «ENDFOR»
+		                field("User ID"; "User ID")
+		                {
+		                    ApplicationArea = All;
+		                    ToolTip = 'Specifies the ID of the user who posted the entry, to be used, for example, in the change log.';
+		                    Visible = false;
+		
+		                    trigger OnDrillDown()
+		                    var
+		                        UserMgt: Codeunit "User Management";
+		                    begin
+		                        UserMgt.DisplayUserInformation("User ID");
+		                    end;
+		                }
+		                field("Source Code"; "Source Code")
+		                {
+		                    ApplicationArea = All;
+		                    ToolTip = 'Specifies the source code that specifies where the entry was created.';
+		                    Visible = false;
+		                }
+		                field("Reason Code"; "Reason Code")
+		                {
+		                    ApplicationArea = All;
+		                    ToolTip = 'Specifies the reason code, a supplementary source code that enables you to trace the entry.';
+		                    Visible = false;
+		                }
+		                field("Entry No."; "Entry No.")
+		                {
+		                    ApplicationArea = All;
+		                    ToolTip = 'Specifies the number of the entry, as assigned from the specified number series when the entry was created.';
+		                }
+		            }
+		        }
+		        area(factboxes)
+		        {
+		            systempart(Control1900383207; Links)
+		            {
+		                ApplicationArea = RecordLinks;
+		                Visible = false;
+		            }
+		            systempart(Control1905767507; Notes)
+		            {
+		                ApplicationArea = Notes;
+		                Visible = false;
+		            }
+		        }
+		    }
+		
+		    actions
+		    {
+		        area(processing)
+		        {
+		            action("&Navigate")
+		            {
+		                ApplicationArea = All;
+		                Caption = '&Navigate';
+		                Image = Navigate;
+		                Promoted = true;
+		                PromotedCategory = Process;
+		                ToolTip = 'Find all entries and documents that exist for the document number and posting date on the selected entry or document.';
+		
+		                trigger OnAction()
+		                begin
+		                    Navigate.SetDoc("Posting Date", "Document No.");
+		                    Navigate.Run;
+		                end;
+		            }
+		        }
+		    }
+		
+		    trigger OnOpenPage()
+		    begin
+		        if GetFilters <> '' then
+		            if FindFirst then;
+		    end;
+		
+		    var
+		        Navigate: Page Navigate;
+		}
+	'''
+	
+	def static doGeneratePageRegister(LedgerEntry ledgerEntry) '''
+		«val master = ledgerEntry.solution.master»
+		page «management.newPageNo» «ledgerEntry.registersPageName.saveQuote»
+		{
+		    ApplicationArea = All;
+		    Caption = '«ledgerEntry.nameRegister»s';
+		    Editable = false;
+		    PageType = List;
+		    SourceTable = «ledgerEntry.tableNameRegister.saveQuote»;
+		    SourceTableView = SORTING("No.")
+		                      ORDER(Descending);
+		    UsageCategory = History;
+		
+		    layout
+		    {
+		        area(content)
+		        {
+		            repeater(Control1)
+		            {
+		                ShowCaption = false;
+		                field("No."; "No.")
+		                {
+		                    ApplicationArea = All;
+		                    ToolTip = 'Specifies the number of the «master.name» ledger register.';
+		                }
+		                field("Creation Date"; "Creation Date")
+		                {
+		                    ApplicationArea = All;
+		                    ToolTip = 'Specifies the date when the entries in the register were posted.';
+		                }
+		                field("Creation Time"; "Creation Time")
+		                {
+		                    ApplicationArea = All;
+		                    ToolTip = 'Specifies the time when the entries in the register were posted.';
+		                }
+		                field("User ID"; "User ID")
+		                {
+		                    ApplicationArea = All;
+		                    ToolTip = 'Specifies the ID of the user who posted the entry, to be used, for example, in the change log.';
+		
+		                    trigger OnDrillDown()
+		                    var
+		                        UserMgt: Codeunit "User Management";
+		                    begin
+		                        UserMgt.DisplayUserInformation("User ID");
+		                    end;
+		                }
+		                field(SourceCode; "Source Code")
+		                {
+		                    ApplicationArea = All;
+		                    ToolTip = 'Specifies the source code for the entries in the register.';
+		                }
+		                field("Journal Batch Name"; "Journal Batch Name")
+		                {
+		                    ApplicationArea = All;
+		                    ToolTip = 'Specifies the batch name of the «master.name» journal that the entries were posted from.';
+		                }
+		                field(Reversed; Reversed)
+		                {
+		                    ApplicationArea = Suite;
+		                    ToolTip = 'Specifies if the register has been reversed (undone) from the Reverse Entries window.';
+		                    Visible = false;
+		                }
+		                field("From Entry No."; "From Entry No.")
+		                {
+		                    ApplicationArea = All;
+		                    ToolTip = 'Specifies the first «master.name» ledger entry number in the register.';
+		                }
+		                field("To Entry No."; "To Entry No.")
+		                {
+		                    ApplicationArea = All;
+		                    ToolTip = 'Specifies the last «master.name» ledger entry number in the register.';
+		                }
+		            }
+		        }
+		        area(factboxes)
+		        {
+		            systempart(Control1900383207; Links)
+		            {
+		                ApplicationArea = RecordLinks;
+		                Visible = false;
+		            }
+		            systempart(Control1905767507; Notes)
+		            {
+		                ApplicationArea = Notes;
+		                Visible = false;
+		            }
+		        }
+		    }
+		
+		    actions
+		    {
+		        area(navigation)
+		        {
+		            group("&Register")
+		            {
+		                Caption = '&Register';
+		                Image = Register;
+		                action("«master.name» Ledger")
+		                {
+		                    ApplicationArea = All;
+		                    Caption = '«master.name» Ledger';
+		                    Image = GLRegisters;
+		                    Promoted = true;
+		                    PromotedCategory = Process;
+		                    PromotedIsBig = true;
+		                    RunObject = Codeunit «ledgerEntry.codeunitNameShowLedger.saveQuote»;
+		                    ToolTip = 'View the general ledger entries that resulted in the current register entry.';
+		                }
+		            }
+		        }
+		    }
+		
+		    trigger OnOpenPage()
+		    begin
+		        if FindSet then;
+		    end;
+		}
+	'''
+	
+	def static doGenerateCodeunitShowLedger(LedgerEntry ledgerEntry) '''
+		codeunit «management.newCodeunitNo» «ledgerEntry.codeunitNameShowLedger.saveQuote»
+		{
+		    TableNo = «ledgerEntry.tableNameRegister.saveQuote»;
+		
+		    trigger OnRun()
+		    begin
+		         «ledgerEntry.tableVariableName».SetRange("Entry No.", "From Entry No.", "To Entry No.");
+		        PAGE.Run(PAGE::«ledgerEntry.listPageName.saveQuote»,  «ledgerEntry.tableVariableName»);
+		    end;
+		
+		    var
+		        «ledgerEntry.tableVariableName»: Record «ledgerEntry.tableName.saveQuote»;
+		}
+	'''
+	
+	
 	
 }
