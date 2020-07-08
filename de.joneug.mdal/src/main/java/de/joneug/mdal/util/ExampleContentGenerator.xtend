@@ -69,6 +69,9 @@ class ExampleContentGenerator {
 					field("Picture"; Media)
 					include("Language Code"; "Seminar"."Language Code")
 					include("Maximum Participants"; "Seminar"."Maximum Participants")
+					include("Seminar No."; "Seminar"."No.")
+					include("Instructor Code"; "Instructor"."Code")
+					include("Sem. Reg. No."; "Seminar Registration Header"."No.")
 				}
 				
 				listPage {

@@ -169,6 +169,12 @@ public class GeneratorManagement {
 		}
 	}
 	
+	public void resetFieldNo(EObject object) {
+		if(lastFieldNoMap.containsKey(object)) {
+			lastFieldNoMap.remove(object);
+		}
+	}
+	
 	public int getNewKeyNo(EObject object) {
 		if (!lastKeyNoMap.containsKey(object)) {
 			lastKeyNoMap.put(object, 1);

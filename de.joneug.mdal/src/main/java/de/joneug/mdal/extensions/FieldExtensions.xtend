@@ -22,11 +22,23 @@ class FieldExtensions {
 	}
 	
 	static def dispatch doGenerateTableField(TemplateField templateField) {
-		return templateField.type.doGenerateTableFields
+		doGenerateTableField(templateField, templateField.type.field.entity)
 	}
 	
-	static def dispatch doGenerateTableField(CustomField customField) '''
-		field(«management.getNewFieldNo(customField.entity)»; «customField.name.saveQuote»; «customField.type.doGenerate»)
+	static def dispatch doGenerateTableField(CustomField customField) {
+		doGenerateTableField(customField, customField.entity)
+	}
+	
+	static def dispatch doGenerateTableField(TemplateField templateField, Entity entity) {
+		return templateField.type.doGenerateTableFields(entity)
+	}
+	
+	static def dispatch doGenerateTableField(CustomField customField, Entity entity) {
+		return doGenerateTableField(customField, customField.name, entity)
+	}
+	
+	static def doGenerateTableField(CustomField customField, String filedName, Entity entity) '''
+		field(«management.getNewFieldNo(entity)»; «filedName.saveQuote»; «customField.type.doGenerate»)
 		{
 			Caption = '«customField.inferredCaption»';
 			««« Option

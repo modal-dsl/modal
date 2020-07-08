@@ -22,7 +22,6 @@ import org.eclipse.xtext.ide.editor.contentassist.IdeContentProposalProvider
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.EntityExtensions.*
 import static extension de.joneug.mdal.extensions.IncludeFieldExtensions.*
-import static extension de.joneug.mdal.extensions.ObjectExtensions.*
 import static extension de.joneug.mdal.extensions.PageFieldExtensions.*
 import static extension de.joneug.mdal.extensions.StringExtensions.*
 
@@ -35,9 +34,7 @@ class MdalIdeContentProposalProvider extends IdeContentProposalProvider {
 
 	override protected createProposals(AbstractElement assignment, ContentAssistContext context, IIdeContentProposalAcceptor acceptor) {
 		switch (assignment) {
-			case ga.includeFieldAccess.entityNameAssignment_4: {
-				logInfo("Adding Entity proposals for IncludeField")
-				
+			case ga.includeFieldAccess.entityNameAssignment_4: {				
 				val currentModel = context.currentModel
 
 				if(currentModel.getContainerOfType(DocumentHeader) !== null) {
@@ -48,13 +45,13 @@ class MdalIdeContentProposalProvider extends IdeContentProposalProvider {
 					addEntityProposals(context, acceptor, #[Master, Supplemental, DocumentHeader, DocumentLine])
 				} else {
 					super.createProposals(assignment, context, acceptor)
+					return
 				}
 			}
-			case ga.includeFieldAccess.fieldNameAssignment_6: {
-				logInfo("Adding Field proposals for IncludeField")
-				
+			case ga.includeFieldAccess.fieldNameAssignment_6: {				
 				if(!(context.currentModel instanceof IncludeField)) {
 					super.createProposals(assignment, context, acceptor)
+					return
 				}
 
 				val includeField = context.currentModel as IncludeField
@@ -62,10 +59,11 @@ class MdalIdeContentProposalProvider extends IdeContentProposalProvider {
 
 				if(entity === null) {
 					super.createProposals(assignment, context, acceptor)
+					return
 				}
 
-				entity.fields.forEach [
-					addProposal(context, acceptor, it.name, ContentAssistEntry.KIND_FIELD)
+				entity.inferredFieldNames.forEach [
+					addProposal(context, acceptor, it, ContentAssistEntry.KIND_FIELD)
 				]
 			}
 			case ga.customFieldAccess.tableRelationAssignment_6_1_1_2: {
@@ -91,6 +89,7 @@ class MdalIdeContentProposalProvider extends IdeContentProposalProvider {
 			case ga.pageFieldAccess.fieldNameAssignment_2: {
 				if(!(context.currentModel instanceof PageField)) {
 					super.createProposals(assignment, context, acceptor)
+					return
 				}
 				
 				val pageField = context.currentModel as PageField
@@ -98,6 +97,7 @@ class MdalIdeContentProposalProvider extends IdeContentProposalProvider {
 				
 				if(entity === null) {
 					super.createProposals(assignment, context, acceptor)
+					return
 				}
 				
 				entity.fields.forEach [

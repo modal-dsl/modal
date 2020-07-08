@@ -9,6 +9,7 @@ import de.joneug.mdal.mdal.IncludeField
 import de.joneug.mdal.mdal.LedgerEntry
 import de.joneug.mdal.mdal.Master
 import de.joneug.mdal.mdal.PageField
+import de.joneug.mdal.mdal.Supplemental
 import de.joneug.mdal.mdal.TemplateField
 import de.joneug.mdal.mdal.TemplateType
 import java.util.List
@@ -82,6 +83,22 @@ class EntityExtensions {
 		}
 		
 		return includeFields
+	}
+	
+	static def List<String> getInferredFieldNames(Entity entity) {
+		var fieldNames = <String>newArrayList
+		fieldNames.addAll(entity.fields.map[it.name])
+		
+		// Add static fields
+		if(entity instanceof Master) {
+			fieldNames.add('No.')
+		} else if(entity instanceof Supplemental) {
+			fieldNames.add('Code')
+		} else if(entity instanceof DocumentHeader) {
+			fieldNames.add('No.')
+		}
+		
+		return fieldNames
 	}
 	
 	static def getInferredGroups(Entity entity) {

@@ -22,7 +22,7 @@ class MdalHoverContextContent {
 		switch (directGrammarElement) {
 			case ga.includeFieldAccess.entityNameSTRINGTerminalRuleCall_4_0: {
 				if(element instanceof IncludeField) {
-					return documentationProvider.getDocumentation((element as IncludeField).entity)
+					return documentationProvider.getDocumentation(element.entity)
 				}
 			}
 			default: {

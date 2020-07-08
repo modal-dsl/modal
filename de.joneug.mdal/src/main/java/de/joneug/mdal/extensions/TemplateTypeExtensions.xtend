@@ -1,17 +1,18 @@
 package de.joneug.mdal.extensions
 
 import de.joneug.mdal.generator.GeneratorManagement
+import de.joneug.mdal.mdal.Entity
 import de.joneug.mdal.mdal.Field
+import de.joneug.mdal.mdal.TemplateAddress
+import de.joneug.mdal.mdal.TemplateContactInfo
 import de.joneug.mdal.mdal.TemplateDescription
 import de.joneug.mdal.mdal.TemplateDimensions
 import de.joneug.mdal.mdal.TemplateName
+import de.joneug.mdal.mdal.TemplateSalesperson
 import de.joneug.mdal.mdal.TemplateType
 
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.FieldExtensions.*
-import de.joneug.mdal.mdal.TemplateSalesperson
-import de.joneug.mdal.mdal.TemplateAddress
-import de.joneug.mdal.mdal.TemplateContactInfo
 
 class TemplateTypeExtensions {
 	
@@ -88,9 +89,8 @@ class TemplateTypeExtensions {
 	/*
 	 * Polymorphic dispatch for "doGenerateTableFields" on TemplateType subtypes 
 	 */
-	
-	static def dispatch doGenerateTableFields(TemplateName templateType) '''
-		field(«management.getNewFieldNo(templateType.field.entity)»; Name; Text[100])
+	static def dispatch doGenerateTableFields(TemplateName templateType, Entity entity) '''
+		field(«management.getNewFieldNo(entity)»; Name; Text[100])
 		{
 			Caption = 'Name';
 			
@@ -110,8 +110,8 @@ class TemplateTypeExtensions {
 		}
 	'''
 	
-	static def dispatch doGenerateTableFields(TemplateDescription templateType) '''
-		field(«management.getNewFieldNo(templateType.field.entity)»; Description; Text[100])
+	static def dispatch doGenerateTableFields(TemplateDescription templateType, Entity entity) '''
+		field(«management.getNewFieldNo(entity)»; Description; Text[100])
 		{
 			Caption = 'Description';
 			
@@ -121,18 +121,18 @@ class TemplateTypeExtensions {
 					"Search Description" := CopyStr(Description, 1, MaxStrLen("Search Description"));
 			end;
 		}
-		field(«management.getNewFieldNo(templateType.field.entity)»; "Search Description"; Code[100])
+		field(«management.getNewFieldNo(entity)»; "Search Description"; Code[100])
 		{
 			Caption = 'Search Description';
 		}
-		field(«management.getNewFieldNo(templateType.field.entity)»; "Description 2"; Text[50])
+		field(«management.getNewFieldNo(entity)»; "Description 2"; Text[50])
 		{
 			Caption = 'Description 2';
 		}
 	'''
 
-	static def dispatch doGenerateTableFields(TemplateDimensions templateType) '''
-		field(«management.getNewFieldNo(templateType.field.entity)»; "Global Dimension 1 Code"; Code[20])
+	static def dispatch doGenerateTableFields(TemplateDimensions templateType, Entity entity) '''
+		field(«management.getNewFieldNo(entity)»; "Global Dimension 1 Code"; Code[20])
 		{
 			CaptionClass = '1,1,1';
 			Caption = 'Global Dimension 1 Code';
@@ -143,7 +143,7 @@ class TemplateTypeExtensions {
 				ValidateShortcutDimCode(1, "Global Dimension 1 Code");
 			end;
 		}
-		field(«management.getNewFieldNo(templateType.field.entity)»; "Global Dimension 2 Code"; Code[20])
+		field(«management.getNewFieldNo(entity)»; "Global Dimension 2 Code"; Code[20])
 		{
 			CaptionClass = '1,1,2';
 			Caption = 'Global Dimension 2 Code';
@@ -156,8 +156,8 @@ class TemplateTypeExtensions {
 		}
 	'''
 	
-	static def dispatch doGenerateTableFields(TemplateSalesperson templateType) '''
-		field(«management.getNewFieldNo(templateType.field.entity)»; "Salesperson Code"; Code[20])
+	static def dispatch doGenerateTableFields(TemplateSalesperson templateType, Entity entity) '''
+		field(«management.getNewFieldNo(entity)»; "Salesperson Code"; Code[20])
 		{
 			Caption = 'Salesperson Code';
 			TableRelation = "Salesperson/Purchaser";
@@ -169,16 +169,16 @@ class TemplateTypeExtensions {
 		}
 	'''
 	
-	static def dispatch doGenerateTableFields(TemplateAddress templateType) '''
-		field(«management.getNewFieldNo(templateType.field.entity)»; Address; Text[100])
+	static def dispatch doGenerateTableFields(TemplateAddress templateType, Entity entity) '''
+		field(«management.getNewFieldNo(entity)»; Address; Text[100])
 		{
 			Caption = 'Address';
 		}
-		field(«management.getNewFieldNo(templateType.field.entity)»; "Address 2"; Text[50])
+		field(«management.getNewFieldNo(entity)»; "Address 2"; Text[50])
 		{
 			Caption = 'Address 2';
 		}
-		field(«management.getNewFieldNo(templateType.field.entity)»; City; Text[30])
+		field(«management.getNewFieldNo(entity)»; City; Text[30])
 		{
 			Caption = 'City';
 			TableRelation = if ("Country/Region Code" = const('')) "Post Code".City
@@ -200,7 +200,7 @@ class TemplateTypeExtensions {
 			PostCode.ValidateCity(City, "Post Code", County, "Country/Region Code", (CurrFieldNo <> 0) and GuiAllowed);
 			end;
 		}
-		field(«management.getNewFieldNo(templateType.field.entity)»; "Country/Region Code"; Code[10])
+		field(«management.getNewFieldNo(entity)»; "Country/Region Code"; Code[10])
 		{
 			Caption = 'Country/Region Code';
 			TableRelation = "Country/Region";
@@ -210,7 +210,7 @@ class TemplateTypeExtensions {
 				PostCode.CheckClearPostCodeCityCounty(City, "Post Code", County, "Country/Region Code", xRec."Country/Region Code");
 			end;
 		}
-		field(«management.getNewFieldNo(templateType.field.entity)»; "Post Code"; Code[20])
+		field(«management.getNewFieldNo(entity)»; "Post Code"; Code[20])
 		{
 			Caption = 'Post Code';
 			TableRelation = if ("Country/Region Code" = const('')) "Post Code"
@@ -232,36 +232,36 @@ class TemplateTypeExtensions {
 				PostCode.ValidatePostCode(City, "Post Code", County, "Country/Region Code", (CurrFieldNo <> 0) and GuiAllowed);
 			end;
 		}
-		field(«management.getNewFieldNo(templateType.field.entity)»; County; Text[30])
+		field(«management.getNewFieldNo(entity)»; County; Text[30])
 		{
 			CaptionClass = '5,1,' + "Country/Region Code";
 			Caption = 'County';
 		}
 	'''
 	
-	static def dispatch doGenerateTableFields(TemplateContactInfo templateType) '''
-		field(«management.getNewFieldNo(templateType.field.entity)»; "Contact Person"; Text[50])
+	static def dispatch doGenerateTableFields(TemplateContactInfo templateType, Entity entity) '''
+		field(«management.getNewFieldNo(entity)»; "Contact Person"; Text[50])
 		{
 			Caption = 'Contact Person';
 		}
-		field(«management.getNewFieldNo(templateType.field.entity)»; "Phone No."; Text[30])
+		field(«management.getNewFieldNo(entity)»; "Phone No."; Text[30])
 		{
 			Caption = 'Phone No.';
 			ExtendedDatatype = PhoneNo;
 		}
-		field(«management.getNewFieldNo(templateType.field.entity)»; "Telex No."; Text[30])
+		field(«management.getNewFieldNo(entity)»; "Telex No."; Text[30])
 		{
 			Caption = 'Telex No.';
 		}
-		field(«management.getNewFieldNo(templateType.field.entity)»; "Fax No."; Text[30])
+		field(«management.getNewFieldNo(entity)»; "Fax No."; Text[30])
 		{
 			Caption = 'Fax No.';
 		}
-		field(«management.getNewFieldNo(templateType.field.entity)»; "Telex Answer Back"; Text[20])
+		field(«management.getNewFieldNo(entity)»; "Telex Answer Back"; Text[20])
 		{
 			Caption = 'Telex Answer Back';
 		}
-		field(«management.getNewFieldNo(templateType.field.entity)»; "E-Mail"; Text[80])
+		field(«management.getNewFieldNo(entity)»; "E-Mail"; Text[80])
 		{
 			Caption = 'Email';
 			ExtendedDatatype = EMail;
@@ -273,7 +273,7 @@ class TemplateTypeExtensions {
 				MailManagement.ValidateEmailAddressField("E-Mail");
 			end;
 		}
-		field(«management.getNewFieldNo(templateType.field.entity)»; "Home Page"; Text[80])
+		field(«management.getNewFieldNo(entity)»; "Home Page"; Text[80])
 		{
 			Caption = 'Home Page';
 			ExtendedDatatype = URL;

@@ -8,6 +8,7 @@ import org.eclipse.xtext.validation.EValidatorRegistrar
 
 import static extension de.joneug.mdal.extensions.IncludeFieldExtensions.*
 import static extension de.joneug.mdal.extensions.StringExtensions.*
+import static extension de.joneug.mdal.extensions.EntityExtensions.*
 
 class IncludeFieldValidator extends AbstractDeclarativeValidator {
 	
@@ -23,7 +24,7 @@ class IncludeFieldValidator extends AbstractDeclarativeValidator {
 				MdalPackage.Literals.INCLUDE_FIELD__ENTITY_NAME,
 				MdalValidator.INCLUDE_FIELD_UNKNOWN_ENTITY
 			)
-		} else if(!includeField.fieldName.isNullOrEmpty && !entity.fields.exists[it.name == includeField.fieldName]) {
+		} else if(!includeField.fieldName.isNullOrEmpty && !entity.inferredFieldNames.exists[it == includeField.fieldName]) {
 			error(
 				'''Field «includeField.entityName.saveQuote».«includeField.fieldName.saveQuote» is unknown.''',
 				MdalPackage.Literals.INCLUDE_FIELD__FIELD_NAME,

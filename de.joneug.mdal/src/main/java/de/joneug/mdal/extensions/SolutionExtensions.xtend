@@ -3,13 +3,14 @@ package de.joneug.mdal.extensions
 import de.joneug.mdal.generator.GeneratorManagement
 import de.joneug.mdal.mdal.Solution
 
+import static extension de.joneug.mdal.extensions.DocumentHeaderExtensions.*
+import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.EntityExtensions.*
+import static extension de.joneug.mdal.extensions.LedgerEntryExtensions.*
 import static extension de.joneug.mdal.extensions.MasterExtensions.*
 import static extension de.joneug.mdal.extensions.ObjectExtensions.*
 import static extension de.joneug.mdal.extensions.StringExtensions.*
-import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.SupplementalExtensions.*
-import static extension de.joneug.mdal.extensions.DocumentHeaderExtensions.*
 
 /**
  * This is an extension library for all {@link Solution objects}.
@@ -55,7 +56,8 @@ class SolutionExtensions {
 		
 		// Document
 		
-		// Journal
+		// Ledger Entry
+		solution.ledgerEntry.doGenerate
 	}
 	
 	/*
