@@ -5,6 +5,7 @@ import de.joneug.mdal.mdal.Entity
 import de.joneug.mdal.mdal.Field
 import de.joneug.mdal.mdal.IncludeField
 import de.joneug.mdal.mdal.TemplateAddress
+import de.joneug.mdal.mdal.TemplateContact
 import de.joneug.mdal.mdal.TemplateContactInfo
 import de.joneug.mdal.mdal.TemplateDescription
 import de.joneug.mdal.mdal.TemplateDimensions
@@ -15,6 +16,7 @@ import de.joneug.mdal.mdal.TemplateType
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.FieldExtensions.*
 import static extension de.joneug.mdal.extensions.IncludeFieldExtensions.*
+import static extension de.joneug.mdal.extensions.StringExtensions.*
 
 class TemplateTypeExtensions {
 	
@@ -123,7 +125,7 @@ class TemplateTypeExtensions {
 			}
 		'''
 	}
-	
+		
 	static def dispatch doGenerateTableFields(TemplateDescription templateType, IncludeField includeField) {
 		var entity = templateType.field.entity
 		var prefix = ''
@@ -183,25 +185,6 @@ class TemplateTypeExtensions {
 				trigger OnValidate()
 				begin
 					ValidateShortcutDimCode(2, "Global Dimension 2 Code");
-				end;
-			}
-		'''
-	}
-	
-	static def dispatch doGenerateTableFields(TemplateSalesperson templateType, IncludeField includeField) {
-		var entity = templateType.field.entity
-		if(includeField !== null) {
-			entity = includeField.getContainerOfType(Entity)
-		}
-		return '''
-			field(«management.getNewFieldNo(entity)»; "Salesperson Code"; Code[20])
-			{
-				Caption = 'Salesperson Code';
-				TableRelation = "Salesperson/Purchaser";
-				
-				trigger OnValidate()
-				begin
-					ValidateSalesPersonCode();
 				end;
 			}
 		'''
@@ -330,6 +313,76 @@ class TemplateTypeExtensions {
 			{
 				Caption = '«prefix»Home Page';
 				ExtendedDatatype = URL;
+			}
+		'''
+	}
+	
+	static def dispatch doGenerateTableFields(TemplateSalesperson templateType, IncludeField includeField) {
+		var entity = templateType.field.entity
+		if(includeField !== null) {
+			entity = includeField.getContainerOfType(Entity)
+		}
+		return '''
+			field(«management.getNewFieldNo(entity)»; "Salesperson Code"; Code[20])
+			{
+				Caption = 'Salesperson Code';
+				TableRelation = "Salesperson/Purchaser";
+				
+				trigger OnValidate()
+				begin
+					ValidateSalesPersonCode();
+				end;
+			}
+		'''
+	}
+	
+	static def dispatch doGenerateTableFields(TemplateContact templateType, IncludeField includeField) {
+		var entity = templateType.field.entity
+		var fieldName = templateType.field.name
+		if(includeField !== null) {
+			entity = includeField.getContainerOfType(Entity)
+			fieldName = includeField.name
+		}
+		return '''
+			field(«management.getNewFieldNo(entity)»; «fieldName.saveQuote»; Code[20])
+			{
+				Caption = '«fieldName»';
+				TableRelation = Contact;
+				
+				trigger OnLookup()
+				var
+					Cont: Record Contact;
+					ContBusinessRelation: Record "Contact Business Relation";
+				begin
+					if «fieldName.saveQuote» <> '' then
+						if Cont.Get(«fieldName.saveQuote») then
+							Cont.SetRange("Company No.", Cont."Company No.")
+						else
+							if ContBusinessRelation.FindByRelation(ContBusinessRelation."Link to Table"::Customer, «fieldName.saveQuote») then
+								Cont.SetRange("Company No.", ContBusinessRelation."Contact No.")
+							else
+								Cont.SetRange("No.", '');
+					
+					if «fieldName.saveQuote» <> '' then
+						if Cont.Get(«fieldName.saveQuote») then;
+					if PAGE.RunModal(0, Cont) = ACTION::LookupOK then begin
+						xRec := Rec;
+						Validate(«fieldName.saveQuote», Cont."No.");
+					end;
+				end;
+				
+				trigger OnValidate()
+				var
+					ContBusinessRelation: Record "Contact Business Relation";
+					Cont: Record Contact;
+				begin
+					if «fieldName.saveQuote» = xRec.«fieldName.saveQuote» then
+						exit;
+					
+					if «fieldName.saveQuote» <> '' then
+						if Cont.Get(«fieldName.saveQuote») then
+							Cont.CheckIfPrivacyBlockedGeneric;
+				end;
 			}
 		'''
 	}

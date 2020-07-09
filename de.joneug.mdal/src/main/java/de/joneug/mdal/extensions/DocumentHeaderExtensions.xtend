@@ -24,6 +24,10 @@ class DocumentHeaderExtensions {
 		return header.getContainerOfType(Document)
 	}
 	
+	static def getTableName(DocumentHeader header) {
+		return header.solution.constructObjectName(header.shortName)
+	}
+	
 	static def getNamePosted(DocumentHeader header) {
 		return 'Posted ' + header.name
 	}

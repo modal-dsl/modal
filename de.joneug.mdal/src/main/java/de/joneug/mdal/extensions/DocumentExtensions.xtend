@@ -4,6 +4,7 @@ import de.joneug.mdal.generator.GeneratorManagement
 import de.joneug.mdal.mdal.Document
 
 import static extension de.joneug.mdal.extensions.DocumentHeaderExtensions.*
+import static extension de.joneug.mdal.extensions.DocumentLineExtensions.*
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.SolutionExtensions.*
 import static extension de.joneug.mdal.extensions.StringExtensions.*
@@ -88,6 +89,7 @@ class DocumentExtensions {
 	static def void doGenerate(Document document) {
 		document.saveEnum(document.statusEnumName, document.doGenerateStatusEnum)
 		document.header.doGenerate
+		document.line.doGenerate
 	}
 	
 	static def doGenerateStatusEnum(Document document) '''

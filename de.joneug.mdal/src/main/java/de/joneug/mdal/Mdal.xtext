@@ -131,7 +131,7 @@ PageField:
  * Template Types
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 TemplateType:
-	TemplateName | TemplateDescription | TemplateDimensions | TemplateAddress | TemplateContactInfo | TemplateSalesperson;
+	TemplateName | TemplateDescription | TemplateDimensions | TemplateAddress | TemplateContactInfo | TemplateSalesperson | TemplateContact;
 
 TemplateName:
 	{TemplateName} 'Name';
@@ -150,6 +150,9 @@ TemplateContactInfo:
 
 TemplateSalesperson:
 	{TemplateSalesperson} 'Salesperson';
+
+TemplateContact:
+	{TemplateContact} 'Contact';
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Field Types
