@@ -3,6 +3,7 @@ package de.joneug.mdal.extensions
 import de.joneug.mdal.generator.GeneratorManagement
 import de.joneug.mdal.mdal.Entity
 import de.joneug.mdal.mdal.Field
+import de.joneug.mdal.mdal.IncludeField
 import de.joneug.mdal.mdal.TemplateAddress
 import de.joneug.mdal.mdal.TemplateContactInfo
 import de.joneug.mdal.mdal.TemplateDescription
@@ -13,6 +14,7 @@ import de.joneug.mdal.mdal.TemplateType
 
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.FieldExtensions.*
+import static extension de.joneug.mdal.extensions.IncludeFieldExtensions.*
 
 class TemplateTypeExtensions {
 	
@@ -89,196 +91,248 @@ class TemplateTypeExtensions {
 	/*
 	 * Polymorphic dispatch for "doGenerateTableFields" on TemplateType subtypes 
 	 */
-	static def dispatch doGenerateTableFields(TemplateName templateType, Entity entity) '''
-		field(«management.getNewFieldNo(entity)»; Name; Text[100])
-		{
-			Caption = 'Name';
-			
-			trigger OnValidate()
-			begin
-				if ("Search Name" = UpperCase(xRec.Name)) or ("Search Name" = '') then
-					"Search Name" := CopyStr(Name, 1, MaxStrLen("Search Name"));
-			end;
+	static def dispatch doGenerateTableFields(TemplateName templateType, IncludeField includeField) {
+		var entity = templateType.field.entity
+		var prefix = ''
+		if(includeField !== null) {
+			entity = includeField.getContainerOfType(Entity)
+			prefix = includeField.entity.shortName + ' '
 		}
-		field(«management.getNewFieldNo(templateType.field.entity)»; "Search Name"; Code[100])
-		{
-			Caption = 'Search Name';
-		}
-		field(«management.getNewFieldNo(templateType.field.entity)»; "Name 2"; Text[50])
-		{
-			Caption = 'Name 2';
-		}
-	'''
+		return '''
+			field(«management.getNewFieldNo(entity)»; "«prefix»Name"; Text[100])
+			{
+				Caption = '«prefix»Name';
+				
+				«IF includeField === null»
+					trigger OnValidate()
+					begin
+						if ("Search Name" = UpperCase(xRec.Name)) or ("Search Name" = '') then
+							"Search Name" := CopyStr(Name, 1, MaxStrLen("Search Name"));
+					end;
+				«ENDIF»
+			}
+			«IF includeField === null»
+				field(«management.getNewFieldNo(templateType.field.entity)»; "Search Name"; Code[100])
+				{
+					Caption = 'Search Name';
+				}
+			«ENDIF»
+			field(«management.getNewFieldNo(templateType.field.entity)»; "«prefix»Name 2"; Text[50])
+			{
+				Caption = '«prefix»Name 2';
+			}
+		'''
+	}
 	
-	static def dispatch doGenerateTableFields(TemplateDescription templateType, Entity entity) '''
-		field(«management.getNewFieldNo(entity)»; Description; Text[100])
-		{
-			Caption = 'Description';
-			
-			trigger OnValidate()
-			begin
-				if ("Search Description" = UpperCase(xRec.Description)) or ("Search Description" = '') then
-					"Search Description" := CopyStr(Description, 1, MaxStrLen("Search Description"));
-			end;
+	static def dispatch doGenerateTableFields(TemplateDescription templateType, IncludeField includeField) {
+		var entity = templateType.field.entity
+		var prefix = ''
+		if(includeField !== null) {
+			entity = includeField.getContainerOfType(Entity)
+			prefix = includeField.entity.shortName + ' '
 		}
-		field(«management.getNewFieldNo(entity)»; "Search Description"; Code[100])
-		{
-			Caption = 'Search Description';
-		}
-		field(«management.getNewFieldNo(entity)»; "Description 2"; Text[50])
-		{
-			Caption = 'Description 2';
-		}
-	'''
+		return '''
+			field(«management.getNewFieldNo(entity)»; "«prefix»Description"; Text[100])
+			{
+				Caption = '«prefix»Description';
+				
+				«IF includeField === null»
+					trigger OnValidate()
+					begin
+						if ("Search Description" = UpperCase(xRec.Description)) or ("Search Description" = '') then
+							"Search Description" := CopyStr(Description, 1, MaxStrLen("Search Description"));
+					end;
+				«ENDIF»
+			}
+			«IF includeField === null»
+				field(«management.getNewFieldNo(entity)»; "Search Description"; Code[100])
+				{
+					Caption = 'Search Description';
+				}
+			«ENDIF»
+			field(«prefix»«management.getNewFieldNo(entity)»; "«prefix»Description 2"; Text[50])
+			{
+				Caption = '«prefix»Description 2';
+			}
+		'''
+	}
 
-	static def dispatch doGenerateTableFields(TemplateDimensions templateType, Entity entity) '''
-		field(«management.getNewFieldNo(entity)»; "Global Dimension 1 Code"; Code[20])
-		{
-			CaptionClass = '1,1,1';
-			Caption = 'Global Dimension 1 Code';
-			TableRelation = "Dimension Value".Code where("Global Dimension No." = const(1));
-			
-			trigger OnValidate()
-			begin
-				ValidateShortcutDimCode(1, "Global Dimension 1 Code");
-			end;
+	static def dispatch doGenerateTableFields(TemplateDimensions templateType, IncludeField includeField) {
+		var entity = templateType.field.entity
+		if(includeField !== null) {
+			entity = includeField.getContainerOfType(Entity)
 		}
-		field(«management.getNewFieldNo(entity)»; "Global Dimension 2 Code"; Code[20])
-		{
-			CaptionClass = '1,1,2';
-			Caption = 'Global Dimension 2 Code';
-			TableRelation = "Dimension Value".Code where("Global Dimension No." = const(2));
-			
-			trigger OnValidate()
-			begin
-				ValidateShortcutDimCode(2, "Global Dimension 2 Code");
-			end;
-		}
-	'''
-	
-	static def dispatch doGenerateTableFields(TemplateSalesperson templateType, Entity entity) '''
-		field(«management.getNewFieldNo(entity)»; "Salesperson Code"; Code[20])
-		{
-			Caption = 'Salesperson Code';
-			TableRelation = "Salesperson/Purchaser";
-			
-			trigger OnValidate()
-			begin
-				ValidateSalesPersonCode();
-			end;
-		}
-	'''
-	
-	static def dispatch doGenerateTableFields(TemplateAddress templateType, Entity entity) '''
-		field(«management.getNewFieldNo(entity)»; Address; Text[100])
-		{
-			Caption = 'Address';
-		}
-		field(«management.getNewFieldNo(entity)»; "Address 2"; Text[50])
-		{
-			Caption = 'Address 2';
-		}
-		field(«management.getNewFieldNo(entity)»; City; Text[30])
-		{
-			Caption = 'City';
-			TableRelation = if ("Country/Region Code" = const('')) "Post Code".City
-			else
-			if ("Country/Region Code" = filter(<> '')) "Post Code".City where("Country/Region Code" = field("Country/Region Code"));
-			ValidateTableRelation = false;
-			
-			trigger OnLookup()
-			begin
-				OnBeforeLookupCity(Rec, PostCode);
+		return '''
+			field(«management.getNewFieldNo(entity)»; "Global Dimension 1 Code"; Code[20])
+			{
+				CaptionClass = '1,1,1';
+				Caption = 'Global Dimension 1 Code';
+				TableRelation = "Dimension Value".Code where("Global Dimension No." = const(1));
 				
-				PostCode.LookupPostCode(City, "Post Code", County, "Country/Region Code");
-			end;
-			
-			trigger OnValidate()
-			begin
-			OnBeforeValidateCity(Rec, PostCode);
-			
-			PostCode.ValidateCity(City, "Post Code", County, "Country/Region Code", (CurrFieldNo <> 0) and GuiAllowed);
-			end;
-		}
-		field(«management.getNewFieldNo(entity)»; "Country/Region Code"; Code[10])
-		{
-			Caption = 'Country/Region Code';
-			TableRelation = "Country/Region";
-			
-			trigger OnValidate()
-			begin
-				PostCode.CheckClearPostCodeCityCounty(City, "Post Code", County, "Country/Region Code", xRec."Country/Region Code");
-			end;
-		}
-		field(«management.getNewFieldNo(entity)»; "Post Code"; Code[20])
-		{
-			Caption = 'Post Code';
-			TableRelation = if ("Country/Region Code" = const('')) "Post Code"
-			else
-			if ("Country/Region Code" = filter(<> '')) "Post Code" where("Country/Region Code" = field("Country/Region Code"));
-			ValidateTableRelation = false;
-			
-			trigger OnLookup()
-			begin
-				OnBeforeLookupPostCode(Rec, PostCode);
+				trigger OnValidate()
+				begin
+					ValidateShortcutDimCode(1, "Global Dimension 1 Code");
+				end;
+			}
+			field(«management.getNewFieldNo(entity)»; "Global Dimension 2 Code"; Code[20])
+			{
+				CaptionClass = '1,1,2';
+				Caption = 'Global Dimension 2 Code';
+				TableRelation = "Dimension Value".Code where("Global Dimension No." = const(2));
 				
-				PostCode.LookupPostCode(City, "Post Code", County, "Country/Region Code");
-			end;
-			
-			trigger OnValidate()
-			begin
-				OnBeforeValidatePostCode(Rec, PostCode);
-				
-				PostCode.ValidatePostCode(City, "Post Code", County, "Country/Region Code", (CurrFieldNo <> 0) and GuiAllowed);
-			end;
-		}
-		field(«management.getNewFieldNo(entity)»; County; Text[30])
-		{
-			CaptionClass = '5,1,' + "Country/Region Code";
-			Caption = 'County';
-		}
-	'''
+				trigger OnValidate()
+				begin
+					ValidateShortcutDimCode(2, "Global Dimension 2 Code");
+				end;
+			}
+		'''
+	}
 	
-	static def dispatch doGenerateTableFields(TemplateContactInfo templateType, Entity entity) '''
-		field(«management.getNewFieldNo(entity)»; "Contact Person"; Text[50])
-		{
-			Caption = 'Contact Person';
+	static def dispatch doGenerateTableFields(TemplateSalesperson templateType, IncludeField includeField) {
+		var entity = templateType.field.entity
+		if(includeField !== null) {
+			entity = includeField.getContainerOfType(Entity)
 		}
-		field(«management.getNewFieldNo(entity)»; "Phone No."; Text[30])
-		{
-			Caption = 'Phone No.';
-			ExtendedDatatype = PhoneNo;
+		return '''
+			field(«management.getNewFieldNo(entity)»; "Salesperson Code"; Code[20])
+			{
+				Caption = 'Salesperson Code';
+				TableRelation = "Salesperson/Purchaser";
+				
+				trigger OnValidate()
+				begin
+					ValidateSalesPersonCode();
+				end;
+			}
+		'''
+	}
+	
+	static def dispatch doGenerateTableFields(TemplateAddress templateType, IncludeField includeField) {
+		var entity = templateType.field.entity
+		var prefix = ''
+		if(includeField !== null) {
+			entity = includeField.getContainerOfType(Entity)
+			prefix = includeField.entity.shortName + ' '
 		}
-		field(«management.getNewFieldNo(entity)»; "Telex No."; Text[30])
-		{
-			Caption = 'Telex No.';
+		return '''
+			field(«management.getNewFieldNo(entity)»; "«prefix»Address"; Text[100])
+			{
+				Caption = '«prefix»Address';
+			}
+			field(«management.getNewFieldNo(entity)»; "«prefix»Address 2"; Text[50])
+			{
+				Caption = '«prefix»Address 2';
+			}
+			field(«management.getNewFieldNo(entity)»; "«prefix»City"; Text[30])
+			{
+				Caption = '«prefix»City';
+				TableRelation = if ("«prefix»Country/Region Code" = const('')) "Post Code".City
+				else
+				if ("«prefix»Country/Region Code" = filter(<> '')) "Post Code".City where("Country/Region Code" = field("«prefix»Country/Region Code"));
+				ValidateTableRelation = false;
+				
+				trigger OnLookup()
+				begin
+					OnBeforeLookupCity(Rec, PostCode);
+					
+					PostCode.LookupPostCode("«prefix»City", "«prefix»Post Code", "«prefix»County", "«prefix»Country/Region Code");
+				end;
+				
+				trigger OnValidate()
+				begin
+				OnBeforeValidateCity(Rec, PostCode);
+				
+				PostCode.ValidateCity("«prefix»City", "«prefix»Post Code", "«prefix»County", "«prefix»Country/Region Code", (CurrFieldNo <> 0) and GuiAllowed);
+				end;
+			}
+			field(«management.getNewFieldNo(entity)»; "«prefix»Country/Region Code"; Code[10])
+			{
+				Caption = '«prefix»Country/Region Code';
+				TableRelation = "Country/Region";
+				
+				trigger OnValidate()
+				begin
+					PostCode.CheckClearPostCodeCityCounty("«prefix»City", "«prefix»Post Code", "«prefix»County", "«prefix»Country/Region Code", xRec."«prefix»Country/Region Code");
+				end;
+			}
+			field(«management.getNewFieldNo(entity)»; "«prefix»Post Code"; Code[20])
+			{
+				Caption = '«prefix»Post Code';
+				TableRelation = if ("«prefix»Country/Region Code" = const('')) "Post Code"
+				else
+				if ("«prefix»Country/Region Code" = filter(<> '')) "Post Code" where("Country/Region Code" = field("«prefix»Country/Region Code"));
+				ValidateTableRelation = false;
+				
+				trigger OnLookup()
+				begin
+					OnBeforeLookupPostCode(Rec, PostCode);
+					
+					PostCode.LookupPostCode("«prefix»City", "«prefix»Post Code", "«prefix»County", "«prefix»Country/Region Code");
+				end;
+				
+				trigger OnValidate()
+				begin
+					OnBeforeValidatePostCode(Rec, PostCode);
+					
+					PostCode.ValidatePostCode("«prefix»City", "«prefix»Post Code", "«prefix»County", "«prefix»Country/Region Code", (CurrFieldNo <> 0) and GuiAllowed);
+				end;
+			}
+			field(«management.getNewFieldNo(entity)»; "«prefix»County"; Text[30])
+			{
+				CaptionClass = '5,1,' + "«prefix»Country/Region Code";
+				Caption = '«prefix»County';
+			}
+		'''
+	}
+	
+	static def dispatch doGenerateTableFields(TemplateContactInfo templateType, IncludeField includeField) {
+		var entity = templateType.field.entity
+		var prefix = ''
+		if(includeField !== null) {
+			entity = includeField.getContainerOfType(Entity)
+			prefix = includeField.entity.shortName + ' '
 		}
-		field(«management.getNewFieldNo(entity)»; "Fax No."; Text[30])
-		{
-			Caption = 'Fax No.';
-		}
-		field(«management.getNewFieldNo(entity)»; "Telex Answer Back"; Text[20])
-		{
-			Caption = 'Telex Answer Back';
-		}
-		field(«management.getNewFieldNo(entity)»; "E-Mail"; Text[80])
-		{
-			Caption = 'Email';
-			ExtendedDatatype = EMail;
-			
-			trigger OnValidate()
-			var
-				MailManagement: Codeunit "Mail Management";
-			begin
-				MailManagement.ValidateEmailAddressField("E-Mail");
-			end;
-		}
-		field(«management.getNewFieldNo(entity)»; "Home Page"; Text[80])
-		{
-			Caption = 'Home Page';
-			ExtendedDatatype = URL;
-		}
-	'''
+		return '''
+			field(«management.getNewFieldNo(entity)»; "«prefix»Contact Person"; Text[50])
+			{
+				Caption = '«prefix»Contact Person';
+			}
+			field(«management.getNewFieldNo(entity)»; "«prefix»Phone No."; Text[30])
+			{
+				Caption = '«prefix»Phone No.';
+				ExtendedDatatype = PhoneNo;
+			}
+			field(«management.getNewFieldNo(entity)»; "«prefix»Telex No."; Text[30])
+			{
+				Caption = '«prefix»Telex No.';
+			}
+			field(«management.getNewFieldNo(entity)»; "«prefix»Fax No."; Text[30])
+			{
+				Caption = '«prefix»Fax No.';
+			}
+			field(«management.getNewFieldNo(entity)»; "«prefix»Telex Answer Back"; Text[20])
+			{
+				Caption = '«prefix»Telex Answer Back';
+			}
+			field(«management.getNewFieldNo(entity)»; "«prefix»E-Mail"; Text[80])
+			{
+				Caption = '«prefix»Email';
+				ExtendedDatatype = EMail;
+				
+				trigger OnValidate()
+				var
+					MailManagement: Codeunit "Mail Management";
+				begin
+					MailManagement.ValidateEmailAddressField("«prefix»E-Mail");
+				end;
+			}
+			field(«management.getNewFieldNo(entity)»; "«prefix»Home Page"; Text[80])
+			{
+				Caption = '«prefix»Home Page';
+				ExtendedDatatype = URL;
+			}
+		'''
+	}
 	
 	/*
 	 * Polymorphic dispatch for "doGeneratePageFields" on TemplateType subtypes 

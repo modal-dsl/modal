@@ -2,8 +2,12 @@ package de.joneug.mdal.extensions
 
 import de.joneug.mdal.generator.GeneratorManagement
 import de.joneug.mdal.mdal.CustomField
+import de.joneug.mdal.mdal.DocumentHeader
 import de.joneug.mdal.mdal.Entity
 import de.joneug.mdal.mdal.IncludeField
+import de.joneug.mdal.mdal.LedgerEntry
+import de.joneug.mdal.mdal.Master
+import de.joneug.mdal.mdal.Supplemental
 
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.EntityExtensions.*
@@ -39,6 +43,15 @@ class IncludeFieldExtensions {
 		val field = includeField.field
 		
 		if(field === null && includeField.fieldName == 'No.') {
+			// Master entity is automatically included in LedgerEntry and DocumentHeader
+			if(includeField.entity instanceof Master && (containerEntity instanceof LedgerEntry || containerEntity instanceof DocumentHeader)) {
+				return ''''''
+			}
+			// DocumentHeader entity is automatically included in LedgerEntry
+			if(includeField.entity instanceof DocumentHeader && containerEntity instanceof LedgerEntry) {
+				return ''''''
+			}
+			
 			return '''
 				field(«management.getNewFieldNo(containerEntity)»; «includeField.name.saveQuote»; Code[20])
 				{
@@ -47,6 +60,11 @@ class IncludeFieldExtensions {
 				}
 			'''
 		} else if(field === null && includeField.fieldName == 'Code') {
+			// IncludeFields for Supplemental entities are handled in DocumentHeaderExtensions
+			if(includeField.entity instanceof Supplemental && containerEntity instanceof DocumentHeader) {
+				return ''''''
+			}
+			
 			return '''
 				field(«management.getNewFieldNo(containerEntity)»; «includeField.name.saveQuote»; Code[10])
 				{
@@ -55,9 +73,9 @@ class IncludeFieldExtensions {
 				}
 			'''
 		} else if(field instanceof CustomField) {
-			return field.doGenerateTableField(includeField.name, containerEntity)
+			return field.doGenerateTableField(includeField)
 		} else {
-			return includeField.field.doGenerateTableField(containerEntity)
+			return includeField.field.doGenerateTableField(includeField)
 		}
 	}
 

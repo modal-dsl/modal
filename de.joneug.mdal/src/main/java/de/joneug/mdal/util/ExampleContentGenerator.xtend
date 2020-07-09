@@ -55,6 +55,7 @@ class ExampleContentGenerator {
 				
 				header "Seminar Registration Header" {
 					ShortName = "Seminar Reg. Header";
+					StatusCaptions = ["Planning", "Registration", "Closed", "Canceled"];
 				}
 				
 				line "Seminar Registration Line" {
@@ -107,6 +108,7 @@ class ExampleContentGenerator {
 				
 				header "Seminar Registration Header" {
 					ShortName = "Sem. Reg. Header";
+					StatusCaptions = ["Planning", "Registration", "Closed", "Canceled"];
 				}
 				
 				line "Seminar Registration Header" {

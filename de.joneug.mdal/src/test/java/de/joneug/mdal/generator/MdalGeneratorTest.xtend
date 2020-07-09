@@ -62,7 +62,7 @@ class MdalGeneratorTest {
 				'table 123456702 "SEM Seminar"',
 				'DataCaptionFields = Description, "No.";',
 				'DrillDownPageID = "SEM Seminar List";',
-				'field(3; Description; Text[100])',
+				'field(3; "Description"; Text[100])',
 				'field(6; "Duration Days"; Decimal)',
 				'key(Key2; "Search Description") { }',
 				'fieldgroup(DropDown; Description, "Description 2", "No.") { }',
@@ -80,7 +80,7 @@ class MdalGeneratorTest {
 				'page 123456700 "SEM Seminar Setup"',
 				'SourceTable = "SEM Seminar Setup";',
 				'group(General)',
-				'field(CopyComments; "Copy Comments")',
+				'field("Copy Comments"; "Copy Comments")',
 				'group("Number Series")'
 			]
 		)

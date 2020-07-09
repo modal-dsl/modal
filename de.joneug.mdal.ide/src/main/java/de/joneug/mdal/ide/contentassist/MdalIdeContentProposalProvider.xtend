@@ -66,7 +66,7 @@ class MdalIdeContentProposalProvider extends IdeContentProposalProvider {
 					addProposal(context, acceptor, it, ContentAssistEntry.KIND_FIELD)
 				]
 			}
-			case ga.customFieldAccess.tableRelationAssignment_6_1_1_2: {
+			case ga.customFieldAccess.tableRelationAssignment_6_1_2: {
 				management.symbolReferences.forEach [symbolReference |
 					var tables = symbolReference.tables
 					

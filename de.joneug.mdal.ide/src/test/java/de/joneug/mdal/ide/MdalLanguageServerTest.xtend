@@ -48,18 +48,99 @@ class MdalLanguageServerTest extends AbstractLanguageServerTest {
 	}
 	
 	@Test
-	def void testCompletion() {
+	def void testIncludeFieldEntityCompletion() {
     	testCompletion [
-	        model = ExampleContentGenerator.generateCorrectModel.toString
-	        line = 65
-	        column = 44
+	        model = '''
+	        	solution "Seminar Management" {
+	        		master "Seminar" {
+	        			ShortName = "Sem.";
+	        			
+	        			fields { 
+	        				template("Description" ; Description)
+	        				field("Minimum Participants"; Integer)
+	        			}
+	        		}
+	        		
+	        		supplemental "Seminar Room" {
+	        			ShortName = "Sem. Room";
+	        			
+	        			fields {
+	        				template("Name"; Name)
+	        			}
+	        		}
+	        		
+	        		supplemental "Instructor" {
+	        			ShortName = "Inst.";
+	        			
+	        			fields {
+	        				template("Name"; Name)
+	        			}
+	        		}
+	        		
+	        		document "Seminar Registration" {
+	        			ShortName = "Sem. Reg.";
+	        			
+	        			header "Seminar Registration Header" {
+	        				ShortName = "Seminar Reg. Header";
+	        				StatusCaptions = ["Planning", "Registration", "Closed", "Canceled"];
+	        			}
+	        			
+	        			line "Seminar Registration Line" {
+	        				ShortName = "Seminar Reg. Line";
+	        			}
+	        		}
+	        		
+	        		ledgerEntry "Seminar Ledger Entry" {
+	        			ShortName = "Sem. Ledger Entry";
+	        			
+	        			fields {
+	        				include("Language Code"; "Seminar"."Language Code")
+	        			}
+	        		}
+	        	}
+	        '''
+	        line = 43
+	        column = 28
 	        expectedCompletionItems = '''
 	            "Instructor" -> "Instructor" [[«line», «column»] .. [«line», «column»]]
 	            "Seminar Registration Header" -> "Seminar Registration Header" [[«line», «column»] .. [«line», «column»]]
 	            "Seminar Registration Line" -> "Seminar Registration Line" [[«line», «column»] .. [«line», «column»]]
 	            "Seminar Room" -> "Seminar Room" [[«line», «column»] .. [«line», «column»]]
 	            "Seminar" -> "Seminar" [[«line», «column»] .. [«line», «column»]]
-	            . -> . [[«line», «column»] .. [«line», «column»]]
+	        '''
+    	]
+	}
+	
+	@Test
+	def void testIncludeFieldFieldCompletion() {
+		testCompletion [
+	        model = '''
+	        	solution "Seminar Management" {
+	        		master "Seminar" {
+	        			ShortName = "Sem.";
+	        			
+	        			fields { 
+	        				template("Description" ; Description)
+	        				field("Minimum Participants"; Integer)
+	        			}
+	        		}
+	        		
+	        		ledgerEntry "Seminar Ledger Entry" {
+	        			ShortName = "Sem. Ledger Entry";
+	        			
+	        			fields {
+	        				include("Language Code"; "Seminar"."Language Code")
+	        			}
+	        		}
+	        	}
+	        '''
+	        line = 14
+	        column = 38
+	        expectedCompletionItems = '''
+	            "Description" -> "Description" [[«line», «column»] .. [«line», «column»]]
+	            "Minimum Participants" -> "Minimum Participants" [[«line», «column»] .. [«line», «column»]]
+	            "No." -> "No." [[«line», «column»] .. [«line», «column»]]
+	            . -> . [[«line», «column - 1»] .. [«line», «column»]]
 	        '''
     	]
 	}
@@ -67,7 +148,9 @@ class MdalLanguageServerTest extends AbstractLanguageServerTest {
 	@Test
 	def void testHoverOnKeyword() {
 		testHover[
-			model = ExampleContentGenerator.generateCorrectModel.toString
+			model = '''
+				solution "Seminar Management" {}
+			'''
 			line = 0
 			column = 0
 			expectedHover = '''
@@ -81,8 +164,24 @@ class MdalLanguageServerTest extends AbstractLanguageServerTest {
 	@Test
 	def void testHoverOnEntity() {
 		testHover[
-			model = ExampleContentGenerator.generateCorrectModel.toString
-			line = 3
+			model = '''
+				solution "Seminar Management" {
+					master "Seminar" {
+						ShortName = "Sem.";
+						
+						fields { 
+							field("Picture"; Media)
+							template("Description" ; Description)
+							field("Duration Days"; Decimal)
+							field("Minimum Participants"; Integer)
+							field("Maximum Participants"; Integer)
+							field("Language Code"; Code[10])
+							field("Seminar Price"; Decimal)
+						}
+					}
+				}
+			'''
+			line = 1
 			column = 1
 			expectedHover = '''
 				[[«line», «column»] .. [«line», «column + 6»]]
@@ -105,7 +204,19 @@ class MdalLanguageServerTest extends AbstractLanguageServerTest {
 	@Test
 	def void testCodeAction() {
 		testCodeAction[
-			model = ExampleContentGenerator.generateModelWithErrors.toString
+			model = '''
+				solution "Seminar Management" {
+					master "Seminar" {
+						ShortName = "Sem.";
+						
+						fields { 
+							field("Language Code"; Code[10]) {
+								TableRelation = "Language1";
+							}
+						}
+					}
+				}
+			'''
 			expectedCodeActions = '''
 				title : Add Description field.
 				kind : quickfix
@@ -113,7 +224,7 @@ class MdalLanguageServerTest extends AbstractLanguageServerTest {
 				codes : e-name-description
 				edit : changes :
 				    MyModel.mdal : template("Description"; Description)
-				                 [[7, 3] .. [7, 3]]
+				                 [[5, 3] .. [5, 3]]
 				documentChanges : 
 				title : Add Name field.
 				kind : quickfix
@@ -121,7 +232,7 @@ class MdalLanguageServerTest extends AbstractLanguageServerTest {
 				codes : e-name-description
 				edit : changes :
 				    MyModel.mdal : template("Name"; Name)
-				                 [[7, 3] .. [7, 3]]
+				                 [[5, 3] .. [5, 3]]
 				documentChanges : 
 				title : Load symbol references.
 				kind : quickfix

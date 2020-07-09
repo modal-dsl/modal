@@ -1,7 +1,7 @@
 package de.joneug.mdal.extensions
 
-import java.text.Normalizer
 import com.google.common.base.Strings
+import java.text.Normalizer
 
 /**
  * This is an extension library for all {@link String objects}.
@@ -18,6 +18,10 @@ class StringExtensions {
 	
 	static def toOnlyAlphabetic(String input) {
 		return Normalizer.normalize(input, Normalizer.Form.NFD).replaceAll("[^a-zA-Z ]", "")
+	}
+	
+	def static clean(String input) {
+		return input.toOnlyAlphabetic.removeSpaces
 	}
 	
 	static def boolean isLetterOrDigit(String input) {
@@ -45,27 +49,27 @@ class StringExtensions {
 	}
 	
 	def static toTableFileName(String tableName) {
-		return tableName.removeSpaces + '.Table.al'
+		return tableName.clean + '.Table.al'
 	}
 
 	def static toPageFileName(String pageName) {
-		return pageName.removeSpaces + '.Page.al'
+		return pageName.clean + '.Page.al'
 	}
 	
 	def static toCodeunitFileName(String codeunitName) {
-		return codeunitName.removeSpaces + '.Codeunit.al'
+		return codeunitName.clean + '.Codeunit.al'
 	}
 	
 	def static toEnumFileName(String enumName) {
-		return enumName.removeSpaces + '.Enum.al'
+		return enumName.clean + '.Enum.al'
 	}
 	
 	def static toEnumExtFileName(String enumExtName) {
-		return enumExtName.removeSpaces + '.EnumExt.al'
+		return enumExtName.clean + '.EnumExt.al'
 	}
 	
 	def static toTableExtFileName(String tableExtName) {
-		return tableExtName.removeSpaces + '.TableExt.al'
+		return tableExtName.clean + '.TableExt.al'
 	}
 	
 }

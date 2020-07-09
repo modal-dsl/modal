@@ -23,13 +23,5 @@ class CustomFieldExtensions {
 		}
 		return customField.enumName.toEnumFileName
 	}
-	
-	static def getInferredCaption(CustomField customField) {
-		if(customField.caption.isNullOrEmpty) {
-			return customField.name			
-		} else {
-			return customField.caption
-		}
-	}
 
 }

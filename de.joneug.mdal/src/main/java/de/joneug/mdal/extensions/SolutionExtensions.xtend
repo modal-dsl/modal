@@ -3,6 +3,7 @@ package de.joneug.mdal.extensions
 import de.joneug.mdal.generator.GeneratorManagement
 import de.joneug.mdal.mdal.Solution
 
+import static extension de.joneug.mdal.extensions.DocumentExtensions.*
 import static extension de.joneug.mdal.extensions.DocumentHeaderExtensions.*
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.EntityExtensions.*
@@ -51,10 +52,11 @@ class SolutionExtensions {
 		solution.logInfo("Generating master files")
 		solution.master.doGenerate
 		
-		// Supplemental
+		// Supplementals
 		solution.supplementals.forEach[it.doGenerate]
 		
 		// Document
+		solution.document.doGenerate
 		
 		// Ledger Entry
 		solution.ledgerEntry.doGenerate
@@ -103,14 +105,14 @@ class SolutionExtensions {
 		            Caption = '«solution.master.cleanedName» Nos.';
 		            TableRelation = "No. Series";
 		        }
-		        field(3; "«solution.document.header.cleanedShortName» Nos."; Code[20])
+		        field(3; "«solution.document.shortName» Nos."; Code[20])
 		        {
-		            Caption = '«solution.document.header.name» Nos.';
+		            Caption = '«solution.document.shortName» Nos.';
 		            TableRelation = "No. Series";
 		        }
-		        field(4; "Posted «solution.document.header.cleanedShortName» Nos."; Code[20])
+		        field(4; "«solution.document.shortNamePosted» Nos."; Code[20])
 		        {
-		            Caption = 'Posted «solution.document.header.cleanedShortName» Nos.';
+		            Caption = '«solution.document.shortNamePosted» Nos.';
 		            TableRelation = "No. Series";
 		        }
 		        field(10; "Copy Comments"; Boolean)
@@ -161,7 +163,7 @@ class SolutionExtensions {
 		            {
 		                Caption = 'General';
 		
-		                field(CopyComments; "Copy Comments")
+		                field("Copy Comments"; "Copy Comments")
 		                {
 		                    ApplicationArea = All;
 		                }
@@ -170,15 +172,15 @@ class SolutionExtensions {
 		            {
 		                Caption = 'Number Series';
 		
-		                field("«solution.master.cleanedName» Nos."; "«solution.master.cleanedName» Nos.")
+		                field("«solution.master.name» Nos."; "«solution.master.name» Nos.")
 		                {
 		                    ApplicationArea = All;
 		                }
-		                field(«solution.document.header.cleanedShortName»Nos; "«solution.document.header.cleanedShortName» Nos.")
+		                field("«solution.document.shortName» Nos."; "«solution.document.shortName» Nos.")
 		                {
 		                    ApplicationArea = All;
 		                }
-		                field(Posted«solution.document.header.cleanedShortName»Nos; "Posted «solution.document.header.cleanedShortName» Nos.")
+		                field("«solution.document.shortNamePosted» Nos."; "«solution.document.shortNamePosted» Nos.")
 		                {
 		                    ApplicationArea = All;
 		                }
@@ -252,8 +254,8 @@ class SolutionExtensions {
 		{
 			Extensible = true;
 			
-			value(0; «document.header.name.saveQuote») { Caption = '«document.header.name»'; }
-			value(1; "Posted «document.header.name»") { Caption = 'Posted «document.header.name»'; }
+			value(0; «document.name.saveQuote») { Caption = '«document.name»'; }
+			value(1; «document.namePosted.saveQuote») { Caption = '«document.namePosted»'; }
 		}
 	'''
 	
@@ -564,9 +566,9 @@ class SolutionExtensions {
 		{
 		    fields
 		    {
-		        field(50000; "«solution.document.header.tableName»"; Code[10])
+		        field(50000; «document.name.saveQuote»; Code[10])
 		        {
-		            Caption = '«document.header.name»';
+		            Caption = '«document.name»';
 		            TableRelation = "Source Code";
 		        }
 		    }

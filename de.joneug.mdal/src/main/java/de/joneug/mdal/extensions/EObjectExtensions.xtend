@@ -46,29 +46,29 @@ class EObjectExtensions {
 		return object.getContainerOfType(Solution)
 	}
 	
-	static def saveTable(EObject object, String fileName, CharSequence fileContent) {
-		management.generatorFsa.generateFile(MdalGenerator.TABLE_PATH + '/' + fileName.toTableFileName, fileContent)
+	static def saveTable(EObject object, String objectName, CharSequence fileContent) {
+		management.generatorFsa.generateFile(MdalGenerator.TABLE_PATH + '/' + objectName.toTableFileName, fileContent)
 	}
 	
-	static def savePage(EObject object, String fileName, CharSequence fileContent) {
-		management.generatorFsa.generateFile(MdalGenerator.PAGE_PATH + '/' + fileName.toPageFileName, fileContent)
+	static def savePage(EObject object, String objectName, CharSequence fileContent) {
+		management.generatorFsa.generateFile(MdalGenerator.PAGE_PATH + '/' + objectName.toPageFileName, fileContent)
 	}
 	
-	static def saveCodeunit(EObject object, String fileName, CharSequence fileContent) {
-		management.generatorFsa.generateFile(MdalGenerator.CODEUNIT_PATH + '/' + fileName.toCodeunitFileName, fileContent)
+	static def saveCodeunit(EObject object, String objectName, CharSequence fileContent) {
+		management.generatorFsa.generateFile(MdalGenerator.CODEUNIT_PATH + '/' + objectName.toCodeunitFileName, fileContent)
 	}
 	
-	static def saveEnum(EObject object, String fileName, CharSequence fileContent) {
-		management.generatorFsa.generateFile(MdalGenerator.ENUM_PATH + '/' + fileName.toEnumFileName, fileContent
+	static def saveEnum(EObject object, String objectName, CharSequence fileContent) {
+		management.generatorFsa.generateFile(MdalGenerator.ENUM_PATH + '/' + objectName.toEnumFileName, fileContent
 		)
 	}
 	
-	static def saveTableExt(EObject object, String fileName, CharSequence fileContent) {
-		management.generatorFsa.generateFile(MdalGenerator.TABLE_EXT_PATH + '/' + fileName.toTableExtFileName, fileContent)
+	static def saveTableExt(EObject object, String objectName, CharSequence fileContent) {
+		management.generatorFsa.generateFile(MdalGenerator.TABLE_EXT_PATH + '/' + objectName.toTableExtFileName, fileContent)
 	}
 	
-	static def saveEnumExt(EObject object, String fileName, CharSequence fileContent) {
-		management.generatorFsa.generateFile(MdalGenerator.ENUM_EXT_PATH + '/' + fileName.toEnumExtFileName, fileContent)
+	static def saveEnumExt(EObject object, String objectName, CharSequence fileContent) {
+		management.generatorFsa.generateFile(MdalGenerator.ENUM_EXT_PATH + '/' + objectName.toEnumExtFileName, fileContent)
 	}
 	
 }

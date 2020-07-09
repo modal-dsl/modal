@@ -55,6 +55,7 @@ DocumentHeader:
 	{DocumentHeader} 'header' name=STRING '{'
 		(
 			('ShortName' '=' shortName=STRING ';') &
+			('StatusCaptions' '=' '[' statusCaptions+=STRING (',' statusCaptions+=STRING)* ']' ';') &
 			('fields' '{' (fields+=Field | includeFields+=IncludeField)* '}')? &
 			('documentPage' '{' (documentPageGroups+=Group)* '}')? &
 			('listPage' '{' (listPageFields+=PageField)* '}')?
@@ -90,7 +91,6 @@ CustomField:
 	(
 		'{'
 			(
-				('Caption' '=' caption=STRING ';')? &
 				('TableRelation' '=' tableRelation=STRING ('.' tableRelationField=STRING)? ('where' '(' whereConditionField=STRING '=' 'const' '(' whereConditionConst=STRING ')' ')')? ';')?
 			)
 		'}'
@@ -103,6 +103,13 @@ TemplateField:
 
 IncludeField:
 	'include' '(' name=STRING ';' entityName=STRING '.' fieldName=STRING ')'
+	(
+		'{'
+			(
+				('Validate' '=' validate=Bool ';')?
+			)
+		'}'
+	)?
 ;
 
 Group:

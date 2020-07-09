@@ -88,10 +88,12 @@ class SupplementalExtensions {
 			end;
 		«ENDIF»
 		var
-			PostCode: Record "Post Code";
 			«IF supplemental.hasTemplateOfType(TemplateDimensions)»
 				DimMgt: Codeunit DimensionManagement;
 			«ENDIF»
+			«IF supplemental.hasTemplateOfType(TemplateAddress)»
+				PostCode: Record "Post Code";
+	        «ENDIF»
 		
 		procedure TestBlocked()
 		begin
@@ -137,22 +139,22 @@ class SupplementalExtensions {
 		«IF supplemental.hasTemplateOfType(TemplateAddress)»
 			
 			[IntegrationEvent(false, false)]
-			local procedure OnBeforeLookupCity(SeminarRoom: Record "SEM Seminar Room"; var PostCodeRec: Record "Post Code");
+			local procedure OnBeforeLookupCity(«supplemental.tableVariableName»: Record «supplemental.tableName.saveQuote»; var PostCodeRec: Record "Post Code");
 			begin
 			end;
 			
 			[IntegrationEvent(false, false)]
-			local procedure OnBeforeLookupPostCode(SeminarRoom: Record "SEM Seminar Room"; var PostCodeRec: Record "Post Code");
+			local procedure OnBeforeLookupPostCode(«supplemental.tableVariableName»: Record «supplemental.tableName.saveQuote»; var PostCodeRec: Record "Post Code");
 			begin
 			end;
 			
 			[IntegrationEvent(false, false)]
-			local procedure OnBeforeValidateCity(SeminarRoom: Record "SEM Seminar Room"; var PostCodeRec: Record "Post Code");
+			local procedure OnBeforeValidateCity(«supplemental.tableVariableName»: Record «supplemental.tableName.saveQuote»; var PostCodeRec: Record "Post Code");
 			begin
 			end;
 			
 			[IntegrationEvent(false, false)]
-			local procedure OnBeforeValidatePostCode(SeminarRoom: Record "SEM Seminar Room"; var PostCodeRec: Record "Post Code");
+			local procedure OnBeforeValidatePostCode(«supplemental.tableVariableName»: Record «supplemental.tableName.saveQuote»; var PostCodeRec: Record "Post Code");
 			begin
 			end;
 		«ENDIF»

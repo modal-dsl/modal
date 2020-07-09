@@ -3,7 +3,9 @@ package de.joneug.mdal.extensions
 import de.joneug.mdal.generator.GeneratorManagement
 import de.joneug.mdal.mdal.Entity
 import de.joneug.mdal.mdal.Master
+import de.joneug.mdal.mdal.TemplateAddress
 import de.joneug.mdal.mdal.TemplateDimensions
+import de.joneug.mdal.mdal.TemplateSalesperson
 
 import static extension de.joneug.mdal.extensions.DocumentExtensions.*
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
@@ -154,13 +156,16 @@ class MasterExtensions {
 				«solution.setupTableVariableName»Read: Boolean;
 				«solution.setupTableVariableName»: Record "«solution.setupTableName»";
 				NoSeriesMgt: Codeunit NoSeriesManagement;
-				«IF master.hasTemplateOfType(TemplateDimensions)»
-					DimMgt: Codeunit DimensionManagement;
-				«ENDIF»
 				CommentLine: Record "Comment Line";
 				«master.tableVariableName»: Record "«master.tableName»";
 				«document.header.tableVariableName»: Record "«document.header.tableName»";
 				ExistingDocumentsErr: Label 'You cannot delete %1 %2 because there is at least one outstanding %3 for this «master.name».';
+				«IF master.hasTemplateOfType(TemplateDimensions)»
+					DimMgt: Codeunit DimensionManagement;
+				«ENDIF»
+				«IF master.hasTemplateOfType(TemplateAddress)»
+					PostCode: Record "Post Code";
+		        «ENDIF»
 				
 			procedure AssistEdit(Old«master.tableVariableName»: Record "«master.tableName»"): Boolean
 			begin
@@ -226,6 +231,40 @@ class MasterExtensions {
 			begin
 				TestField(Blocked, false);
 			end;
+			«IF master.hasTemplateOfType(TemplateSalesperson)»
+				
+				local procedure ValidateSalesPersonCode()
+				var
+					SalespersonPurchaser: Record "Salesperson/Purchaser";
+				begin
+					if "Salesperson Code" <> '' then
+						if SalespersonPurchaser.Get("Salesperson Code") then
+							if SalespersonPurchaser.VerifySalesPersonPurchaserPrivacyBlocked(SalespersonPurchaser) then
+								Error(SalespersonPurchaser.GetPrivacyBlockedGenericText(SalespersonPurchaser, true));
+				end;
+			«ENDIF»
+			«IF master.hasTemplateOfType(TemplateAddress)»
+				
+				[IntegrationEvent(false, false)]
+				local procedure OnBeforeLookupCity(«master.tableVariableName»: Record «master.tableName.saveQuote»; var PostCodeRec: Record "Post Code");
+				begin
+				end;
+				
+				[IntegrationEvent(false, false)]
+				local procedure OnBeforeLookupPostCode(«master.tableVariableName»: Record «master.tableName.saveQuote»; var PostCodeRec: Record "Post Code");
+				begin
+				end;
+				
+				[IntegrationEvent(false, false)]
+				local procedure OnBeforeValidateCity(«master.tableVariableName»: Record «master.tableName.saveQuote»; var PostCodeRec: Record "Post Code");
+				begin
+				end;
+				
+				[IntegrationEvent(false, false)]
+				local procedure OnBeforeValidatePostCode(«master.tableVariableName»: Record «master.tableName.saveQuote»; var PostCodeRec: Record "Post Code");
+				begin
+				end;
+			«ENDIF»
 		}
 	'''
 	

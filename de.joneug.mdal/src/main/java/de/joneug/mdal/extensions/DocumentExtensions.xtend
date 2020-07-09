@@ -1,13 +1,16 @@
 package de.joneug.mdal.extensions
 
+import de.joneug.mdal.generator.GeneratorManagement
 import de.joneug.mdal.mdal.Document
-import org.eclipse.xtext.generator.IFileSystemAccess2
 
+import static extension de.joneug.mdal.extensions.DocumentHeaderExtensions.*
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.SolutionExtensions.*
 import static extension de.joneug.mdal.extensions.StringExtensions.*
 
 class DocumentExtensions {
+	
+	static GeneratorManagement management = GeneratorManagement.getInstance()
 	
 	static def getCleanedName(Document document) {
 		return document.name.toOnlyAlphabetic.removeSpaces
@@ -69,17 +72,34 @@ class DocumentExtensions {
 		return name
 	}
 	
-	static def void doGenerate(Document document, IFileSystemAccess2 fsa) {
-		// Table
-		//document.solution.saveTable(fsa, document.tableName, document.doGenerateTables(fsa))
+	static def getStatusEnumName(Document document) {
+		var name = document.solution.constructObjectName(document.name + ' Status')
+		if(name.length > 30) {
+			name = document.solution.constructObjectName(document.shortName + ' Status')
+		}
 		
-		// List Page
-		// Card Page
+		return name
 	}
 	
-	static def doGenerateTables(Document document, IFileSystemAccess2 fsa) {
-		return ""
+	static def getInitialStatus(Document document) {
+		return document.header.statusCaptions.get(0)
 	}
 	
+	static def void doGenerate(Document document) {
+		document.saveEnum(document.statusEnumName, document.doGenerateStatusEnum)
+		document.header.doGenerate
+	}
+	
+	static def doGenerateStatusEnum(Document document) '''
+		enum «management.newEnumNo» «document.statusEnumName.saveQuote»
+		{
+		    Extensible = true;
+		    AssignmentCompatibility = true;
+			
+			«FOR statusCaption : document.header.statusCaptions»
+				value(«management.getNewFieldNo(document)»; «statusCaption.saveQuote») { Caption = '«statusCaption»'; }
+			«ENDFOR»
+		}
+	'''
 	
 }

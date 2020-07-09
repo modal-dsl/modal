@@ -5,9 +5,9 @@ import de.joneug.mdal.mdal.LedgerEntry
 
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.EntityExtensions.*
+import static extension de.joneug.mdal.extensions.PageFieldExtensions.*
 import static extension de.joneug.mdal.extensions.SolutionExtensions.*
 import static extension de.joneug.mdal.extensions.StringExtensions.*
-import static extension de.joneug.mdal.extensions.PageFieldExtensions.*
 
 class LedgerEntryExtensions {
 	

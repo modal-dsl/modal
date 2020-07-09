@@ -24,11 +24,11 @@ import static extension de.joneug.mdal.extensions.TemplateFieldExtensions.*
 class EntityExtensions {
 	
 	static def getCleanedName(Entity entity) {
-		return entity.name.toOnlyAlphabetic.removeSpaces
+		return entity.name.clean
 	}
 	
 	static def getCleanedShortName(Entity entity) {
-		return entity.shortName.toOnlyAlphabetic.removeSpaces
+		return entity.shortName.clean
 	}
 
 	static def getTableName(Entity entity) {
@@ -68,7 +68,9 @@ class EntityExtensions {
 	}
 	
 	static def <T extends TemplateType> hasTemplateOfType(Entity entity, Class<T> templateType) {
-		entity.templateFields.exists[templateType.isInstance(it.type)]
+		return entity.templateFields.exists[templateType.isInstance(it.type)] ||
+			// Also check TemplateFields inserted via IncludeFields 
+			entity.inferredIncludeFields.exists[it.field instanceof TemplateField && templateType.isInstance((it.field as TemplateField).type)]
 	}
 	
 	static def getInferredIncludeFields(Entity entity) {
