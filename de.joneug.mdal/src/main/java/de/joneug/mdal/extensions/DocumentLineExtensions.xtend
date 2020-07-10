@@ -53,6 +53,10 @@ class DocumentLineExtensions {
 		return line.cleanedShortNamePosted
 	}
 	
+	static def getSubformPageName(DocumentLine line) {
+		return line.solution.constructObjectName(line.shortName + ' Subform')
+	}
+	
 	static def void doGenerate(DocumentLine line) {
 		// Tables
 		line.saveTable(line.tableName, line.doGenerateTable)

@@ -1,7 +1,6 @@
 package de.joneug.mdal.extensions
 
 import de.joneug.mdal.generator.GeneratorManagement
-import de.joneug.mdal.mdal.CustomField
 import de.joneug.mdal.mdal.DocumentHeader
 import de.joneug.mdal.mdal.Entity
 import de.joneug.mdal.mdal.IncludeField
@@ -72,15 +71,46 @@ class IncludeFieldExtensions {
 					TableRelation = «includeField.entity.tableName.saveQuote»;
 				}
 			'''
-		} else if(field instanceof CustomField) {
-			return field.doGenerateTableField(includeField)
 		} else {
-			return includeField.field.doGenerateTableField(includeField)
+			return field.doGenerateTableField(includeField)
 		}
 	}
 
 	def static doGeneratePageField(IncludeField includeField) {
-		return includeField.field.doGeneratePageField
+		val containerEntity = includeField.getContainerOfType(Entity)
+		val field = includeField.field
+		
+		if(field === null && includeField.fieldName == 'No.') {
+			// Master entity is automatically included in LedgerEntry and DocumentHeader
+			if(includeField.entity instanceof Master && (containerEntity instanceof LedgerEntry || containerEntity instanceof DocumentHeader)) {
+				return ''''''
+			}
+			// DocumentHeader entity is automatically included in LedgerEntry
+			if(includeField.entity instanceof DocumentHeader && containerEntity instanceof LedgerEntry) {
+				return ''''''
+			}
+			
+			return '''
+				field(«includeField.name.saveQuote»; «includeField.name.saveQuote»)
+				{
+					ApplicationArea = All;
+				}
+			'''
+		} else if(field === null && includeField.fieldName == 'Code') {
+			// IncludeFields for Supplemental entities are handled in DocumentHeaderExtensions
+			if(includeField.entity instanceof Supplemental && containerEntity instanceof DocumentHeader) {
+				return ''''''
+			}
+			
+			return '''
+				field(«includeField.name.saveQuote»; «includeField.name.saveQuote»)
+				{
+					ApplicationArea = All;
+				}
+			'''
+		} else {
+			return includeField.field.doGeneratePageField(includeField)
+		}
 	}
 
 }

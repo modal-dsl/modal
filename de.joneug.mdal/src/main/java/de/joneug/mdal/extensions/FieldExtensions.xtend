@@ -10,7 +10,6 @@ import de.joneug.mdal.mdal.TypeOption
 
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.FieldTypeExtensions.*
-import static extension de.joneug.mdal.extensions.IncludeFieldExtensions.*
 import static extension de.joneug.mdal.extensions.StringExtensions.*
 import static extension de.joneug.mdal.extensions.TemplateTypeExtensions.*
 
@@ -23,11 +22,11 @@ class FieldExtensions {
 	}
 	
 	static def dispatch doGenerateTableField(TemplateField templateField) {
-		doGenerateTableField(templateField, null)
+		return doGenerateTableField(templateField, null)
 	}
 	
 	static def dispatch doGenerateTableField(CustomField customField) {
-		doGenerateTableField(customField, null)
+		return doGenerateTableField(customField, null)
 	}
 	
 	static def dispatch doGenerateTableField(TemplateField templateField, IncludeField includeField) {
@@ -37,17 +36,15 @@ class FieldExtensions {
 	static def dispatch doGenerateTableField(CustomField customField, IncludeField includeField) {
 		var entity = customField.entity
 		var fieldName = customField.name
-		var prefix = ''
 		if(includeField !== null) {
 			entity = includeField.getContainerOfType(Entity)
-			prefix = includeField.entity.shortName + ' '
 			fieldName = includeField.name
 		}
 		
 		return '''
-			field(«management.getNewFieldNo(entity)»; "«prefix»«fieldName»"; «customField.type.doGenerate»)
+			field(«management.getNewFieldNo(entity)»; «fieldName.saveQuote»; «customField.type.doGenerate»)
 			{
-				Caption = '«prefix»«fieldName»';
+				Caption = '«fieldName»';
 				««« Option
 				«IF customField.type instanceof TypeOption»
 					OptionCaption = '«FOR member : (customField.type as TypeOption).getMembers() SEPARATOR ','»«member»«ENDFOR»';
@@ -61,15 +58,29 @@ class FieldExtensions {
 		'''
 	}
 	
-	static def dispatch doGeneratePageField(CustomField customField) '''
-	field(«customField.name.saveQuote»; «customField.name.saveQuote»)
-	{
-		ApplicationArea = All;
+	static def dispatch doGeneratePageField(CustomField customField) {
+		return doGeneratePageField(customField, null)
 	}
-	'''
 	
 	static def dispatch doGeneratePageField(TemplateField templateField) {
-		return templateField.type.doGeneratePageFields
+		return doGeneratePageField(templateField, null)
+	}
+	
+	static def dispatch doGeneratePageField(CustomField customField, IncludeField includeField) {
+		var fieldName = customField.name
+		if(includeField !== null) {
+			fieldName = includeField.name
+		}
+		return '''
+			field(«fieldName.saveQuote»; «fieldName.saveQuote»)
+			{
+				ApplicationArea = All;
+			}
+		'''
+	}
+	
+	static def dispatch doGeneratePageField(TemplateField templateField, IncludeField includeField) {
+		return templateField.type.doGeneratePageFields(includeField)
 	}
 	
 }

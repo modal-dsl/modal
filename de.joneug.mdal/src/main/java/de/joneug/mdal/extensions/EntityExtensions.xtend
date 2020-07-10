@@ -122,7 +122,7 @@ class EntityExtensions {
 	static def getPageFieldsInGroup(Entity entity, String groupName) {		
 		val filteredGroups = entity.inferredGroups.filter[it.name == groupName]
 		
-		if(filteredGroups.length == 0) {
+		if(filteredGroups.empty) {
 			return <PageField>newArrayList
 		} else {
 			return filteredGroups.get(0).pageFields

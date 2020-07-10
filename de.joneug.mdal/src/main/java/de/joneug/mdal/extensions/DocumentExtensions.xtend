@@ -86,6 +86,50 @@ class DocumentExtensions {
 		return document.header.statusCaptions.get(0)
 	}
 	
+	static def codeunitNamePost(Document document) {
+		val master = document.solution.master
+		var name = document.solution.constructObjectName(master.name + '-Post')
+		if(name.length > 30) {
+			name = document.solution.constructObjectName(master.shortName + '-Post')
+		}
+		
+		return name
+	}
+	
+	static def codeunitNamePostYesNo(Document document) {
+		val master = document.solution.master
+		var name = document.solution.constructObjectName(master.name + '-Post (Yes/No)')
+		if(name.length > 30) {
+			name = document.solution.constructObjectName(master.shortName + '-Post (Yes/No)')
+		}
+		
+		return name
+	}
+	
+	static def codeunitVariableNamePostYesNo(Document document) {
+		return document.codeunitNamePostYesNo.clean
+	}
+	
+	static def codeunitNameJnlCheckLine(Document document) {
+		val master = document.solution.master
+		var name = document.solution.constructObjectName(master.name + ' Jnl.-Check Line')
+		if(name.length > 30) {
+			name = document.solution.constructObjectName(master.shortName + ' Jnl.-Check Line')
+		}
+		
+		return name
+	}
+	
+	static def codeunitNameJnlPostLine(Document document) {
+		val master = document.solution.master
+		var name = document.solution.constructObjectName(master.name + ' Jnl.-Post Line')
+		if(name.length > 30) {
+			name = document.solution.constructObjectName(master.shortName + ' Jnl.-Post Line')
+		}
+		
+		return name
+	}
+	
 	static def void doGenerate(Document document) {
 		document.saveEnum(document.statusEnumName, document.doGenerateStatusEnum)
 		document.header.doGenerate

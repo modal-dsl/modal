@@ -14,6 +14,7 @@ import static extension de.joneug.mdal.extensions.DocumentLineExtensions.*
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.EntityExtensions.*
 import static extension de.joneug.mdal.extensions.IncludeFieldExtensions.*
+import static extension de.joneug.mdal.extensions.PageFieldExtensions.*
 import static extension de.joneug.mdal.extensions.SolutionExtensions.*
 import static extension de.joneug.mdal.extensions.StringExtensions.*
 
@@ -61,6 +62,10 @@ class DocumentHeaderExtensions {
 		// Tables
 		header.saveTable(header.tableName, header.doGenerateTable)
 		header.saveTable(header.tableNamePosted, header.doGenerateTablePosted)
+		
+		// Pages
+		header.savePage(header.document.listPageName, header.doGenerateListPage)
+		header.savePage(header.document.documentPageName, header.doGenerateDocumentPage)
 	}
 	
 	static def doGenerateTable(DocumentHeader header) '''
@@ -951,6 +956,253 @@ class DocumentHeaderExtensions {
 					DimMgt.ShowDimensionSet("Dimension Set ID", StrSubstNo('%1 %2', TableCaption, "No."));
 				end;
 		   	«ENDIF»
+		}
+	'''
+	
+	static def doGenerateListPage(DocumentHeader header) '''
+		«val solution = header.solution»
+		«val document = header.document»
+		«val master = header.solution.master»
+		page «management.newPageNo» «document.listPageName.saveQuote»
+		{
+		    ApplicationArea = All;
+		    Caption = '«document.name»s';
+		    CardPageID = «document.documentPageName.saveQuote»;
+		    DataCaptionFields = "«master.name» No.";
+		    Editable = false;
+		    PageType = List;
+		    PromotedActionCategories = 'New,Process,Report,Posting,Print/Send,«document.name»,Navigate';
+		    SourceTable = «header.tableName.saveQuote»;
+		    UsageCategory = Lists;
+		
+		    layout
+		    {
+		        area(content)
+		        {
+		            repeater(Control1)
+		            {
+		                field("No."; "No.")
+		                {
+		                    ApplicationArea = All;
+		                    ToolTip = 'Specifies the number of the involved entry or record, according to the specified number series.';
+		                }
+		                field("External Document No."; "External Document No.")
+		                {
+		                    ApplicationArea = All;
+		                    Visible = false;
+		                }
+		                field("Document Date"; "Document Date")
+		                {
+		                    ApplicationArea = All;
+		                }
+		                field(Status; Status)
+		                {
+		                    ApplicationArea = All;
+		                }
+		                field("«master.name» No."; "«master.name» No.")
+		                {
+		                    ApplicationArea = All;
+		                }
+		                «FOR pageField : header.listPageFields»
+		                	«pageField.doGenerate»
+		                «ENDFOR»
+		            }
+		        }
+		        area(factboxes)
+		        {
+		            systempart(Control1900383207; Links)
+		            {
+		            	ApplicationArea = RecordLinks;
+		            	Visible = false;
+		            }
+		            systempart(Control1905767507; Notes)
+		            {
+		            	ApplicationArea = Notes;
+		            }
+		        }
+		    }
+		
+			actions
+		    {
+		        area(navigation)
+		        {
+		            group(«document.name.saveQuote»)
+		            {
+		                Caption = '«document.name»';
+		                Image = "Order";
+		                action("&«master.name» Card")
+		                {
+		                    ApplicationArea = All;
+		                    Caption = '&«master.name» Card';
+		                    RunObject = Page «master.cardPageName.saveQuote»;
+		                    RunPageLink = "No." = FIELD("«master.name» No.");
+		                    ShortCutKey = 'Shift+F7';
+		                    ToolTip = 'View detailed information about the «master.name».';
+		                }
+		                action(Comments)
+		                {
+		                    ApplicationArea = Comments;
+		                    Caption = 'Co&mments';
+		                    Image = ViewComments;
+		                    Promoted = true;
+		                    PromotedCategory = Category6;
+		                    RunObject = Page «solution.commentSheetPageName.saveQuote»;
+		                    RunPageLink = "No." = field("No."),
+		                                  "Document Line No." = const(0);
+		                    ToolTip = 'View or add comments for the record.';
+		                }
+		            }
+		        }
+		    }
+		}
+	'''
+	
+	static def doGenerateDocumentPage(DocumentHeader header) '''
+		«val solution = header.solution»
+		«val document = header.document»
+		«val master = header.solution.master»
+		page «management.newPageNo» «document.documentPageName.saveQuote»
+		{
+		
+		    Caption = '«document.name»';
+		    PageType = Document;
+		    PromotedActionCategories = 'New,Process,Report,Print/Send,Release,Posting,«document.name»,Navigate';
+		    RefreshOnActivate = true;
+		    SourceTable = «header.tableName.saveQuote»;
+		
+		    layout
+		    {
+		        area(content)
+		        {
+		            group(General)
+		            {
+		                Caption = 'General';
+		                field("No."; "No.")
+		                {
+		                    ApplicationArea = All;
+		                    Importance = Promoted;
+		                    ToolTip = 'Specifies the number of the involved entry or record, according to the specified number series.';
+		
+		                    trigger OnAssistEdit()
+		                    begin
+		                        if AssistEdit(xRec) then
+		                            CurrPage.Update;
+		                    end;
+		                }
+		                field("«master.name» No."; "«master.name» No.")
+		                {
+		                    ApplicationArea = All;
+		                }
+		                field(Status; Status)
+		                {
+		                    ApplicationArea = All;
+		                    Importance = Promoted;
+		                    QuickEntry = false;
+		                }
+		                field("External Document No."; "External Document No.")
+		                {
+		                	ApplicationArea = All;
+		                	Importance = Promoted;
+		                }
+		                field(DocumentDate; "Document Date")
+		                {
+		                    ApplicationArea = All;
+		                    Importance = Additional;
+		                }
+		                field("Posting Date"; "Posting Date")
+		                {
+		                    ApplicationArea = All;
+		                    Importance = Promoted;
+		                }
+		                field("Posting Description"; "Posting Description")
+		                {
+		                    ApplicationArea = All;
+		                    Visible = false;
+		                }
+		                «FOR pageField : header.getPageFieldsInGroup('General')»
+		                	«pageField.doGenerate»
+		                «ENDFOR»
+		            }
+		            part(«document.line.subformPageName.saveQuote»; «document.line.subformPageName.saveQuote»)
+		            {
+		                ApplicationArea = All;
+		                SubPageLink = "Document No." = field("No.");
+		                UpdatePropagation = Both;
+		            }
+		            «FOR group : header.documentPageGroups.filter[it.name != 'General']»
+		            	group(«group.name.saveQuote»)
+		            	{
+		            		Caption = '«group.name»';
+		            		
+		            		«FOR pageField : group.pageFields»
+		            			«pageField.doGenerate»
+		            		«ENDFOR»
+		            	}
+		            «ENDFOR»
+		        }
+		        area(factboxes)
+		        {
+		            systempart(Control1900383207; Links)
+		            {
+		                ApplicationArea = RecordLinks;
+		                Visible = false;
+		            }
+		            systempart(Control1905767507; Notes)
+		            {
+		                ApplicationArea = Notes;
+		                Visible = true;
+		            }
+		        }
+		    }
+		
+		    actions
+		    {
+		        area(navigation)
+		        {
+		            group(«document.name.saveQuote»)
+		            {
+		                Caption = '«document.name»';
+		                Image = "Order";
+		                action("Co&mments")
+		                {
+		                    ApplicationArea = Comments;
+		                    Caption = 'Co&mments';
+		                    Image = ViewComments;
+		                    Promoted = true;
+		                    PromotedCategory = Category8;
+		                    RunObject = Page «solution.commentSheetPageName.saveQuote»;
+		                    RunPageLink = "No." = field("No."),
+		                                  "Document Line No." = const(0);
+		                    ToolTip = 'View or add comments for the record.';
+		                }
+		            }
+		            group("P&osting")
+		            {
+		                Caption = 'P&osting';
+		                Image = Post;
+		                action(Post)
+		                {
+		                    ApplicationArea = All;
+		                    Caption = 'P&ost';
+		                    Ellipsis = true;
+		                    Image = PostOrder;
+		                    Promoted = true;
+		                    PromotedCategory = Category7;
+		                    PromotedIsBig = true;
+		                    ShortCutKey = 'F9';
+		                    ToolTip = 'Finalize the document or journal by posting the amounts and quantities to the related accounts in your company books.';
+		
+		                    trigger OnAction()
+		                    var
+		                        «document.codeunitVariableNamePostYesNo»: Codeunit «document.codeunitNamePostYesNo.saveQuote»;
+		                    begin
+		                        «document.codeunitVariableNamePostYesNo».Run(Rec);
+		                        CurrPage.Update(false);
+		                    end;
+		                }
+		            }
+		        }
+		    }
 		}
 	'''
 	

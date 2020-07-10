@@ -426,128 +426,170 @@ class TemplateTypeExtensions {
 	 * Polymorphic dispatch for "doGeneratePageFields" on TemplateType subtypes 
 	 */
 	 
-	static def dispatch doGeneratePageFields(TemplateName templateType) '''
-		field(Name; Name)
-		{
-			ApplicationArea = All;
-			Importance = Promoted;
-			ShowMandatory = true;
-			
-			trigger OnValidate()
-			begin
-				CurrPage.SaveRecord;
-			end;
+	static def dispatch doGeneratePageFields(TemplateName templateType, IncludeField includeField) {
+		var prefix = ''
+		if(includeField !== null) {
+			prefix = includeField.entity.shortName + ' '
 		}
-		field("Name 2"; "Name 2")
-		{
-			ApplicationArea = All;
-			Importance = Additional;
-			Visible = false;
-		}
-		field("Search Name"; "Search Name")
-		{
-			ApplicationArea = All;
-			Importance = Additional;
-			Visible = false;
-		}
-	'''
+		return '''
+			field("«prefix»Name"; "«prefix»Name")
+			{
+				ApplicationArea = All;
+				Importance = Promoted;
+				ShowMandatory = true;
+				
+				«IF includeField === null»
+					trigger OnValidate()
+					begin
+						CurrPage.SaveRecord;
+					end;
+				«ENDIF»
+			}
+			field("«prefix»Name 2"; "«prefix»Name 2")
+			{
+				ApplicationArea = All;
+				Importance = Additional;
+				Visible = false;
+			}
+			«IF includeField === null»
+				field("Search Name"; "Search Name")
+				{
+					ApplicationArea = All;
+					Importance = Additional;
+				}
+			«ENDIF»
+		'''
+	}
 	
-	static def dispatch doGeneratePageFields(TemplateDescription templateType) '''
-	    field(Description; Description)
-	    {
-	        ApplicationArea = All;
-	        Importance = Promoted;
-	        ShowMandatory = true;
-	        
-	        trigger OnValidate()
-	        begin
-	            CurrPage.SaveRecord;
-	        end;
-	    }
-	    field("Description 2"; "Description 2")
-	    {
-	        ApplicationArea = All;
-	        Importance = Additional;
-	        Visible = false;
-	    }
-	    field("Search Description"; "Search Description")
-	    {
-	        ApplicationArea = All;
-	        Importance = Additional;
-	        Visible = false;
-	    }
-	'''
+	static def dispatch doGeneratePageFields(TemplateDescription templateType, IncludeField includeField) {
+		var prefix = ''
+		if(includeField !== null) {
+			prefix = includeField.entity.shortName + ' '
+		}
+		return '''
+		    field("«prefix»Description"; "«prefix»Description")
+		    {
+		        ApplicationArea = All;
+		        Importance = Promoted;
+		        ShowMandatory = true;
+		        
+		        «IF includeField === null»
+		        	trigger OnValidate()
+		        	begin
+		        		CurrPage.SaveRecord;
+		        	end;
+			    «ENDIF»
+		    }
+		    field("«prefix»Description 2"; "«prefix»Description 2")
+		    {
+		        ApplicationArea = All;
+		        Importance = Additional;
+		        Visible = false;
+		    }
+		    «IF includeField === null»
+		    	field("Search Description"; "Search Description")
+		    	{
+		    		ApplicationArea = All;
+		    		Importance = Additional;
+		    	}
+		    «ENDIF»
+		'''
+	}
 	
-	static def dispatch doGeneratePageFields(TemplateDimensions templateType) ''''''
+	static def dispatch doGeneratePageFields(TemplateDimensions templateType, IncludeField includeField) ''''''
 
-	static def dispatch doGeneratePageFields(TemplateSalesperson templateType) '''
+	static def dispatch doGeneratePageFields(TemplateSalesperson templateType, IncludeField includeField) '''
 		field("Salesperson Code"; "Salesperson Code")
 		{
 		    ApplicationArea = All;
 		}
 	'''
 	
-	static def dispatch doGeneratePageFields(TemplateAddress templateType) '''
-		field(Address; Address)
-		{
-			ApplicationArea = All;
-			QuickEntry = false;
+	static def dispatch doGeneratePageFields(TemplateAddress templateType, IncludeField includeField) {
+		var prefix = ''
+		if(includeField !== null) {
+			prefix = includeField.entity.shortName + ' '
 		}
-		field(Address2; "Address 2")
-		{
-			ApplicationArea = All;
-			QuickEntry = false;
-		}
-		field(City; City)
-		{
-			ApplicationArea = All;
-			QuickEntry = false;
-		}
-		field(County; County)
-		{
-			ApplicationArea = All;
-			QuickEntry = false;
-		}
-		field(PostCode; "Post Code")
-		{
-			ApplicationArea = All;
-			QuickEntry = false;
-		}
-		field(CountryRegionCode; "Country/Region Code")
-		{
-			ApplicationArea = All;
-			QuickEntry = false;
-		}
-	'''
+		return '''
+			field("«prefix»Address"; "«prefix»Address")
+			{
+				ApplicationArea = All;
+				QuickEntry = false;
+			}
+			field("«prefix»Address 2"; "«prefix»Address 2")
+			{
+				ApplicationArea = All;
+				QuickEntry = false;
+			}
+			field("«prefix»City"; "«prefix»City")
+			{
+				ApplicationArea = All;
+				QuickEntry = false;
+			}
+			field("«prefix»County"; "«prefix»County")
+			{
+				ApplicationArea = All;
+				QuickEntry = false;
+			}
+			field("«prefix»Post Code"; "«prefix»Post Code")
+			{
+				ApplicationArea = All;
+				QuickEntry = false;
+			}
+			field("«prefix»Country/Region Code"; "«prefix»Country/Region Code")
+			{
+				ApplicationArea = All;
+				QuickEntry = false;
+			}
+		'''	
+	}
 	
-	static def dispatch doGeneratePageFields(TemplateContactInfo templateType) '''
-		field(PhoneNo; "Phone No.")
-		{
-			ApplicationArea = All;
+	static def dispatch doGeneratePageFields(TemplateContactInfo templateType, IncludeField includeField) {
+		var prefix = ''
+		if(includeField !== null) {
+			prefix = includeField.entity.shortName + ' '
 		}
-		field(TelexNo; "Telex No.")
-		{
-			ApplicationArea = All;
-			Visible = false;
+		return '''
+			field("«prefix»Phone No."; "«prefix»Phone No.")
+			{
+				ApplicationArea = All;
+			}
+			field("«prefix»Telex No."; "«prefix»Telex No.")
+			{
+				ApplicationArea = All;
+				Visible = false;
+			}
+			field("«prefix»Fax No."; "«prefix»Fax No.")
+			{
+				ApplicationArea = All;
+				Visible = false;
+			}
+			field("«prefix»Telex Answer Back"; "«prefix»Telex Answer Back")
+			{
+				ApplicationArea = All;
+				Visible = false;
+			}
+			field("«prefix»E-Mail"; "«prefix»E-Mail")
+			{
+				ApplicationArea = All;
+			}
+			field("«prefix»Home Page"; "«prefix»Home Page")
+			{
+				ApplicationArea = All;
+			}
+		'''	
+	}
+	
+	static def dispatch doGeneratePageFields(TemplateContact templateType, IncludeField includeField) {
+		var fieldName = templateType.field.name
+		if(includeField !== null) {
+			fieldName = includeField.name
 		}
-		field(FaxNo; "Fax No.")
-		{
-			ApplicationArea = All;
-			Visible = false;
-		}
-		field(TelexAnswerBack; "Telex Answer Back")
-		{
-			ApplicationArea = All;
-			Visible = false;
-		}
-		field(EMail; "E-Mail")
-		{
-			ApplicationArea = All;
-		}
-		field(HomePage; "Home Page")
-		{
-			ApplicationArea = All;
-		}
-	'''
-
+		return '''
+			field(«fieldName.saveQuote»; «fieldName.saveQuote»)
+			{
+				ApplicationArea = All;
+			}
+		'''
+	}
 }
