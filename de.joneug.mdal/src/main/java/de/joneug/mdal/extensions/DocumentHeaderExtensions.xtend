@@ -10,6 +10,7 @@ import de.joneug.mdal.mdal.TemplateDimensions
 import de.joneug.mdal.mdal.TemplateSalesperson
 
 import static extension de.joneug.mdal.extensions.DocumentExtensions.*
+import static extension de.joneug.mdal.extensions.DocumentLineExtensions.*
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.EntityExtensions.*
 import static extension de.joneug.mdal.extensions.IncludeFieldExtensions.*
@@ -57,7 +58,9 @@ class DocumentHeaderExtensions {
 	}
 	
 	static def void doGenerate(DocumentHeader header) {
+		// Tables
 		header.saveTable(header.tableName, header.doGenerateTable)
+		header.saveTable(header.tableNamePosted, header.doGenerateTablePosted)
 	}
 	
 	static def doGenerateTable(DocumentHeader header) '''
@@ -278,7 +281,7 @@ class DocumentHeaderExtensions {
 		        			If «supplementalIncludeField.name.saveQuote» = '' then
 		        				«supplementalIncludeField.entity.tableVariableName».Init()
 		        			else begin
-		        			GetRoom(«supplementalIncludeField.name.saveQuote»);
+		        			Get(«supplementalIncludeField.name.saveQuote»);
 		        				«supplementalIncludeField.entity.tableVariableName».TestBlocked;
 		        			end;
 		        			
@@ -780,6 +783,156 @@ class DocumentHeaderExtensions {
 		    local procedure OnAfterGetPostingNoSeriesCode(«header.tableVariableName»: Record «header.tableName.saveQuote»; var PostingNos: Code[20])
 		    begin
 		    end;
+		}
+	'''
+	
+	static def doGenerateTablePosted(DocumentHeader header) '''
+		«management.resetFieldNo(header)»
+		«val solution = header.solution»
+		«val document = header.document»
+		«val master = header.solution.master»
+		table «management.newTableNo» «header.tableNamePosted.saveQuote»
+		{
+		    Caption = '«header.namePosted»';
+		    DataCaptionFields = "No.";
+		    LookupPageId = «document.documentPageNamePosted.saveQuote»;
+		
+		    fields
+		    {
+		        field(«management.getNewFieldNo(header)»; "No."; Code[20])
+		        {
+		            Caption = 'No.';
+		        }
+		        field(«management.getNewFieldNo(header)»; "«master.name» No."; Code[20])
+		        {
+		            Caption = '«master.name» No.';
+		            TableRelation = «master.tableName.saveQuote»;
+		        }
+		        field(«management.getNewFieldNo(header)»; Status; Enum «document.statusEnumName.saveQuote»)
+		        {
+		            Caption = 'Status';
+		            Editable = false;
+		        }
+		        
+		        field(«management.getNewFieldNo(header)»; Comment; Boolean)
+		        {
+		            Caption = 'Comment';
+		            FieldClass = FlowField;
+		            Editable = false;
+		            CalcFormula = exist («solution.commentLineTableName.saveQuote» where("No." = field("No."), "Document Line No." = const(0)));
+		        }
+		        field(«management.getNewFieldNo(header)»; "No. Printed"; Integer)
+		        {
+		            Caption = 'No. Printed';
+		            Editable = false;
+		        }
+		        field(«management.getNewFieldNo(header)»; "Posting Date"; Date)
+		        {
+		            Caption = 'Posting Date';
+		        }
+		        field(«management.getNewFieldNo(header)»; "Document Date"; Date)
+		        {
+		            Caption = 'Document Date';
+		        }
+		        field(«management.getNewFieldNo(header)»; "Posting Description"; Text[100])
+		        {
+		            Caption = 'Posting Description';
+		        }
+		        field(«management.getNewFieldNo(header)»; "External Document No."; Code[35])
+		        {
+		            Caption = 'External Document No.';
+		        }
+		        field(«management.getNewFieldNo(header)»; "Reason Code"; Code[10])
+		        {
+		            Caption = 'Reason Code';
+		            TableRelation = "Reason Code";
+		        }
+		        field(«management.getNewFieldNo(header)»; "No. Series"; Code[20])
+		        {
+		            Caption = 'No. Series';
+		            Editable = false;
+		            TableRelation = "No. Series";
+		        }
+		        field(«management.getNewFieldNo(header)»; "Posting No."; Code[20])
+		        {
+		            Caption = 'Posting No.';
+		        }
+		        field(«management.getNewFieldNo(header)»; "Posting No. Series"; Code[20])
+		        {
+		            Caption = 'Posting No. Series';
+		            TableRelation = "No. Series";
+		        }
+		        field(«management.getNewFieldNo(header)»; "Last Posting No."; Code[20])
+		        {
+		            Caption = 'Last Posting No.';
+		            Editable = false;
+		            TableRelation = «header.tableNamePosted.saveQuote»;
+		        }
+		        «IF header.hasTemplateOfType(TemplateDimensions)»
+		        	field(«management.getNewFieldNo(header)»; "Dimension Set ID"; Integer)
+		        	{
+		        		Caption = 'Dimension Set ID';
+		        		Editable = false;
+		        		TableRelation = "Dimension Set Entry";
+		        		
+		        		trigger OnLookup()
+		        		begin
+		        			ShowDocDim;
+		        		end;
+		        		
+		        		trigger OnValidate()
+		        		begin
+		        			DimMgt.UpdateGlobalDimFromDimSetID("Dimension Set ID", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
+		        		end;
+		        	}
+		        «ENDIF»
+		        «IF header.includeFields.exists[it.entity instanceof Supplemental && it.field == 'Code']»
+		        	«val supplementalIncludeField = header.includeFields.filter[it.entity instanceof Supplemental && it.field == 'Code'].get(0)»
+		        	field(«management.getNewFieldNo(header)»; «supplementalIncludeField.name.saveQuote»; Code[10])
+		        	{
+		        		Caption = '«supplementalIncludeField.name»';
+		        		TableRelation = «supplementalIncludeField.entity.tableName.saveQuote»;
+		        	}
+		        «ENDIF»
+		        «header.doGenerateTableFields»
+		        field(«management.getNewFieldNo(header)»; "«document.shortName» No."; Code[20])
+		        {
+		        	Caption = '«document.shortName» No.';
+		        }
+		        field(«management.getNewFieldNo(header)»; "«document.shortName» Nos."; Code[20])
+		        {
+		        	Caption = '«document.shortName» Nos.';
+		        	TableRelation = "No. Series".Code;
+		        }
+		        field(«management.getNewFieldNo(header)»; "User ID"; Code[50])
+		        {
+		        	Caption = 'User ID';
+		        	TableRelation = User."User Name";
+		        	ValidateTableRelation = false;
+		        }
+		        field(«management.getNewFieldNo(header)»; "Source Code"; Code[10])
+		        {
+		        	Caption = 'Source Code';
+		        }
+			}
+		
+		    keys
+		    {
+		        key(Key1; "No.")
+		        {
+		            Clustered = true;
+		        }
+		        key(Key2; "Posting Date") { }
+		    }
+		    
+		    procedure Navigate()
+		    var
+		    	NavigatePage: Page Navigate;
+		    begin
+		    	NavigatePage.SetDoc("Posting Date", "No.");
+		    	NavigatePage.SetRec(Rec);
+		    	NavigatePage.Run;
+		   	end;
 		}
 	'''
 	
