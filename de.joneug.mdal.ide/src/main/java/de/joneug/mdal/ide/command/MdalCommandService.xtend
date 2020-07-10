@@ -42,7 +42,7 @@ class MdalCommandService implements IExecutableCommandService {
 				val uri = params.arguments.head as JsonPrimitive
 				
 				if (uri !== null) {
-					return access.doRead(uri.asString) [						
+					return access.doRead(uri.asString) [
 						javaIoFileSystemAccess.setOutputPath(MdalGenerator.OUTPUT_FOLDER)
 						forceDeleteDirectory(MdalGenerator.OUTPUT_FOLDER)
 						generator.doGenerate(resource, javaIoFileSystemAccess, new GeneratorContext())

@@ -953,7 +953,7 @@ class DocumentHeaderExtensions {
 			«IF header.hasTemplateOfType(TemplateDimensions)»
 				procedure ShowDimensions()
 				begin
-					DimMgt.ShowDimensionSet("Dimension Set ID", StrSubstNo('%1 %2', TableCaption, "No."));
+					DimMgt.ShowDimensionSet("Dimension Set ID", StrSubstNo('%1 %2', TableCaption, "Document No."));
 				end;
 		   	«ENDIF»
 		}

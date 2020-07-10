@@ -10,6 +10,7 @@ import static extension de.joneug.mdal.extensions.DocumentExtensions.*
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.EntityExtensions.*
 import static extension de.joneug.mdal.extensions.IncludeFieldExtensions.*
+import static extension de.joneug.mdal.extensions.PageFieldExtensions.*
 import static extension de.joneug.mdal.extensions.SolutionExtensions.*
 import static extension de.joneug.mdal.extensions.StringExtensions.*
 
@@ -61,6 +62,9 @@ class DocumentLineExtensions {
 		// Tables
 		line.saveTable(line.tableName, line.doGenerateTable)
 		line.saveTable(line.tableNamePosted, line.doGenerateTablePosted)
+		
+		// Pages
+		line.savePage(line.subformPageName, line.doGenerateSuformPage)
 	}
 	
 	static def doGenerateTable(DocumentLine line) '''
@@ -343,4 +347,68 @@ class DocumentLineExtensions {
 		}
 	'''
 	
+	static def doGenerateSuformPage(DocumentLine line) '''
+		page «management.newPageNo» «line.subformPageName.saveQuote»
+		{
+		
+		    AutoSplitKey = true;
+		    Caption = 'Lines';
+		    Editable = false;
+		    LinksAllowed = false;
+		    PageType = ListPart;
+		    SourceTable = «line.tableName.saveQuote»;
+		
+		    layout
+		    {
+		        area(content)
+		        {
+		            repeater(Control1)
+		            {
+		                ShowCaption = false;
+		                «FOR pageField : line.listPartPageFields»
+		                	«pageField.doGenerate»
+		                «ENDFOR»
+		                «IF line.hasTemplateOfType(TemplateDimensions)»
+		                	field("Shortcut Dimension 1 Code"; "Shortcut Dimension 1 Code")
+		                	{
+		                		ApplicationArea = All;
+		                	}
+		                	field("Shortcut Dimension 2 Code"; "Shortcut Dimension 2 Code")
+		                	{
+		                		ApplicationArea = All;
+		                	}
+		                «ENDIF»
+		            }
+		        }
+		    }
+		
+		    actions
+		    {
+		        area(processing)
+		        {
+		            group("&Line")
+		            {
+		                Caption = '&Line';
+		                Image = Line;
+		                group("Related Information")
+		                {
+		                    Caption = 'Related Information';
+		                    action("Co&mments")
+		                    {
+		                        ApplicationArea = Comments;
+		                        Caption = 'Co&mments';
+		                        Image = ViewComments;
+		                        ToolTip = 'View or add comments for the record.';
+		
+		                        trigger OnAction()
+		                        begin
+		                            ShowLineComments;
+		                        end;
+		                    }
+		                }
+		            }
+		        }
+		    }
+		}
+	'''
 }
