@@ -29,12 +29,20 @@ class LedgerEntryExtensions {
 		return ledgerEntry.solution.master.name + ' Reg.'
 	}
 	
+	static def getCleanedShortNameRegister(LedgerEntry ledgerEntry) {
+		return ledgerEntry.shortNameRegister.toOnlyAlphabetic.removeSpaces
+	}
+	
 	def static getTableNameRegister(LedgerEntry ledgerEntry) {
 		var name = ledgerEntry.solution.constructObjectName(ledgerEntry.nameRegister)
 		if(name.length > 30) {
 			name = ledgerEntry.solution.constructObjectName(ledgerEntry.shortNameRegister)
 		}
 		return name
+	}
+	
+	static def getTableVariableNameRegister(LedgerEntry ledgerEntry) {
+		return ledgerEntry.cleanedShortNameRegister
 	}
 	
 	def static getNameJournal(LedgerEntry ledgerEntry) {
