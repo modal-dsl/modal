@@ -366,7 +366,7 @@ class DocumentHeaderExtensions {
 		        «solution.commentLineTableVariableName».SetRange("No.", "No.");
 		        «solution.commentLineTableVariableName».DeleteAll();
 		        
-		        «header.tableVariableName».DeleteAll();
+		        «document.line.tableVariableName».DeleteAll();
 		    end;
 		
 		    local procedure GetFilter«master.tableVariableName»No(): Code[20]
@@ -877,12 +877,7 @@ class DocumentHeaderExtensions {
 		        		
 		        		trigger OnLookup()
 		        		begin
-		        			ShowDocDim;
-		        		end;
-		        		
-		        		trigger OnValidate()
-		        		begin
-		        			DimMgt.UpdateGlobalDimFromDimSetID("Dimension Set ID", "Shortcut Dimension 1 Code", "Shortcut Dimension 2 Code");
+		        			ShowDimensions;
 		        		end;
 		        	}
 		        «ENDIF»
@@ -925,6 +920,22 @@ class DocumentHeaderExtensions {
 		        key(Key2; "Posting Date") { }
 		    }
 		    
+		    trigger OnDelete()
+		    begin
+		        «solution.commentLineTableVariableName».SetRange("Document Type", «solution.commentLineTableVariableName»."Document Type"::«document.namePosted.saveQuote»);
+		        «solution.commentLineTableVariableName».SetRange("No.", "No.");
+		        «solution.commentLineTableVariableName».DeleteAll();
+		        
+		        «document.line.tableVariableNamePosted».DeleteAll();
+		    end;
+		    
+		    var
+		    	«solution.commentLineTableVariableName»: Record «solution.commentLineTableName.saveQuote»;
+		    	«document.line.tableVariableNamePosted»: Record «document.line.tableNamePosted.saveQuote»;
+			    «IF header.hasTemplateOfType(TemplateDimensions)»
+			    	DimMgt: Codeunit DimensionManagement;
+			    «ENDIF»
+		    
 		    procedure Navigate()
 		    var
 		    	NavigatePage: Page Navigate;
@@ -933,6 +944,13 @@ class DocumentHeaderExtensions {
 		    	NavigatePage.SetRec(Rec);
 		    	NavigatePage.Run;
 		   	end;
+		   	
+			«IF header.hasTemplateOfType(TemplateDimensions)»
+				procedure ShowDimensions()
+				begin
+					DimMgt.ShowDimensionSet("Dimension Set ID", StrSubstNo('%1 %2', TableCaption, "No."));
+				end;
+		   	«ENDIF»
 		}
 	'''
 	

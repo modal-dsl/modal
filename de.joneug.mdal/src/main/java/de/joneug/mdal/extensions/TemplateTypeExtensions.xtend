@@ -26,6 +26,14 @@ class TemplateTypeExtensions {
 		return templateType.getContainerOfType(Field)
 	}
 	
+	static def calledFromEditableTable(StackTraceElement[] stacktrace) {
+		return !stacktrace.exists[
+			(it.className == DocumentHeaderExtensions.name && it.methodName == 'doGenerateTablePosted') ||
+			(it.className == DocumentLineExtensions.name && it.methodName == 'doGenerateTablePosted') ||
+			it.className == LedgerEntryExtensions.name
+		]
+	}
+	
 	/*
 	 * Polymorphic dispatch for "getDataCaptionFields" on TemplateType subtypes 
 	 */
@@ -133,6 +141,7 @@ class TemplateTypeExtensions {
 			entity = includeField.getContainerOfType(Entity)
 			prefix = includeField.entity.shortName + ' '
 		}
+		
 		return '''
 			field(«management.getNewFieldNo(entity)»; "«prefix»Description"; Text[100])
 			{
@@ -164,28 +173,34 @@ class TemplateTypeExtensions {
 		if(includeField !== null) {
 			entity = includeField.getContainerOfType(Entity)
 		}
+		val editable = Thread.currentThread.stackTrace.calledFromEditableTable
+		
 		return '''
 			field(«management.getNewFieldNo(entity)»; "Global Dimension 1 Code"; Code[20])
 			{
 				CaptionClass = '1,1,1';
 				Caption = 'Global Dimension 1 Code';
 				TableRelation = "Dimension Value".Code where("Global Dimension No." = const(1));
-				
-				trigger OnValidate()
-				begin
-					ValidateShortcutDimCode(1, "Global Dimension 1 Code");
-				end;
+				«IF editable»
+					
+					trigger OnValidate()
+					begin
+						ValidateShortcutDimCode(1, "Global Dimension 1 Code");
+					end;
+				«ENDIF»
 			}
 			field(«management.getNewFieldNo(entity)»; "Global Dimension 2 Code"; Code[20])
 			{
 				CaptionClass = '1,1,2';
 				Caption = 'Global Dimension 2 Code';
 				TableRelation = "Dimension Value".Code where("Global Dimension No." = const(2));
-				
-				trigger OnValidate()
-				begin
-					ValidateShortcutDimCode(2, "Global Dimension 2 Code");
-				end;
+				«IF editable»
+					
+					trigger OnValidate()
+					begin
+						ValidateShortcutDimCode(2, "Global Dimension 2 Code");
+					end;
+				«ENDIF»
 			}
 		'''
 	}
@@ -197,6 +212,8 @@ class TemplateTypeExtensions {
 			entity = includeField.getContainerOfType(Entity)
 			prefix = includeField.entity.shortName + ' '
 		}
+		val editable = Thread.currentThread.stackTrace.calledFromEditableTable
+		
 		return '''
 			field(«management.getNewFieldNo(entity)»; "«prefix»Address"; Text[100])
 			{
@@ -213,30 +230,34 @@ class TemplateTypeExtensions {
 				else
 				if ("«prefix»Country/Region Code" = filter(<> '')) "Post Code".City where("Country/Region Code" = field("«prefix»Country/Region Code"));
 				ValidateTableRelation = false;
-				
-				trigger OnLookup()
-				begin
-					OnBeforeLookupCity(Rec, PostCode);
+				«IF editable»
 					
-					PostCode.LookupPostCode("«prefix»City", "«prefix»Post Code", "«prefix»County", "«prefix»Country/Region Code");
-				end;
-				
-				trigger OnValidate()
-				begin
-				OnBeforeValidateCity(Rec, PostCode);
-				
-				PostCode.ValidateCity("«prefix»City", "«prefix»Post Code", "«prefix»County", "«prefix»Country/Region Code", (CurrFieldNo <> 0) and GuiAllowed);
-				end;
+					trigger OnLookup()
+					begin
+						OnBeforeLookupCity(Rec, PostCode);
+						
+						PostCode.LookupPostCode("«prefix»City", "«prefix»Post Code", "«prefix»County", "«prefix»Country/Region Code");
+					end;
+					
+					trigger OnValidate()
+					begin
+					OnBeforeValidateCity(Rec, PostCode);
+					
+					PostCode.ValidateCity("«prefix»City", "«prefix»Post Code", "«prefix»County", "«prefix»Country/Region Code", (CurrFieldNo <> 0) and GuiAllowed);
+					end;
+				«ENDIF»
 			}
 			field(«management.getNewFieldNo(entity)»; "«prefix»Country/Region Code"; Code[10])
 			{
 				Caption = '«prefix»Country/Region Code';
 				TableRelation = "Country/Region";
-				
-				trigger OnValidate()
-				begin
-					PostCode.CheckClearPostCodeCityCounty("«prefix»City", "«prefix»Post Code", "«prefix»County", "«prefix»Country/Region Code", xRec."«prefix»Country/Region Code");
-				end;
+				«IF editable»
+					
+					trigger OnValidate()
+					begin
+						PostCode.CheckClearPostCodeCityCounty("«prefix»City", "«prefix»Post Code", "«prefix»County", "«prefix»Country/Region Code", xRec."«prefix»Country/Region Code");
+					end;
+				«ENDIF»
 			}
 			field(«management.getNewFieldNo(entity)»; "«prefix»Post Code"; Code[20])
 			{
@@ -245,20 +266,22 @@ class TemplateTypeExtensions {
 				else
 				if ("«prefix»Country/Region Code" = filter(<> '')) "Post Code" where("Country/Region Code" = field("«prefix»Country/Region Code"));
 				ValidateTableRelation = false;
-				
-				trigger OnLookup()
-				begin
-					OnBeforeLookupPostCode(Rec, PostCode);
+				«IF editable»
 					
-					PostCode.LookupPostCode("«prefix»City", "«prefix»Post Code", "«prefix»County", "«prefix»Country/Region Code");
-				end;
-				
-				trigger OnValidate()
-				begin
-					OnBeforeValidatePostCode(Rec, PostCode);
+					trigger OnLookup()
+					begin
+						OnBeforeLookupPostCode(Rec, PostCode);
+						
+						PostCode.LookupPostCode("«prefix»City", "«prefix»Post Code", "«prefix»County", "«prefix»Country/Region Code");
+					end;
 					
-					PostCode.ValidatePostCode("«prefix»City", "«prefix»Post Code", "«prefix»County", "«prefix»Country/Region Code", (CurrFieldNo <> 0) and GuiAllowed);
-				end;
+					trigger OnValidate()
+					begin
+						OnBeforeValidatePostCode(Rec, PostCode);
+						
+						PostCode.ValidatePostCode("«prefix»City", "«prefix»Post Code", "«prefix»County", "«prefix»Country/Region Code", (CurrFieldNo <> 0) and GuiAllowed);
+					end;
+				«ENDIF»
 			}
 			field(«management.getNewFieldNo(entity)»; "«prefix»County"; Text[30])
 			{
@@ -275,6 +298,8 @@ class TemplateTypeExtensions {
 			entity = includeField.getContainerOfType(Entity)
 			prefix = includeField.entity.shortName + ' '
 		}
+		val editable = Thread.currentThread.stackTrace.calledFromEditableTable
+		
 		return '''
 			field(«management.getNewFieldNo(entity)»; "«prefix»Contact Person"; Text[50])
 			{
@@ -301,13 +326,15 @@ class TemplateTypeExtensions {
 			{
 				Caption = '«prefix»Email';
 				ExtendedDatatype = EMail;
-				
-				trigger OnValidate()
-				var
-					MailManagement: Codeunit "Mail Management";
-				begin
-					MailManagement.ValidateEmailAddressField("«prefix»E-Mail");
-				end;
+				«IF editable»
+					
+					trigger OnValidate()
+					var
+						MailManagement: Codeunit "Mail Management";
+					begin
+						MailManagement.ValidateEmailAddressField("«prefix»E-Mail");
+					end;
+				«ENDIF»
 			}
 			field(«management.getNewFieldNo(entity)»; "«prefix»Home Page"; Text[80])
 			{
@@ -322,16 +349,20 @@ class TemplateTypeExtensions {
 		if(includeField !== null) {
 			entity = includeField.getContainerOfType(Entity)
 		}
+		val editable = Thread.currentThread.stackTrace.calledFromEditableTable
+		
 		return '''
 			field(«management.getNewFieldNo(entity)»; "Salesperson Code"; Code[20])
 			{
 				Caption = 'Salesperson Code';
 				TableRelation = "Salesperson/Purchaser";
-				
-				trigger OnValidate()
-				begin
-					ValidateSalesPersonCode();
-				end;
+				«IF editable»
+					
+					trigger OnValidate()
+					begin
+						ValidateSalesPersonCode();
+					end;
+				«ENDIF»
 			}
 		'''
 	}
@@ -343,46 +374,50 @@ class TemplateTypeExtensions {
 			entity = includeField.getContainerOfType(Entity)
 			fieldName = includeField.name
 		}
+		val editable = Thread.currentThread.stackTrace.calledFromEditableTable
+		
 		return '''
 			field(«management.getNewFieldNo(entity)»; «fieldName.saveQuote»; Code[20])
 			{
 				Caption = '«fieldName»';
 				TableRelation = Contact;
-				
-				trigger OnLookup()
-				var
-					Cont: Record Contact;
-					ContBusinessRelation: Record "Contact Business Relation";
-				begin
-					if «fieldName.saveQuote» <> '' then
-						if Cont.Get(«fieldName.saveQuote») then
-							Cont.SetRange("Company No.", Cont."Company No.")
-						else
-							if ContBusinessRelation.FindByRelation(ContBusinessRelation."Link to Table"::Customer, «fieldName.saveQuote») then
-								Cont.SetRange("Company No.", ContBusinessRelation."Contact No.")
+				«IF editable»
+					
+					trigger OnLookup()
+					var
+						Cont: Record Contact;
+						ContBusinessRelation: Record "Contact Business Relation";
+					begin
+						if «fieldName.saveQuote» <> '' then
+							if Cont.Get(«fieldName.saveQuote») then
+								Cont.SetRange("Company No.", Cont."Company No.")
 							else
-								Cont.SetRange("No.", '');
-					
-					if «fieldName.saveQuote» <> '' then
-						if Cont.Get(«fieldName.saveQuote») then;
-					if PAGE.RunModal(0, Cont) = ACTION::LookupOK then begin
-						xRec := Rec;
-						Validate(«fieldName.saveQuote», Cont."No.");
+								if ContBusinessRelation.FindByRelation(ContBusinessRelation."Link to Table"::Customer, «fieldName.saveQuote») then
+									Cont.SetRange("Company No.", ContBusinessRelation."Contact No.")
+								else
+									Cont.SetRange("No.", '');
+						
+						if «fieldName.saveQuote» <> '' then
+							if Cont.Get(«fieldName.saveQuote») then;
+						if PAGE.RunModal(0, Cont) = ACTION::LookupOK then begin
+							xRec := Rec;
+							Validate(«fieldName.saveQuote», Cont."No.");
+						end;
 					end;
-				end;
-				
-				trigger OnValidate()
-				var
-					ContBusinessRelation: Record "Contact Business Relation";
-					Cont: Record Contact;
-				begin
-					if «fieldName.saveQuote» = xRec.«fieldName.saveQuote» then
-						exit;
 					
-					if «fieldName.saveQuote» <> '' then
-						if Cont.Get(«fieldName.saveQuote») then
-							Cont.CheckIfPrivacyBlockedGeneric;
-				end;
+					trigger OnValidate()
+					var
+						ContBusinessRelation: Record "Contact Business Relation";
+						Cont: Record Contact;
+					begin
+						if «fieldName.saveQuote» = xRec.«fieldName.saveQuote» then
+							exit;
+						
+						if «fieldName.saveQuote» <> '' then
+							if Cont.Get(«fieldName.saveQuote») then
+								Cont.CheckIfPrivacyBlockedGeneric;
+					end;
+				«ENDIF»
 			}
 		'''
 	}

@@ -54,7 +54,9 @@ class DocumentLineExtensions {
 	}
 	
 	static def void doGenerate(DocumentLine line) {
+		// Tables
 		line.saveTable(line.tableName, line.doGenerateTable)
+		line.saveTable(line.tableNamePosted, line.doGenerateTablePosted)
 	}
 	
 	static def doGenerateTable(DocumentLine line) '''
@@ -62,6 +64,8 @@ class DocumentLineExtensions {
 		«val document = line.document»
 		table «management.newTableNo» «line.tableName.saveQuote»
 		{
+			Caption = '«line.tableName»';
+			
 		    fields
 		    {
 		        field(«management.getNewFieldNo(line)»; "Document No."; Code[20])
@@ -259,6 +263,79 @@ class DocumentLineExtensions {
 		    	begin
 		    	end;
 		    «ENDIF»
+		}
+	'''
+	
+	static def doGenerateTablePosted(DocumentLine line) '''
+		«management.resetFieldNo(line)»
+		«val solution = line.solution»
+		«val document = line.document»
+		table «management.newTableNo» «line.tableNamePosted.saveQuote»
+		{
+			Caption = '«line.tableNamePosted»';
+			
+		    fields
+		    {
+		        field(«management.getNewFieldNo(line)»; "Document No."; Code[20])
+		        {
+		            Caption = 'Document No.';
+		            TableRelation = «document.header.tableName.saveQuote»;
+		        }
+		        field(«management.getNewFieldNo(line)»; "Line No."; Integer)
+		        {
+		            Caption = 'Line No.';
+		        }
+		        «IF line.hasTemplateOfType(TemplateDimensions)»
+		        	field(«management.getNewFieldNo(line)»; "Dimension Set ID"; Integer)
+		        	{
+		        		Caption = 'Dimension Set ID';
+		        		Editable = false;
+		        		TableRelation = "Dimension Set Entry";
+		        		
+		        		trigger OnLookup()
+		        		begin
+		        			ShowDimensions();
+		        		end;
+		        	}
+		        «ENDIF»
+		        «line.doGenerateTableFields»
+		    }
+		
+		    keys
+		    {
+		        key(Key1; "Document No.", "Line No.")
+		        {
+		            Clustered = true;
+		        }
+		    }
+		
+		    var
+		        «solution.commentLineTableVariableName»: Record «solution.commentLineTableName.saveQuote»;
+		        «IF line.hasTemplateOfType(TemplateDimensions)»
+		        	DimMgt: Codeunit DimensionManagement;
+		        «ENDIF»
+		
+		    trigger OnDelete()
+		    begin
+		        «solution.commentLineTableVariableName».SetRange("Document Type", «solution.commentLineTableVariableName»."Document Type"::«document.namePosted.saveQuote»);
+		        «solution.commentLineTableVariableName».SetRange("No.", "Document No.");
+		        «solution.commentLineTableVariableName».SetRange("Line No.", "Line No.");
+		        «solution.commentLineTableVariableName».DeleteAll();
+		    end;
+		    «IF line.hasTemplateOfType(TemplateDimensions)»
+		    	
+		    	procedure ShowDimensions()
+		    	begin
+		    		DimMgt.ShowDimensionSet("Dimension Set ID", StrSubstNo('%1 %2', TableCaption, "No."));
+		    	end;
+		    «ENDIF»
+		    
+			procedure ShowLineComments()
+			var
+				«solution.commentLineTableVariableName»: Record «solution.commentLineTableName.saveQuote»;
+			begin
+				«solution.commentLineTableVariableName».ShowComments(«solution.commentLineTableVariableName»."Document Type"::«document.namePosted.saveQuote», "Document No.", "Line No.");
+			end;
 		}
 	'''
 	
