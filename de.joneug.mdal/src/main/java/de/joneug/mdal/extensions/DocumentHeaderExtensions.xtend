@@ -35,7 +35,7 @@ class DocumentHeaderExtensions {
 	}
 	
 	static def getShortNamePosted(DocumentHeader header) {
-		return 'Posted ' + header.shortName
+		return 'Pstd. ' + header.shortName
 	}
 	
 	static def getCleanedNamePosted(DocumentHeader header) {
@@ -66,6 +66,8 @@ class DocumentHeaderExtensions {
 		// Pages
 		header.savePage(header.document.listPageName, header.doGenerateListPage)
 		header.savePage(header.document.documentPageName, header.doGenerateDocumentPage)
+		header.savePage(header.document.listPageNamePosted, header.doGenerateListPagePosted)
+		header.savePage(header.document.documentPageNamePosted, header.doGenerateDocumentPagePosted)
 	}
 	
 	static def doGenerateTable(DocumentHeader header) '''
@@ -1047,11 +1049,121 @@ class DocumentHeaderExtensions {
 		                    Promoted = true;
 		                    PromotedCategory = Category6;
 		                    RunObject = Page «solution.commentSheetPageName.saveQuote»;
-		                    RunPageLink = "No." = field("No."),
+		                    RunPageLink = "Document Type" = CONST(«document.name.saveQuote»),
+		                    			  "No." = field("No."),
 		                                  "Document Line No." = const(0);
 		                    ToolTip = 'View or add comments for the record.';
 		                }
 		            }
+		        }
+		    }
+		}
+	'''
+	
+	static def doGenerateListPagePosted(DocumentHeader header) '''
+		«val solution = header.solution»
+		«val document = header.document»
+		«val master = header.solution.master»
+		page «management.newPageNo» «document.listPageNamePosted.saveQuote»
+		{
+		    ApplicationArea = All;
+		    Caption = '«document.namePosted»s';
+		    CardPageID = «document.documentPageNamePosted.saveQuote»;
+		    DataCaptionFields = "«master.name» No.";
+		    Editable = false;
+		    PageType = List;
+		    PromotedActionCategories = 'New,Process,Report,«document.namePosted»,Navigate,Print/Send';
+		    RefreshOnActivate = true;
+		    SourceTable = «header.tableNamePosted.saveQuote»;
+		    SourceTableView = SORTING("Posting Date")
+		   	                  ORDER(Descending);
+		    UsageCategory = History;
+		
+		    layout
+		    {
+		        area(content)
+		        {
+		            repeater(Control1)
+		            {
+		            	ShowCaption = false;
+		                field("No."; "No.")
+		                {
+		                    ApplicationArea = All;
+		                    ToolTip = 'Specifies the number of the involved entry or record, according to the specified number series.';
+		                }
+		                field("External Document No."; "External Document No.")
+		                {
+		                    ApplicationArea = All;
+		                    Visible = false;
+		                }
+		                field("Document Date"; "Document Date")
+		                {
+		                    ApplicationArea = All;
+		                }
+		                field(Status; Status)
+		                {
+		                    ApplicationArea = All;
+		                }
+		                field("«master.name» No."; "«master.name» No.")
+		                {
+		                    ApplicationArea = All;
+		                }
+		                «FOR pageField : header.listPageFields»
+		                	«pageField.doGenerate»
+		                «ENDFOR»
+		            }
+		        }
+		        area(factboxes)
+		        {
+		            systempart(Control1900383207; Links)
+		            {
+		            	ApplicationArea = RecordLinks;
+		            	Visible = false;
+		            }
+		            systempart(Control1905767507; Notes)
+		            {
+		            	ApplicationArea = Notes;
+		            }
+		        }
+		    }
+		
+			actions
+		    {
+		        area(navigation)
+		        {
+		            group(«document.namePosted.saveQuote»)
+		            {
+		                Caption = '«document.namePosted»';
+		                action(Comments)
+		                {
+		                    ApplicationArea = Comments;
+		                    Caption = 'Co&mments';
+		                    Image = ViewComments;
+		                    Promoted = true;
+		                    PromotedCategory = Category4;
+		                    RunObject = Page «solution.commentSheetPageName.saveQuote»;
+		                    RunPageLink = "Document Type" = CONST(«document.namePosted.saveQuote»),
+		                    			  "No." = field("No."),
+		                                  "Document Line No." = const(0);
+		                    ToolTip = 'View or add comments for the record.';
+		                }
+		            }
+		        }
+		        area(processing)
+		        {
+		        	action(Navigate)
+		        	{
+		        		CaptionML = DEU = '&Navigate',
+		        					ENU = '&Navigate';
+		        		Image = Navigate;
+		        		Promoted = true;
+		        		PromotedCategory = Process;
+		        		
+		        		trigger OnAction()
+		        		begin
+		        			Navigate();
+		        		end;
+		        	}
 		        }
 		    }
 		}
@@ -1171,7 +1283,8 @@ class DocumentHeaderExtensions {
 		                    Promoted = true;
 		                    PromotedCategory = Category8;
 		                    RunObject = Page «solution.commentSheetPageName.saveQuote»;
-		                    RunPageLink = "No." = field("No."),
+		                    RunPageLink = "Document Type" = CONST(«document.name.saveQuote»),
+		                    			  "No." = field("No."),
 		                                  "Document Line No." = const(0);
 		                    ToolTip = 'View or add comments for the record.';
 		                }
@@ -1201,6 +1314,141 @@ class DocumentHeaderExtensions {
 		                    end;
 		                }
 		            }
+		        }
+		    }
+		}
+	'''
+	
+	static def doGenerateDocumentPagePosted(DocumentHeader header) '''
+		«val solution = header.solution»
+		«val document = header.document»
+		«val master = header.solution.master»
+		page «management.newPageNo» «document.documentPageNamePosted.saveQuote»
+		{
+		    Caption = '«document.namePosted»';
+		    InsertAllowed = false;
+		    Editable = false;
+		    PageType = Document;
+		    PromotedActionCategories = 'New,Process,Report,«document.namePosted»,Correct,Print/Send,Navigate';
+		    RefreshOnActivate = true;
+		    SourceTable = «header.tableNamePosted.saveQuote»;
+		
+		    layout
+		    {
+		        area(content)
+		        {
+		            group(General)
+		            {
+		                Caption = 'General';
+		                field("No."; "No.")
+		                {
+		                    ApplicationArea = All;
+		                    Importance = Promoted;
+		                    ToolTip = 'Specifies the number of the involved entry or record, according to the specified number series.';
+		                }
+		                field("«master.name» No."; "«master.name» No.")
+		                {
+		                    ApplicationArea = All;
+		                }
+		                field(Status; Status)
+		                {
+		                    ApplicationArea = All;
+		                    Importance = Promoted;
+		                    QuickEntry = false;
+		                }
+		                field("External Document No."; "External Document No.")
+		                {
+		                	ApplicationArea = All;
+		                	Importance = Promoted;
+		                }
+		                field(DocumentDate; "Document Date")
+		                {
+		                    ApplicationArea = All;
+		                    Importance = Additional;
+		                }
+		                field("Posting Date"; "Posting Date")
+		                {
+		                    ApplicationArea = All;
+		                    Importance = Promoted;
+		                }
+		                field("Posting Description"; "Posting Description")
+		                {
+		                    ApplicationArea = All;
+		                    Visible = false;
+		                }
+		                «FOR pageField : header.getPageFieldsInGroup('General')»
+		                	«pageField.doGenerate»
+		                «ENDFOR»
+		            }
+		            part(«document.line.subformPageNamePosted.saveQuote»; «document.line.subformPageNamePosted.saveQuote»)
+		            {
+		                ApplicationArea = All;
+		                SubPageLink = "Document No." = field("No.");
+		            }
+		            «FOR group : header.documentPageGroups.filter[it.name != 'General']»
+		            	group(«group.name.saveQuote»)
+		            	{
+		            		Caption = '«group.name»';
+		            		
+		            		«FOR pageField : group.pageFields»
+		            			«pageField.doGenerate»
+		            		«ENDFOR»
+		            	}
+		            «ENDFOR»
+		        }
+		        area(factboxes)
+		        {
+		            systempart(Control1900383207; Links)
+		            {
+		            	ApplicationArea = RecordLinks;
+		            	Visible = false;
+		            }
+		            systempart(Control1905767507; Notes)
+		            {
+		            	ApplicationArea = Notes;
+		            }
+		        }
+		    }
+		
+		    actions
+		    {
+		        area(navigation)
+		        {
+		            group(«document.namePosted.saveQuote»)
+		            {
+		                Caption = '«document.namePosted»';
+		                Image = "Order";
+		                action("Co&mments")
+		                {
+		                    ApplicationArea = Comments;
+		                    Caption = 'Co&mments';
+		                    Image = ViewComments;
+		                    Promoted = true;
+		                    PromotedCategory = Category4;
+		                    RunObject = Page «solution.commentSheetPageName.saveQuote»;
+		                    RunPageLink = "Document Type" = CONST(«document.namePosted.saveQuote»),
+		                    			  "No." = field("No."),
+		                                  "Document Line No." = const(0);
+		                    ToolTip = 'View or add comments for the record.';
+		                }
+		            }
+		        }
+		        area(processing)
+		        {
+		        	action(Navigate)
+		        	{
+		        		ApplicationArea = All;
+		        		Caption = '&Navigate';
+		        		Image = Navigate;
+		        		Promoted = true;
+		        		PromotedCategory = Category4;
+		        		ToolTip = 'Find all entries and documents that exist for the document number and posting date on the selected entry or document.';
+		        		
+		        		trigger OnAction()
+		        		begin
+		        			Navigate();
+		        		end;
+		        	}
 		        }
 		    }
 		}

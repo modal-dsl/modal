@@ -31,7 +31,7 @@ class DocumentLineExtensions {
 	}
 	
 	static def getShortNamePosted(DocumentLine line) {
-		return 'Posted ' + line.shortName
+		return 'Pstd. ' + line.shortName
 	}
 	
 	static def getCleanedNamePosted(DocumentLine line) {
@@ -55,7 +55,11 @@ class DocumentLineExtensions {
 	}
 	
 	static def getSubformPageName(DocumentLine line) {
-		return line.solution.constructObjectName(line.shortName + ' Subform')
+		return line.solution.constructObjectName(line.shortName + ' Subf.')
+	}
+	
+	static def getSubformPageNamePosted(DocumentLine line) {
+		return line.solution.constructObjectName(line.shortNamePosted + ' Subf.')
 	}
 	
 	static def void doGenerate(DocumentLine line) {
@@ -65,6 +69,7 @@ class DocumentLineExtensions {
 		
 		// Pages
 		line.savePage(line.subformPageName, line.doGenerateSuformPage)
+		line.savePage(line.subformPageNamePosted, line.doGenerateSuformPagePosted)
 	}
 	
 	static def doGenerateTable(DocumentLine line) '''
@@ -411,4 +416,69 @@ class DocumentLineExtensions {
 		    }
 		}
 	'''
+	
+	static def doGenerateSuformPagePosted(DocumentLine line) '''
+		page «management.newPageNo» «line.subformPageNamePosted.saveQuote»
+		{
+		    AutoSplitKey = true;
+		    Caption = 'Lines';
+		    Editable = false;
+		    LinksAllowed = false;
+		    PageType = ListPart;
+		    SourceTable = «line.tableNamePosted.saveQuote»;
+		
+		    layout
+		    {
+		        area(content)
+		        {
+		            repeater(Control1)
+		            {
+		                ShowCaption = false;
+		                «FOR pageField : line.listPartPageFields»
+		                	«pageField.doGenerate»
+		                «ENDFOR»
+		                «IF line.hasTemplateOfType(TemplateDimensions)»
+		                	field("Shortcut Dimension 1 Code"; "Shortcut Dimension 1 Code")
+		                	{
+		                		ApplicationArea = All;
+		                	}
+		                	field("Shortcut Dimension 2 Code"; "Shortcut Dimension 2 Code")
+		                	{
+		                		ApplicationArea = All;
+		                	}
+		                «ENDIF»
+		            }
+		        }
+		    }
+		
+		    actions
+		    {
+		        area(processing)
+		        {
+		            group("&Line")
+		            {
+		                Caption = '&Line';
+		                Image = Line;
+		                group("Related Information")
+		                {
+		                    Caption = 'Related Information';
+		                    action("Co&mments")
+		                    {
+		                        ApplicationArea = Comments;
+		                        Caption = 'Co&mments';
+		                        Image = ViewComments;
+		                        ToolTip = 'View or add comments for the record.';
+		
+		                        trigger OnAction()
+		                        begin
+		                            ShowLineComments;
+		                        end;
+		                    }
+		                }
+		            }
+		        }
+		    }
+		}
+	'''
+	
 }
