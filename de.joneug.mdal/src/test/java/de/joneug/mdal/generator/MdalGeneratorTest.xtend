@@ -53,7 +53,7 @@ class MdalGeneratorTest {
 				'table 123456700 "SEM Seminar Setup"',
 				'field(1; "Primary Key"; Code[10])',
 				'DrillDownPageID = "SEM Seminar Setup";',
-				'AccessByPermission = TableData "SEM Posted Seminar Reg. Header" = R;'
+				'AccessByPermission = TableData "SEM Pstd. Seminar Reg. Header" = R;'
 			]
 		)
 		checkFileContains(
