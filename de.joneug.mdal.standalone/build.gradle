@@ -32,3 +32,8 @@ distTar {
         file.setPath(path.substring(path.indexOf("/") + 1, path.length()))
     }
 }
+
+task distUnzip(dependsOn: distZip, type: Sync) {
+    from zipTree("${buildDir}/distributions/${project.name}-${project.version}.zip")
+    into "${project.buildDir}/docker"
+}
