@@ -25,12 +25,11 @@ jobs:
             ${{ runner.os }}-gradle-
       - name: Create Dist
         run: ./gradlew distUnzip
-      - name: Publish to Registry
-        uses: elgohr/Publish-Docker-Github-Action@master
+      - name: Publish to Docker Hub
+        uses: docker/build-push-action@v1
         with:
-          name: docker.pkg.github.com/joneug/mdal/mdal
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          registry: docker.pkg.github.com
-          workdir: de.joneug.mdal.standalone
-          tags: "master,latest"
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          path: de.joneug.mdal.standalone
+          repository: joneug/mdal
+          tags: master,latest
