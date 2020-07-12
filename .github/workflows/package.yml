@@ -33,4 +33,4 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
           workdir: de.joneug.mdal.standalone
-          tags: "master"
+          tags: "master,latest"
