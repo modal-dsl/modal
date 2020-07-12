@@ -11,6 +11,6 @@ This repository contains the implementation of the Domain Specific Language `mdA
 $ ./gradlew build
 ```
 
-## References
+## License
 
-The project structure was setup according to the [example](https://github.com/itemis/xtext-languageserver-example) provided by itemis. Read more about the underlying concepts in the accompanying [blog post](https://blogs.itemis.com/en/integrating-xtext-language-support-in-visual-studio-code).
+Apache 2.0 (c) Jonathan Neugebauer
