@@ -2,11 +2,14 @@ coverage:
   status:
     project:
       dsl:
+        informational: true
         paths:
           - de.joneug.mdal
       ide:
+        informational: true
         paths:
           - de.joneug.mdal.ide
       standalone:
+        informational: true
         paths:
           - de.joneug.mdal.standalone
