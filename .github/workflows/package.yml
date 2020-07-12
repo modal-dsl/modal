@@ -1,17 +1,14 @@
-name: Build
+name: Package
 
 on:
   push:
     branches:
-      - '*'
+      - 'master'
     tags-ignore:
       - '*'
-  pull_request:
-    branches:
-      - master
 
 jobs:
-  build:
+  package:
     runs-on: ubuntu-latest
     steps:
       - name: Set up JDK 11
@@ -26,12 +23,14 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Build
-        run: ./gradlew build
-      - name: Generate Code Coverage Report
-        run: ./gradlew codeCoverageReport
-      - name: Upload Code Coverage Report
-        uses: codecov/codecov-action@v1
+      - name: Create Dist
+        run: ./gradlew distUnzip
+      - name: Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./build/reports/jacoco/coverage.xml
+          name: docker.pkg.github.com/joneug/mdal/mdal
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          workdir: de.joneug.mdal.standalone
+          tags: "master"
