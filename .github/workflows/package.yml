@@ -26,8 +26,16 @@ jobs:
       - name: Create Dist
         run: ./gradlew distUnzip
       - name: Publish to Docker Hub
+        if: ${{ matrix.os }} == 'ubuntu-latest'
         run: |
           cd de.joneug.mdal.standalone
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-          docker build -t $IMAGE_NAME:IMAGE_TAG .
-          docker push $IMAGE_NAME:IMAGE_TAG
+          docker build -t $IMAGE_NAME:$IMAGE_TAG .
+          docker push $IMAGE_NAME:$IMAGE_TAG
+      - name: Publish to Docker Hub
+        if: ${{ matrix.os }} == 'windows-latest'
+        run: |
+          cd de.joneug.mdal.standalone
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+          docker build -t $env:IMAGE_NAME:$env:IMAGE_TAG .
+          docker push $env:IMAGE_NAME:$env:IMAGE_TAG
