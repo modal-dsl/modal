@@ -1,0 +1,4 @@
+FROM openjdk:11-jre-nanoserver
+WORKDIR /project
+COPY build/docker /mdal
+ENTRYPOINT [ "C:/mdal/bin/mdal-standalone.bat" ]

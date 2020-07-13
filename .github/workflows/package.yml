@@ -37,5 +37,5 @@ jobs:
         run: |
           cd de.joneug.mdal.standalone
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u joneug --password-stdin
-          docker build -t $env:IMAGE_NAME:$env:IMAGE_TAG .
+          docker build -f Dockerfile.windows -t $env:IMAGE_NAME:$env:IMAGE_TAG .
           docker push $env:IMAGE_NAME:$env:IMAGE_TAG

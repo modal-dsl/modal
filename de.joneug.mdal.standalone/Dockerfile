@@ -1,5 +1,8 @@
 FROM openjdk:11-jre
-COPY build/docker /usr/bin/mdal-standalone
-RUN ln -s /usr/bin/mdal-standalone/bin/mdal-standalone /bin/mdal
+RUN useradd mdal \
+    && mkdir -p /project \
+    && chown -R mdal /project
 WORKDIR /project
-ENTRYPOINT [ "mdal" ]
+USER mdal
+COPY build/docker /usr/bin/mdal
+ENTRYPOINT [ "/usr/bin/mdal/bin/mdal-standalone" ]
