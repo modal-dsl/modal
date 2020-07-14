@@ -33,19 +33,18 @@ class SolutionExtensions {
 	}
 	 
 	static def doGenerate(Solution solution) {
-		solution.logInfo('''Generating solution "«solution.name»"''')
-		management.reset()
-		management.readAppJson()
-		management.readSymbolReferences()
+		solution.logInfo("Generating solution '" + solution.name + "'")
 		
 		// Setup
 		solution.logInfo("Generating setup files")
 		solution.doGenerateSetup
 		
 		// Comments
+		solution.logInfo("Generating comment files")
 		solution.doGenerateCommentObjects
 		
 		// Source Code Setup
+		solution.logInfo("Generating source code setup files")
 		solution.doGenerateSourceCodeSetupObjects
 		
 		// Master
@@ -53,12 +52,15 @@ class SolutionExtensions {
 		solution.master.doGenerate
 		
 		// Supplementals
+		solution.logInfo("Generating supplemental files")
 		solution.supplementals.forEach[it.doGenerate]
 		
 		// Document
+		solution.logInfo("Generating document files")
 		solution.document.doGenerate
 		
 		// Ledger Entry
+		solution.logInfo("Generating ledger entry files")
 		solution.ledgerEntry.doGenerate
 	}
 	

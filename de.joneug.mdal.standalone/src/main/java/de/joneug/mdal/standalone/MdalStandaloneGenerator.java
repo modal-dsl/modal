@@ -1,22 +1,16 @@
 package de.joneug.mdal.standalone;
 
 import java.io.File;
-import java.util.List;
 import java.util.concurrent.Callable;
 
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.xtext.diagnostics.Severity;
 import org.eclipse.xtext.generator.GeneratorContext;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 import org.eclipse.xtext.generator.IGenerator2;
 import org.eclipse.xtext.generator.JavaIoFileSystemAccess;
-import org.eclipse.xtext.util.CancelIndicator;
-import org.eclipse.xtext.validation.CheckMode;
-import org.eclipse.xtext.validation.IResourceValidator;
-import org.eclipse.xtext.validation.Issue;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -34,9 +28,6 @@ public class MdalStandaloneGenerator implements Callable<Integer> {
 	protected final Logger LOGGER = Logger.getLogger(MdalStandaloneGenerator.class);
 	
 	protected IGenerator2 generator = new MdalGenerator();
-	
-	@Inject
-	protected IResourceValidator validator;
 	
 	@Inject
 	protected ResourceSet resourceSet;
@@ -61,20 +52,6 @@ public class MdalStandaloneGenerator implements Callable<Integer> {
 	public Integer call() throws Exception {
 		// Load model
 		Resource resource = resourceSet.getResource(URI.createFileURI(modelFile.getAbsolutePath()), true);
-		
-		// Validate model
-		List<Issue> issues = validator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl);
-		if (!issues.isEmpty()) {
-			LOGGER.error("There are issues in the given model file");
-			for (Issue issue : issues) {
-				if(issue.getSeverity() == Severity.ERROR) {
-					LOGGER.error(issue);
-				} else {
-					LOGGER.warn(issue);
-				}
-			}
-			return 1;
-		}
 		
 		// Clean
 		MdalUtils.forceDeleteDirectory(MdalGenerator.OUTPUT_FOLDER);

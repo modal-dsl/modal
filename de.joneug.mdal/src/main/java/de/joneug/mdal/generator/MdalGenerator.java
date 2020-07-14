@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.Resource.Diagnostic;
+import org.eclipse.xtext.diagnostics.Severity;
 import org.eclipse.xtext.generator.AbstractGenerator;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 import org.eclipse.xtext.generator.IGeneratorContext;
@@ -35,19 +36,29 @@ public class MdalGenerator extends AbstractGenerator {
 	public void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {		
 		ObjectExtensions.logInfo(this, "Generator called with resource '" + resource.getURI() + "'");
 		management.setGeneratorFsa(fsa);
+		management.reset();
+		management.readAppJson();
+		management.readSymbolReferences();
 		Model model = (Model)IterableExtensions.head(resource.getContents());
 		
 		// Check for parsing errors
-		List<Diagnostic> errors = model.eResource().getErrors();
-		if(!errors.isEmpty()) {
-			throw new IllegalArgumentException("The model in the provided resource contains errors: " + errors);
+		List<Diagnostic> parsingErrors = model.eResource().getErrors();
+		if(!parsingErrors.isEmpty()) {
+			throw new IllegalArgumentException("The model in the provided resource could not be parsed successfully: \n" + parsingErrors);
 		}
 		
 		// Validate
 		IResourceValidator validator = ((XtextResource)resource).getResourceServiceProvider().getResourceValidator();
 		List<Issue> issues = validator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl);
-		if(!issues.isEmpty()) {
-			throw new IllegalArgumentException("The model in the provided resource contains issues: " + issues);
+		if(issues.stream().anyMatch(it -> it.getSeverity() == Severity.ERROR)) {
+			throw new IllegalArgumentException("The model in the provided resource contains errors.");
+		}
+		for (Issue issue : issues) {
+			if(issue.getSeverity() == Severity.ERROR) {
+				ObjectExtensions.logError(this, issue);
+			} else {
+				ObjectExtensions.logWarn(this, issue);
+			}
 		}
 		
 		SolutionExtensions.doGenerate(model.getSolution());
