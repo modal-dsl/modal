@@ -1,9 +1,17 @@
 package de.joneug.mdal.generator;
 
+import java.util.List;
+
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.Resource.Diagnostic;
 import org.eclipse.xtext.generator.AbstractGenerator;
 import org.eclipse.xtext.generator.IFileSystemAccess2;
 import org.eclipse.xtext.generator.IGeneratorContext;
+import org.eclipse.xtext.resource.XtextResource;
+import org.eclipse.xtext.util.CancelIndicator;
+import org.eclipse.xtext.validation.CheckMode;
+import org.eclipse.xtext.validation.IResourceValidator;
+import org.eclipse.xtext.validation.Issue;
 import org.eclipse.xtext.xbase.lib.IterableExtensions;
 
 import de.joneug.mdal.extensions.ObjectExtensions;
@@ -28,6 +36,20 @@ public class MdalGenerator extends AbstractGenerator {
 		ObjectExtensions.logInfo(this, "Generator called with resource '" + resource.getURI() + "'");
 		management.setGeneratorFsa(fsa);
 		Model model = (Model)IterableExtensions.head(resource.getContents());
+		
+		// Check for parsing errors
+		List<Diagnostic> errors = model.eResource().getErrors();
+		if(!errors.isEmpty()) {
+			throw new IllegalArgumentException("The model in the provided resource contains errors: " + errors);
+		}
+		
+		// Validate
+		IResourceValidator validator = ((XtextResource)resource).getResourceServiceProvider().getResourceValidator();
+		List<Issue> issues = validator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl);
+		if(!issues.isEmpty()) {
+			throw new IllegalArgumentException("The model in the provided resource contains issues: " + issues);
+		}
+		
 		SolutionExtensions.doGenerate(model.getSolution());
 		ObjectExtensions.logInfo(this, "Done");
 	}
