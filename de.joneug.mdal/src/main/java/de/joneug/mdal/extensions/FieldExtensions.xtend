@@ -45,12 +45,10 @@ class FieldExtensions {
 			field(«management.getNewFieldNo(entity)»; «fieldName.saveQuote»; «customField.type.doGenerate»)
 			{
 				Caption = '«fieldName»';
-				««« Option
 				«IF customField.type instanceof TypeOption»
 					OptionCaption = '«FOR member : (customField.type as TypeOption).getMembers() SEPARATOR ','»«member»«ENDFOR»';
 					OptionMembers = «FOR member : (customField.type as TypeOption).getMembers() SEPARATOR ','»"«member»"«ENDFOR»;
 				«ENDIF»
-				««« Table Relation
 				«IF !customField.tableRelation.isNullOrEmpty»
 					TableRelation = «customField.tableRelation.saveQuote»«IF !customField.tableRelationField.isNullOrEmpty».«customField.tableRelationField.saveQuote»«ENDIF»«IF !customField.whereConditionField.isNullOrEmpty» where(«customField.whereConditionField.saveQuote» = const(«customField.whereConditionConst.saveQuote»))«ENDIF»;
 				«ENDIF»
