@@ -264,8 +264,7 @@ class DocumentHeaderExtensions {
 		        		end;
 		        	}
 		        «ENDIF»
-		        «IF header.includeFields.exists[it.entity instanceof Supplemental && it.field == 'Code']»
-		        	«val supplementalIncludeField = header.includeFields.filter[it.entity instanceof Supplemental && it.field == 'Code'].get(0)»
+		        «FOR supplementalIncludeField : header.includeFields.filter[it.entity instanceof Supplemental && it.fieldName == 'Code']»
 		        	field(«management.getNewFieldNo(header)»; «supplementalIncludeField.name.saveQuote»; Code[10])
 		        	{
 		        		Caption = '«supplementalIncludeField.name»';
@@ -273,7 +272,7 @@ class DocumentHeaderExtensions {
 		        		
 		        		trigger OnValidate()
 		        		begin
-		        			Test«document.initialStatus»Planning();
+		        			TestStatus«document.initialStatus»();
 		        			if («supplementalIncludeField.name.saveQuote» <> xRec.«supplementalIncludeField.name.saveQuote») and (xRec.«supplementalIncludeField.name.saveQuote» <> '') then begin
 		        				if GetHideValidationDialog or not GuiAllowed then
 		        					Confirmed := true
@@ -309,7 +308,7 @@ class DocumentHeaderExtensions {
 		        			«ENDFOR»
 		        		end;
 		        	}
-		        «ENDIF»
+		        «ENDFOR»
 		        «header.doGenerateTableFields»
 		    }
 		
@@ -327,7 +326,7 @@ class DocumentHeaderExtensions {
 		        «solution.setupTableVariableName»: Record «solution.setupTableName.saveQuote»;
 		        «solution.setupTableVariableName»Read: Boolean;
 		        «master.tableVariableName»: Record «master.tableName.saveQuote»;
-		        «FOR supplementalIncludeField : header.includeFields.filter[it.entity instanceof Supplemental && it.field == 'Code']»
+		        «FOR supplementalIncludeField : header.includeFields.filter[it.entity instanceof Supplemental && it.fieldName == 'Code']»
 		        	«supplementalIncludeField.entity.tableVariableName»: Record «supplementalIncludeField.entity.tableName.saveQuote»;
 		        «ENDFOR»
 		        «document.header.tableVariableName»: Record «document.header.tableName.saveQuote»;
@@ -364,7 +363,7 @@ class DocumentHeaderExtensions {
 		        if GetFilter«master.tableVariableName»No <> '' then
 		            Validate("«master.name» No.", GetFilter«master.tableVariableName»No);
 				
-				«FOR supplementalIncludeField : header.includeFields.filter[it.entity instanceof Supplemental && it.field == 'Code']»
+				«FOR supplementalIncludeField : header.includeFields.filter[it.entity instanceof Supplemental && it.fieldName == 'Code']»
 					if GetFilter«supplementalIncludeField.entity.tableVariableName»Code <> '' then
 						Validate(«supplementalIncludeField.name.saveQuote», GetFilter«supplementalIncludeField.entity.tableVariableName»Code);
 				«ENDFOR»
@@ -390,7 +389,7 @@ class DocumentHeaderExtensions {
 		            if GetRangeMin("«master.name» No.") = GetRangeMax("«master.name» No.") then
 		                exit(GetRangeMax("«master.name» No."));
 		    end;
-			«FOR supplementalIncludeField : header.includeFields.filter[it.entity instanceof Supplemental && it.field == 'Code']»
+			«FOR supplementalIncludeField : header.includeFields.filter[it.entity instanceof Supplemental && it.fieldName == 'Code']»
 				
 				local procedure GetFilter«supplementalIncludeField.entity.tableVariableName»Code(): Code[20]
 					begin
@@ -605,7 +604,7 @@ class DocumentHeaderExtensions {
 		        end else
 		            Clear(«master.tableVariableName»);
 		    end;
-			«FOR supplementalIncludeField : header.includeFields.filter[it.entity instanceof Supplemental && it.field == 'Code']»
+			«FOR supplementalIncludeField : header.includeFields.filter[it.entity instanceof Supplemental && it.fieldName == 'Code']»
 			    
 			    local procedure Get«supplementalIncludeField.entity.tableVariableName»(«supplementalIncludeField.name.clean»: Code[10])
 			    begin
@@ -896,14 +895,13 @@ class DocumentHeaderExtensions {
 		        		end;
 		        	}
 		        «ENDIF»
-		        «IF header.includeFields.exists[it.entity instanceof Supplemental && it.field == 'Code']»
-		        	«val supplementalIncludeField = header.includeFields.filter[it.entity instanceof Supplemental && it.field == 'Code'].get(0)»
+		        «FOR supplementalIncludeField : header.includeFields.filter[it.entity instanceof Supplemental && it.fieldName == 'Code']»
 		        	field(«management.getNewFieldNo(header)»; «supplementalIncludeField.name.saveQuote»; Code[10])
 		        	{
 		        		Caption = '«supplementalIncludeField.name»';
 		        		TableRelation = «supplementalIncludeField.entity.tableName.saveQuote»;
 		        	}
-		        «ENDIF»
+		        «ENDFOR»
 		        «header.doGenerateTableFields»
 		        field(«management.getNewFieldNo(header)»; "«document.shortName» No."; Code[20])
 		        {
