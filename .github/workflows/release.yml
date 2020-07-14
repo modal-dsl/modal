@@ -44,7 +44,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ env.ASSET_PATH }}
-          asset_name: ${{ env.ASSET_NAME }}
+          asset_name: de.joneug.mdal.ide.zip
           asset_content_type: application/zip
       - name: Set up Environment Variables (CLI)
         run: |
@@ -57,5 +57,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ env.ASSET_PATH }}
-          asset_name: ${{ env.ASSET_NAME }}
+          asset_name: de.joneug.mdal.standalone.zip
           asset_content_type: application/zip
