@@ -23,10 +23,6 @@ jobs:
             ${{ runner.os }}-gradle-
       - name: Build
         run: ./gradlew build
-      - name: Set up Environment Variables
-        run: |
-          echo "::set-env name=ASSET_PATH::$(ls de.joneug.mdal.ide/build/distributions/*.zip | head -1)"
-          echo "::set-env name=ASSET_NAME::$(cd de.joneug.mdal.ide/build/distributions/ && ls *.zip | head -1)"
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -37,8 +33,24 @@ jobs:
           release_name: ${{ github.ref }}
           draft: false
           prerelease: false
-      - name: Upload Release Asset
-        id: upload-release-asset
+      - name: Set up Environment Variables (IDE)
+        run: |
+          echo "::set-env name=ASSET_PATH::$(ls de.joneug.mdal.ide/build/distributions/*.zip | head -1)"
+          echo "::set-env name=ASSET_NAME::$(cd de.joneug.mdal.ide/build/distributions/ && ls *.zip | head -1)"
+      - name: Upload Release Asset (IDE)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ env.ASSET_PATH }}
+          asset_name: ${{ env.ASSET_NAME }}
+          asset_content_type: application/zip
+      - name: Set up Environment Variables (CLI)
+        run: |
+          echo "::set-env name=ASSET_PATH::$(ls de.joneug.mdal.standalone/build/distributions/*.zip | head -1)"
+          echo "::set-env name=ASSET_NAME::$(cd de.joneug.mdal.standalone/build/distributions/ && ls *.zip | head -1)"
+      - name: Upload Release Asset (CLI)
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
