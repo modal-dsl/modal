@@ -1,17 +1,22 @@
 package de.joneug.mdal.extensions
 
 import de.joneug.mdal.generator.GeneratorManagement
+import de.joneug.mdal.mdal.CustomField
 import de.joneug.mdal.mdal.DocumentHeader
 import de.joneug.mdal.mdal.Entity
 import de.joneug.mdal.mdal.IncludeField
 import de.joneug.mdal.mdal.LedgerEntry
 import de.joneug.mdal.mdal.Master
 import de.joneug.mdal.mdal.Supplemental
+import de.joneug.mdal.mdal.TemplateField
+import java.util.HashMap
+import java.util.Map
 
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.EntityExtensions.*
 import static extension de.joneug.mdal.extensions.FieldExtensions.*
 import static extension de.joneug.mdal.extensions.StringExtensions.*
+import static extension de.joneug.mdal.extensions.TemplateTypeExtensions.*
 
 class IncludeFieldExtensions {
 
@@ -35,6 +40,19 @@ class IncludeFieldExtensions {
 		} else {
 			return matchingFields.get(0)
 		}
+	}
+	
+	def static Map<String, String> getAssignmentMap(IncludeField includeField) {
+		var map = new HashMap<String, String>()
+		val originalField = includeField.field
+		
+		if(originalField instanceof CustomField) {
+			map.put(includeField.name, originalField.name)
+		} else if(originalField instanceof TemplateField) {
+			map.putAll(originalField.type.getAssignmentMap(includeField))
+		}
+		
+		return map
 	}
 	
 	def static CharSequence doGenerateTableField(IncludeField includeField) {

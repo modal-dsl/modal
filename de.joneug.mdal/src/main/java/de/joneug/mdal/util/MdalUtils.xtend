@@ -6,11 +6,25 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.Comparator
+import java.util.HashMap
+import java.util.List
 import org.eclipse.xtext.generator.JavaIoFileSystemAccess
 import org.eclipse.xtext.parser.IEncodingProvider
 import org.eclipse.xtext.service.AbstractGenericModule
 
 class MdalUtils {
+	
+	static def constructMap(List<String> keys, List<String> values) {
+		if(keys.length != values.length) {
+			throw new IllegalArgumentException("List lengths must be equal")
+		}
+		
+		var map = new HashMap<String, String>()
+		for (i : 0 ..< keys.length) {
+			map.put(keys.get(i), values.get(i))
+		}
+		return map
+	}
 	
 	def static JavaIoFileSystemAccess getJavaIoFileSystemAccess() {
 		val fsa = new JavaIoFileSystemAccess()

@@ -136,12 +136,16 @@ class DocumentHeaderExtensions {
 		                Get«master.tableVariableName»("«master.name» No.");
 		                «master.tableVariableName».TestBlocked();
 		                OnAfterCheck«master.tableVariableName»No(Rec, xRec, «master.tableVariableName»);
-		                
 		                «FOR masterIncludeField : header.includeFields.filter[it.entity === master]»
+		                	
 		                	«IF masterIncludeField.validate == BoolInternal.TRUE»
-		                		VALIDATE(«masterIncludeField.name.saveQuote», «master.tableVariableName».«masterIncludeField.fieldName.saveQuote»);
+		                		«FOR assignmentEntry : masterIncludeField.assignmentMap.entrySet»
+		                			VALIDATE(«assignmentEntry.key.saveQuote», «master.tableVariableName».«assignmentEntry.value.saveQuote»);
+		                		«ENDFOR»
 		                	«ELSE»
-		                		«masterIncludeField.name.saveQuote» := «master.tableVariableName».«masterIncludeField.fieldName.saveQuote»;
+		                		«FOR assignmentEntry : masterIncludeField.assignmentMap.entrySet»
+		                			«assignmentEntry.key.saveQuote» := «master.tableVariableName».«assignmentEntry.value.saveQuote»;
+		                		«ENDFOR»
 		                	«ENDIF»
 						«ENDFOR»
 		            end;
@@ -291,14 +295,18 @@ class DocumentHeaderExtensions {
 		        			Get(«supplementalIncludeField.name.saveQuote»);
 		        				«supplementalIncludeField.entity.tableVariableName».TestBlocked;
 		        			end;
-		        			
 		        			«FOR supplementalIncludeField2 : header.includeFields.filter[it.entity === supplementalIncludeField.entity]»
+		        				
 		        				«IF supplementalIncludeField2.validate == BoolInternal.TRUE»
-		        					VALIDATE(«supplementalIncludeField2.name.saveQuote», «supplementalIncludeField2.entity.tableVariableName».«supplementalIncludeField2.fieldName.saveQuote»);
-			                	«ELSE»
-			                		«supplementalIncludeField2.name.saveQuote» := «supplementalIncludeField2.entity.tableVariableName».«supplementalIncludeField2.fieldName.saveQuote»;
-			                	«ENDIF»
-							«ENDFOR»
+		        					«FOR assignmentEntry : supplementalIncludeField2.assignmentMap.entrySet»
+		        						VALIDATE(«assignmentEntry.key.saveQuote», «supplementalIncludeField2.entity.tableVariableName».«assignmentEntry.value.saveQuote»);
+		        					«ENDFOR»
+		        				«ELSE»
+		        					«FOR assignmentEntry : supplementalIncludeField2.assignmentMap.entrySet»
+		        						«assignmentEntry.key.saveQuote» := «supplementalIncludeField2.entity.tableVariableName».«assignmentEntry.value.saveQuote»;
+		        					«ENDFOR»
+		        				«ENDIF»
+		        			«ENDFOR»
 		        		end;
 		        	}
 		        «ENDIF»
@@ -955,7 +963,7 @@ class DocumentHeaderExtensions {
 			«IF header.hasTemplateOfType(TemplateDimensions)»
 				procedure ShowDimensions()
 				begin
-					DimMgt.ShowDimensionSet("Dimension Set ID", StrSubstNo('%1 %2', TableCaption, "Document No."));
+					DimMgt.ShowDimensionSet("Dimension Set ID", StrSubstNo('%1 %2', TableCaption, "No."));
 				end;
 		   	«ENDIF»
 		}

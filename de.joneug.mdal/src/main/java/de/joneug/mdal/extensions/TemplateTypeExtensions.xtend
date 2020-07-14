@@ -4,6 +4,8 @@ import de.joneug.mdal.generator.GeneratorManagement
 import de.joneug.mdal.mdal.Entity
 import de.joneug.mdal.mdal.Field
 import de.joneug.mdal.mdal.IncludeField
+import de.joneug.mdal.mdal.Master
+import de.joneug.mdal.mdal.Supplemental
 import de.joneug.mdal.mdal.TemplateAddress
 import de.joneug.mdal.mdal.TemplateContact
 import de.joneug.mdal.mdal.TemplateContactInfo
@@ -12,6 +14,9 @@ import de.joneug.mdal.mdal.TemplateDimensions
 import de.joneug.mdal.mdal.TemplateName
 import de.joneug.mdal.mdal.TemplateSalesperson
 import de.joneug.mdal.mdal.TemplateType
+import de.joneug.mdal.util.MdalUtils
+import java.util.List
+import java.util.Map
 
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.FieldExtensions.*
@@ -26,12 +31,40 @@ class TemplateTypeExtensions {
 		return templateType.getContainerOfType(Field)
 	}
 	
+	static def getEntity(TemplateType templateType, IncludeField includeField) {
+		var entity = templateType.field.entity
+		if(includeField !== null) {
+			entity = includeField.getContainerOfType(Entity)
+		}
+		return entity
+	}
+	
+	static def getPrefix(TemplateType templateType, IncludeField includeField) {
+		var prefix = ''
+		if(includeField !== null) {
+			prefix = includeField.entity.shortName + ' '
+		}
+		return prefix
+	}
+	
 	static def calledFromEditableTable(StackTraceElement[] stacktrace) {
 		return !stacktrace.exists[
 			(it.className == DocumentHeaderExtensions.name && it.methodName == 'doGenerateTablePosted') ||
 			(it.className == DocumentLineExtensions.name && it.methodName == 'doGenerateTablePosted') ||
 			it.className == LedgerEntryExtensions.name
 		]
+	}
+	
+	static def Map<String, String> constructAssignmentMap(TemplateType templateType, IncludeField includeField, List<String> originalFieldNames) {
+		return MdalUtils.constructMap(originalFieldNames.map[templateType.getPrefix(includeField) + it], originalFieldNames)
+	}
+	
+	static def getFieldNames(TemplateDimensions templateType, Entity entity) {
+		if(entity instanceof Master || entity instanceof Supplemental) {
+			return #['Global Dimension 1 Code', 'Global Dimension 2 Code']
+		} else {
+			return #['Shortcut Dimension 1 Code', 'Shortcut Dimension 2 Code']
+		}
 	}
 	
 	/*
@@ -99,15 +132,46 @@ class TemplateTypeExtensions {
 	}
 	
 	/*
+	 * Polymorphic dispatch for "getAssignmentMap" on TemplateType subtypes 
+	 */
+	static def dispatch Map<String, String> getAssignmentMap(TemplateName templateType, IncludeField includeField) {
+		return constructAssignmentMap(templateType, includeField, #['Name', 'Name 2'])
+	}
+	
+	static def dispatch Map<String, String> getAssignmentMap(TemplateDescription templateType, IncludeField includeField) {
+		return constructAssignmentMap(templateType, includeField, #['Description', 'Description 2'])
+	}
+	
+	static def dispatch Map<String, String> getAssignmentMap(TemplateDimensions templateType, IncludeField includeField) {
+		val originalEntity = includeField.entity
+		val includeEntity = templateType.getEntity(includeField)
+		return MdalUtils.constructMap(templateType.getFieldNames(includeEntity), templateType.getFieldNames(originalEntity))
+	}
+	
+	static def dispatch Map<String, String> getAssignmentMap(TemplateAddress templateType, IncludeField includeField) {
+		return constructAssignmentMap(templateType, includeField, #['Address', 'Address 2', 'City', 'Country/Region Code', 'Post Code', 'County'])
+	}
+	
+	static def dispatch Map<String, String> getAssignmentMap(TemplateContactInfo templateType, IncludeField includeField) {
+		return constructAssignmentMap(templateType, includeField, #['Contact Person', 'Phone No.', 'Telex No.', 'Fax No.', 'Telex Answer Back', 'Email', 'Home Page'])
+	}
+	
+	static def dispatch Map<String, String> getAssignmentMap(TemplateSalesperson templateType, IncludeField includeField) {
+		val fieldNames = #['Salesperson Code']
+		return MdalUtils.constructMap(fieldNames, fieldNames)
+	}
+	
+	static def dispatch Map<String, String> getAssignmentMap(TemplateContact templateType, IncludeField includeField) {
+		return MdalUtils.constructMap(#[includeField.name], #[includeField.field.name])
+	}
+	
+	/*
 	 * Polymorphic dispatch for "doGenerateTableFields" on TemplateType subtypes 
 	 */
 	static def dispatch doGenerateTableFields(TemplateName templateType, IncludeField includeField) {
-		var entity = templateType.field.entity
-		var prefix = ''
-		if(includeField !== null) {
-			entity = includeField.getContainerOfType(Entity)
-			prefix = includeField.entity.shortName + ' '
-		}
+		val entity = templateType.getEntity(includeField)
+		val prefix = templateType.getPrefix(includeField)
+
 		return '''
 			field(«management.getNewFieldNo(entity)»; "«prefix»Name"; Text[100])
 			{
@@ -122,12 +186,12 @@ class TemplateTypeExtensions {
 				«ENDIF»
 			}
 			«IF includeField === null»
-				field(«management.getNewFieldNo(templateType.field.entity)»; "Search Name"; Code[100])
+				field(«management.getNewFieldNo(entity)»; "Search Name"; Code[100])
 				{
 					Caption = 'Search Name';
 				}
 			«ENDIF»
-			field(«management.getNewFieldNo(templateType.field.entity)»; "«prefix»Name 2"; Text[50])
+			field(«management.getNewFieldNo(entity)»; "«prefix»Name 2"; Text[50])
 			{
 				Caption = '«prefix»Name 2';
 			}
@@ -135,12 +199,8 @@ class TemplateTypeExtensions {
 	}
 		
 	static def dispatch doGenerateTableFields(TemplateDescription templateType, IncludeField includeField) {
-		var entity = templateType.field.entity
-		var prefix = ''
-		if(includeField !== null) {
-			entity = includeField.getContainerOfType(Entity)
-			prefix = includeField.entity.shortName + ' '
-		}
+		val entity = templateType.getEntity(includeField)
+		val prefix = templateType.getPrefix(includeField)
 		
 		return '''
 			field(«management.getNewFieldNo(entity)»; "«prefix»Description"; Text[100])
@@ -161,7 +221,7 @@ class TemplateTypeExtensions {
 					Caption = 'Search Description';
 				}
 			«ENDIF»
-			field(«prefix»«management.getNewFieldNo(entity)»; "«prefix»Description 2"; Text[50])
+			field(«management.getNewFieldNo(entity)»; "«prefix»Description 2"; Text[50])
 			{
 				Caption = '«prefix»Description 2';
 			}
@@ -169,36 +229,43 @@ class TemplateTypeExtensions {
 	}
 
 	static def dispatch doGenerateTableFields(TemplateDimensions templateType, IncludeField includeField) {
-		var entity = templateType.field.entity
-		if(includeField !== null) {
-			entity = includeField.getContainerOfType(Entity)
-		}
+		val entity = templateType.getEntity(includeField)
 		val editable = Thread.currentThread.stackTrace.calledFromEditableTable
 		
+		var prefix = 'Shortcut'
+		if(entity instanceof Master || entity instanceof Supplemental) {
+			prefix = 'Global'
+		}
+		
+		var captionClassPrefix = '1,2'
+		if(entity instanceof Master || entity instanceof Supplemental) {
+			captionClassPrefix = '1,1'
+		}
+		
 		return '''
-			field(«management.getNewFieldNo(entity)»; "Global Dimension 1 Code"; Code[20])
+			field(«management.getNewFieldNo(entity)»; "«prefix» Dimension 1 Code"; Code[20])
 			{
-				CaptionClass = '1,1,1';
-				Caption = 'Global Dimension 1 Code';
+				CaptionClass = '«captionClassPrefix»,1';
+				Caption = '«prefix» Dimension 1 Code';
 				TableRelation = "Dimension Value".Code where("Global Dimension No." = const(1));
 				«IF editable»
 					
 					trigger OnValidate()
 					begin
-						ValidateShortcutDimCode(1, "Global Dimension 1 Code");
+						ValidateShortcutDimCode(1, "«prefix» Dimension 1 Code");
 					end;
 				«ENDIF»
 			}
-			field(«management.getNewFieldNo(entity)»; "Global Dimension 2 Code"; Code[20])
+			field(«management.getNewFieldNo(entity)»; "«prefix» Dimension 2 Code"; Code[20])
 			{
-				CaptionClass = '1,1,2';
-				Caption = 'Global Dimension 2 Code';
+				CaptionClass = '«captionClassPrefix»,2';
+				Caption = '«prefix» Dimension 2 Code';
 				TableRelation = "Dimension Value".Code where("Global Dimension No." = const(2));
 				«IF editable»
 					
 					trigger OnValidate()
 					begin
-						ValidateShortcutDimCode(2, "Global Dimension 2 Code");
+						ValidateShortcutDimCode(2, "«prefix» Dimension 2 Code");
 					end;
 				«ENDIF»
 			}
@@ -206,12 +273,8 @@ class TemplateTypeExtensions {
 	}
 	
 	static def dispatch doGenerateTableFields(TemplateAddress templateType, IncludeField includeField) {
-		var entity = templateType.field.entity
-		var prefix = ''
-		if(includeField !== null) {
-			entity = includeField.getContainerOfType(Entity)
-			prefix = includeField.entity.shortName + ' '
-		}
+		val entity = templateType.getEntity(includeField)
+		val prefix = templateType.getPrefix(includeField)
 		val editable = Thread.currentThread.stackTrace.calledFromEditableTable
 		
 		return '''
@@ -292,12 +355,8 @@ class TemplateTypeExtensions {
 	}
 	
 	static def dispatch doGenerateTableFields(TemplateContactInfo templateType, IncludeField includeField) {
-		var entity = templateType.field.entity
-		var prefix = ''
-		if(includeField !== null) {
-			entity = includeField.getContainerOfType(Entity)
-			prefix = includeField.entity.shortName + ' '
-		}
+		val entity = templateType.getEntity(includeField)
+		val prefix = templateType.getPrefix(includeField)
 		val editable = Thread.currentThread.stackTrace.calledFromEditableTable
 		
 		return '''
@@ -345,10 +404,7 @@ class TemplateTypeExtensions {
 	}
 	
 	static def dispatch doGenerateTableFields(TemplateSalesperson templateType, IncludeField includeField) {
-		var entity = templateType.field.entity
-		if(includeField !== null) {
-			entity = includeField.getContainerOfType(Entity)
-		}
+		val entity = templateType.getEntity(includeField)
 		val editable = Thread.currentThread.stackTrace.calledFromEditableTable
 		
 		return '''
@@ -368,10 +424,9 @@ class TemplateTypeExtensions {
 	}
 	
 	static def dispatch doGenerateTableFields(TemplateContact templateType, IncludeField includeField) {
-		var entity = templateType.field.entity
+		val entity = templateType.getEntity(includeField)
 		var fieldName = templateType.field.name
 		if(includeField !== null) {
-			entity = includeField.getContainerOfType(Entity)
 			fieldName = includeField.name
 		}
 		val editable = Thread.currentThread.stackTrace.calledFromEditableTable
@@ -427,10 +482,8 @@ class TemplateTypeExtensions {
 	 */
 	 
 	static def dispatch doGeneratePageFields(TemplateName templateType, IncludeField includeField) {
-		var prefix = ''
-		if(includeField !== null) {
-			prefix = includeField.entity.shortName + ' '
-		}
+		val prefix = templateType.getPrefix(includeField)
+		
 		return '''
 			field("«prefix»Name"; "«prefix»Name")
 			{
@@ -462,10 +515,8 @@ class TemplateTypeExtensions {
 	}
 	
 	static def dispatch doGeneratePageFields(TemplateDescription templateType, IncludeField includeField) {
-		var prefix = ''
-		if(includeField !== null) {
-			prefix = includeField.entity.shortName + ' '
-		}
+		val prefix = templateType.getPrefix(includeField)
+		
 		return '''
 		    field("«prefix»Description"; "«prefix»Description")
 		    {
@@ -506,10 +557,8 @@ class TemplateTypeExtensions {
 	'''
 	
 	static def dispatch doGeneratePageFields(TemplateAddress templateType, IncludeField includeField) {
-		var prefix = ''
-		if(includeField !== null) {
-			prefix = includeField.entity.shortName + ' '
-		}
+		val prefix = templateType.getPrefix(includeField)
+		
 		return '''
 			field("«prefix»Address"; "«prefix»Address")
 			{
@@ -545,10 +594,8 @@ class TemplateTypeExtensions {
 	}
 	
 	static def dispatch doGeneratePageFields(TemplateContactInfo templateType, IncludeField includeField) {
-		var prefix = ''
-		if(includeField !== null) {
-			prefix = includeField.entity.shortName + ' '
-		}
+		val prefix = templateType.getPrefix(includeField)
+		
 		return '''
 			field("«prefix»Phone No."; "«prefix»Phone No.")
 			{

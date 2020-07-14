@@ -200,12 +200,16 @@ class DocumentLineExtensions {
 		        Get«document.header.tableVariableName»;
 		
 		        Init();
-		        
 		        «FOR headerIncludeField : line.includeFields.filter[it.entity === document.header]»
+		        	
 		        	«IF headerIncludeField.validate == BoolInternal.TRUE»
-		        		Validate(«headerIncludeField.name.saveQuote», «document.header.tableVariableName».«headerIncludeField.fieldName.saveQuote»);
+		        		«FOR assignmentEntry : headerIncludeField.assignmentMap.entrySet»
+		        			Validate(«assignmentEntry.key.saveQuote», «document.header.tableVariableName».«assignmentEntry.value.saveQuote»);
+		        		«ENDFOR»
 		        	«ELSE»
-		        		«headerIncludeField.name.saveQuote» := «document.header.tableVariableName».«headerIncludeField.fieldName.saveQuote»;
+		        		«FOR assignmentEntry : headerIncludeField.assignmentMap.entrySet»
+		        			«assignmentEntry.key.saveQuote» := «document.header.tableVariableName».«assignmentEntry.value.saveQuote»;
+		        		«ENDFOR»
 		        	«ENDIF»
 				«ENDFOR»
 				«IF line.hasTemplateOfType(TemplateDimensions) && document.header.hasTemplateOfType(TemplateDimensions)»
@@ -339,7 +343,7 @@ class DocumentLineExtensions {
 		    	
 		    	procedure ShowDimensions()
 		    	begin
-		    		DimMgt.ShowDimensionSet("Dimension Set ID", StrSubstNo('%1 %2', TableCaption, "No."));
+		    		DimMgt.ShowDimensionSet("Dimension Set ID", StrSubstNo('%1 %2 %3', TableCaption, "Document No.", "Line No."));
 		    	end;
 		    «ENDIF»
 		    

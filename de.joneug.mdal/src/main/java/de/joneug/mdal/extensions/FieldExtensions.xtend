@@ -25,15 +25,15 @@ class FieldExtensions {
 		return doGenerateTableField(templateField, null)
 	}
 	
-	static def dispatch doGenerateTableField(CustomField customField) {
+	static def dispatch CharSequence doGenerateTableField(CustomField customField) {
 		return doGenerateTableField(customField, null)
 	}
 	
-	static def dispatch doGenerateTableField(TemplateField templateField, IncludeField includeField) {
+	static def dispatch CharSequence doGenerateTableField(TemplateField templateField, IncludeField includeField) {
 		return templateField.type.doGenerateTableFields(includeField)
 	}
 	
-	static def dispatch doGenerateTableField(CustomField customField, IncludeField includeField) {
+	static def dispatch CharSequence doGenerateTableField(CustomField customField, IncludeField includeField) {
 		var entity = customField.entity
 		var fieldName = customField.name
 		if(includeField !== null) {
