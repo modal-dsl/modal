@@ -54,8 +54,8 @@ class MdalParsingTest {
 		val issues = model.validate
 		logDebug(issues)
 		assertEquals(8, issues.length)
-		assertEquals(7, issues.filter[it.severity == Severity.ERROR].length)
-		assertEquals(1, issues.filter[it.severity == Severity.WARNING].length)
+		assertEquals(6, issues.filter[it.severity == Severity.ERROR].length)
+		assertEquals(2, issues.filter[it.severity == Severity.WARNING].length)
 		
 		// Master should have name or description
 		model.assertWarning(MdalPackage.eINSTANCE.master, MdalValidator.ENTITY_NAME_DESCRIPTION)
@@ -64,7 +64,7 @@ class MdalParsingTest {
 		model.assertError(MdalPackage.eINSTANCE.includeField, MdalValidator.INCLUDE_FIELD_UNKNOWN_FIELD)
 		
 		// Unknown table
-		model.assertError(MdalPackage.eINSTANCE.customField, MdalValidator.CUSTOM_FIELD_UNKNOWN_TABLE)
+		model.assertWarning(MdalPackage.eINSTANCE.customField, MdalValidator.CUSTOM_FIELD_UNKNOWN_TABLE)
 		
 		// Entity name already exists
 		model.assertError(MdalPackage.eINSTANCE.documentHeader, MdalValidator.ENTITY_NAME_EXISTS)

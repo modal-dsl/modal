@@ -19,7 +19,7 @@ class CustomFieldValidator extends AbstractDeclarativeValidator {
 	def checkTableRelation(CustomField customField) {
 		if(!customField.tableRelation.isNullOrEmpty) {
 			if(!management.symbolReferences.exists[it.tables.exists[it.name == customField.tableRelation.unquote]]) {
-				error(
+				warning(
 					'''Table «customField.tableRelation.saveQuote» is unknown.''',
 					MdalPackage.Literals.CUSTOM_FIELD__TABLE_RELATION,
 					MdalValidator.CUSTOM_FIELD_UNKNOWN_TABLE

@@ -43,8 +43,8 @@ class MdalLanguageServerTest extends AbstractLanguageServerTest {
 		assertFalse('Incorrect model should have errors', diagnostics.empty)
 		logDebug(diagnostics)
 		assertEquals(8, diagnostics.length)
-		assertEquals(7, diagnostics.filter[it.severity == DiagnosticSeverity.Error].length)
-		assertEquals(1, diagnostics.filter[it.severity == DiagnosticSeverity.Warning].length)
+		assertEquals(6, diagnostics.filter[it.severity == DiagnosticSeverity.Error].length)
+		assertEquals(2, diagnostics.filter[it.severity == DiagnosticSeverity.Warning].length)
 	}
 	
 	@Test
