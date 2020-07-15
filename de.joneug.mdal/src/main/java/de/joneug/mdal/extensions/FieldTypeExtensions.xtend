@@ -1,6 +1,5 @@
 package de.joneug.mdal.extensions
 
-import de.joneug.mdal.mdal.CustomField
 import de.joneug.mdal.mdal.TypeBigInteger
 import de.joneug.mdal.mdal.TypeBlob
 import de.joneug.mdal.mdal.TypeBoolean
@@ -22,7 +21,6 @@ import de.joneug.mdal.mdal.TypeText
 import de.joneug.mdal.mdal.TypeTime
 
 import static extension de.joneug.mdal.extensions.CustomFieldExtensions.*
-import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.TypeEnumExtensions.*
 
 class FieldTypeExtensions {
@@ -55,7 +53,7 @@ class FieldTypeExtensions {
 
 	static def dispatch CharSequence doGenerate(TypeEnum fieldType) {
 		fieldType.doGenerate
-		return '''Enum "«fieldType.getContainerOfType(CustomField).getEnumName()»"'''
+		return '''Enum "«fieldType.customField.getEnumName()»"'''
 	}
 
 	static def dispatch CharSequence doGenerate(TypeOption fieldType) '''Option'''

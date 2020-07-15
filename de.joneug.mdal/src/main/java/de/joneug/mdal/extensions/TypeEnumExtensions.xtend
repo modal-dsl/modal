@@ -12,17 +12,24 @@ class TypeEnumExtensions {
 	
 	static GeneratorManagement management = GeneratorManagement.getInstance()
 	
+	static def getCustomField(TypeEnum typeEnum) {
+		return typeEnum.getContainerOfType(CustomField)
+	}
+	
 	static def void doGenerate(TypeEnum typeEnum) {
-		typeEnum.solution.saveEnum(typeEnum.getContainerOfType(CustomField).enumFileName, typeEnum.doGenerateEnum)
+		// Skip if file was already generated as this method could be called multiple times due to IncludeFields
+		if(!typeEnum.solution.existsEnum(typeEnum.customField.enumFileName)) {
+			typeEnum.solution.saveEnum(typeEnum.customField.enumFileName, typeEnum.doGenerateEnum)	
+		}
 	}
 	
 	static def doGenerateEnum(TypeEnum typeEnum) '''
-	enum «management.newEnumNo» «typeEnum.getContainerOfType(CustomField).enumName.saveQuote»
+	enum «management.newEnumNo» «typeEnum.customField.enumName.saveQuote»
 	{
 		Extensible = true;
 		
 		«FOR member : typeEnum.members»
-			value(«management.getNewFieldNo(typeEnum)»; "«member»") { Caption = '«member»'; }
+			value(«management.getNewFieldNo(typeEnum.customField) - 1»; "«member»") { Caption = '«member»'; }
 		«ENDFOR»
 	}
 	'''

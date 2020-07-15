@@ -21,7 +21,6 @@ import de.joneug.al.ObjectRange;
 import de.joneug.al.SymbolReference;
 import de.joneug.mdal.extensions.ObjectExtensions;
 import de.joneug.mdal.mdal.Entity;
-import de.joneug.mdal.mdal.TypeEnum;
 import de.joneug.mdal.util.MdalUtils;
 
 public class GeneratorManagement {
@@ -149,11 +148,7 @@ public class GeneratorManagement {
 
 	public int getNewFieldNo(EObject object) {
 		if (!lastFieldNoMap.containsKey(object)) {
-			if (object instanceof TypeEnum) {
-				lastFieldNoMap.put(object, 0);
-			} else {
-				lastFieldNoMap.put(object, 1);
-			}
+			lastFieldNoMap.put(object, 1);
 		} else {
 			lastFieldNoMap.put(object, lastFieldNoMap.get(object) + 1);
 		}

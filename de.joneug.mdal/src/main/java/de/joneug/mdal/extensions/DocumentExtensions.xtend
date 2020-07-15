@@ -158,7 +158,7 @@ class DocumentExtensions {
 		    AssignmentCompatibility = true;
 			
 			«FOR statusCaption : document.header.statusCaptions»
-				value(«management.getNewFieldNo(document)»; «statusCaption.saveQuote») { Caption = '«statusCaption»'; }
+				value(«management.getNewFieldNo(document) - 1»; «statusCaption.saveQuote») { Caption = '«statusCaption»'; }
 			«ENDFOR»
 		}
 	'''

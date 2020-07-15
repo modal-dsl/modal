@@ -59,8 +59,7 @@ class EObjectExtensions {
 	}
 	
 	static def saveEnum(EObject object, String objectName, CharSequence fileContent) {
-		management.generatorFsa.generateFile(MdalGenerator.ENUM_PATH + '/' + objectName.toEnumFileName, fileContent
-		)
+		management.generatorFsa.generateFile(MdalGenerator.ENUM_PATH + '/' + objectName.toEnumFileName, fileContent)
 	}
 	
 	static def saveTableExt(EObject object, String objectName, CharSequence fileContent) {
@@ -69,6 +68,10 @@ class EObjectExtensions {
 	
 	static def saveEnumExt(EObject object, String objectName, CharSequence fileContent) {
 		management.generatorFsa.generateFile(MdalGenerator.ENUM_EXT_PATH + '/' + objectName.toEnumExtFileName, fileContent)
+	}
+	
+	static def existsEnum(EObject object, String objectName) {
+		management.generatorFsa.isFile(MdalGenerator.ENUM_PATH + '/' + objectName.toEnumFileName)
 	}
 	
 }
