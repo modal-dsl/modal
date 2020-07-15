@@ -499,8 +499,6 @@ class LedgerEntryExtensions {
 		    Editable = false;
 		    PageType = List;
 		    SourceTable = «ledgerEntry.tableName.saveQuote»;
-		    SourceTableView = SORTING("«master.name» No.", "Posting Date")
-		                      ORDER(Descending);
 		    UsageCategory = History;
 		
 		    layout
