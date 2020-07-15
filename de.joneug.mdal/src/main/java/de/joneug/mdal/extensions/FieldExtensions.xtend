@@ -6,6 +6,7 @@ import de.joneug.mdal.mdal.Entity
 import de.joneug.mdal.mdal.Field
 import de.joneug.mdal.mdal.IncludeField
 import de.joneug.mdal.mdal.TemplateField
+import de.joneug.mdal.mdal.TypeDecimal
 import de.joneug.mdal.mdal.TypeOption
 
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
@@ -48,6 +49,15 @@ class FieldExtensions {
 				«IF customField.type instanceof TypeOption»
 					OptionCaption = '«FOR member : (customField.type as TypeOption).getMembers() SEPARATOR ','»«member»«ENDFOR»';
 					OptionMembers = «FOR member : (customField.type as TypeOption).getMembers() SEPARATOR ','»"«member»"«ENDFOR»;
+				«ENDIF»
+				«IF fieldName.contains('Price') && customField.type instanceof TypeDecimal»
+					AutoFormatType = 2;
+				«ELSEIF fieldName.contains('Amount') && customField.type instanceof TypeDecimal»
+					AutoFormatType = 1;
+				«ELSEIF fieldName.contains('%') && customField.type instanceof TypeDecimal»
+					MinValue = 0;
+					MaxValue = 100;
+					DecimalPlaces = 0 : 5;
 				«ENDIF»
 				«IF !customField.tableRelation.isNullOrEmpty»
 					TableRelation = «customField.tableRelation.saveQuote»«IF !customField.tableRelationField.isNullOrEmpty».«customField.tableRelationField.saveQuote»«ENDIF»«IF !customField.whereConditionField.isNullOrEmpty» where(«customField.whereConditionField.saveQuote» = const(«customField.whereConditionConst.saveQuote»))«ENDIF»;
