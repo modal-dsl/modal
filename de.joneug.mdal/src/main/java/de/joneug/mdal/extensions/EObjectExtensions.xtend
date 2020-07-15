@@ -74,6 +74,7 @@ class EObjectExtensions {
 	}
 	
 	static def existsEnum(EObject object, String objectName) {
+		if(management.generatorFsa === null) return true;
 		management.generatorFsa.isFile(MdalGenerator.ENUM_PATH + '/' + objectName.toEnumFileName)
 	}
 	
