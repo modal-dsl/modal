@@ -55,11 +55,11 @@ class DocumentLineExtensions {
 	}
 	
 	static def getSubformPageName(DocumentLine line) {
-		return line.solution.constructObjectName(line.shortName + ' Subf.')
+		return line.solution.constructObjectName(line.document.shortName + ' Subf.')
 	}
 	
-	static def getSubformPageNamePosted(DocumentLine line) {
-		return line.solution.constructObjectName(line.shortNamePosted + ' Subf.')
+	static def String getSubformPageNamePosted(DocumentLine line) {
+		return line.solution.constructObjectName(line.document.shortNamePosted + ' Subf.')
 	}
 	
 	static def void doGenerate(DocumentLine line) {
@@ -374,7 +374,7 @@ class DocumentLineExtensions {
 		
 		    AutoSplitKey = true;
 		    Caption = 'Lines';
-		    Editable = false;
+		    DelayedInsert = true;
 		    LinksAllowed = false;
 		    PageType = ListPart;
 		    SourceTable = «line.tableName.saveQuote»;
@@ -386,6 +386,13 @@ class DocumentLineExtensions {
 		            repeater(Control1)
 		            {
 		                ShowCaption = false;
+		                
+		                field("Line No."; "Line No.")
+		                {
+		                	ApplicationArea = All;
+		                	ToolTip = 'Specifies the number of the line.';
+		                	Visible = false;
+		                }
 		                «FOR pageField : line.listPartPageFields»
 		                	«pageField.doGenerate»
 		                «ENDFOR»

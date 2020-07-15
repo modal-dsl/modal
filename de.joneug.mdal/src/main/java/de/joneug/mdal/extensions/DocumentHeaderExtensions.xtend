@@ -291,7 +291,7 @@ class DocumentHeaderExtensions {
 		        			If «supplementalIncludeField.name.saveQuote» = '' then
 		        				«supplementalIncludeField.entity.tableVariableName».Init()
 		        			else begin
-		        				Get(«supplementalIncludeField.name.saveQuote»);
+		        				Get«supplementalIncludeField.entity.tableVariableName»(«supplementalIncludeField.name.saveQuote»);
 		        				«supplementalIncludeField.entity.tableVariableName».TestBlocked;
 		        			end;
 		        			«FOR supplementalIncludeField2 : header.includeFields.filter[it.entity === supplementalIncludeField.entity]»

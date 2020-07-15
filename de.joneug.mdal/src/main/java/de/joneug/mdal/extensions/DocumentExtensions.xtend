@@ -500,7 +500,7 @@ class DocumentExtensions {
 		    begin
 		        Temp«line.tableVariableName».Reset();
 		        if Temp«line.tableVariableName».IsEmpty() then
-		            CopyToTempLines(«header.tableVariableName», «line.tableVariableName»);
+		            CopyToTempLines(«header.tableVariableName», Temp«line.tableVariableName»);
 		    end;
 		
 		    procedure CopyToTempLines(«header.tableVariableName»: Record «header.tableName.saveQuote»; var Temp«line.tableVariableName»: Record «line.tableName.saveQuote» temporary)
