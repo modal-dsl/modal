@@ -114,24 +114,114 @@ class MdalIdeContentProposalProvider extends IdeContentProposalProvider {
 	}
 
 	override protected _createProposals(RuleCall ruleCall, ContentAssistContext context, IIdeContentProposalAcceptor acceptor) {
-		switch (ruleCall.rule) {
-			case ga.modelAccess.solutionSolutionParserRuleCall_0: {
-				addSnippet(context, acceptor, '''
-					solution "Seminar Management" {
-						Prefix = "SEM";
-						
-						master "Seminar" {
-							ShortName = "Sem.";
-						}
+		val masterTemplate = '''
+			master ${1:"Name"} {
+				ShortName = ${2:"Short Name"};
+				
+				fields {
+					template("Description"; Description)
+				}
+				cardPage {
+					group("General") {
+						field("Description")
 					}
-				''', "mdAL Solution", "Solution")
+				}
+				listPage {
+					field("Description")
+				}
 			}
-			case ga.fieldAccess.templateFieldParserRuleCall_1: {
-				addSnippet(context, acceptor, '''template(${1:FieldName}; ${1:TemplateName})''', "Template Field", "Template Field")
+		'''
+		val documentHeaderTemplate = '''
+			header ${1:"Name"} {
+				ShortName = ${2:"Short Name"};
+				StatusCaptions = ["Open", "Released"];
+				
+				fields {
+					template("Salesperson"; Salesperson)
+				}
+				
+				documentPage {
+					group("General") {
+						field("Salesperson")
+					}
+				}
+				
+				listPage {
+					field("Salesperson")
+				}
 			}
-			default: {
-				super._createProposals(ruleCall, context, acceptor)
+		'''
+		val documentLineTemplate = '''
+			line ${1:"Name"} {
+				ShortName = ${2:"Short Name"};
+				
+				fields {
+					field("Quantity"; Decimal)
+				}
+				listPartPage {
+					field("Quantity")
+				}
 			}
+		'''
+		val documentTemplate = '''
+			document ${1:"Name"} {
+				ShortName = ${2:"Short Name"};
+				
+				«documentHeaderTemplate.replace('${1:', '${3:').replace('${2:', '${4:')»
+				
+				«documentLineTemplate.replace('${1:', '${5:').replace('${2:', '${6:')»
+			}
+		'''
+		val supplementalTemplate = '''
+			supplemental ${1:"Name"} {
+				ShortName = ${2:"Short Name"};
+				
+				fields {
+					template("Name"; Name)
+				}
+				
+				listPage {
+					field("Name")
+				}
+			}
+		'''
+		val ledgerEntryTemplate = '''
+			ledgerEntry ${1:"Name"} {
+				ShortName = ${2:"Short Name"};
+				
+				fields {
+					field("Quantity"; Decimal)
+				}
+				listPage {
+					field("Quantity")
+				}
+			}
+		'''
+		val solutionTemplate = '''
+			solution ${1:"Name"} {
+				Prefix = ${2:"PRE"};
+			}
+		'''
+		if(ruleCall == ga.modelAccess.solutionSolutionParserRuleCall_0) {
+			addSnippet(context, acceptor, solutionTemplate, "solution (template)")
+		} else if(ruleCall == ga.solutionAccess.masterMasterParserRuleCall_3_1_0) {
+			addSnippet(context, acceptor, masterTemplate, "master (template)")
+		} else if(ruleCall == ga.solutionAccess.supplementalsSupplementalParserRuleCall_3_2_0) {
+			addSnippet(context, acceptor, supplementalTemplate, "supplemental (template)")
+		} else if(ruleCall == ga.solutionAccess.documentDocumentParserRuleCall_3_3_0) {
+			addSnippet(context, acceptor, documentTemplate, "document (template)")
+		} else if(ruleCall == ga.documentAccess.headerDocumentHeaderParserRuleCall_3_1_0) {
+			addSnippet(context, acceptor, documentHeaderTemplate, "header (template)")
+		} else if(ruleCall == ga.documentAccess.lineDocumentLineParserRuleCall_3_2_0) {
+			addSnippet(context, acceptor, documentLineTemplate, "line (template)")
+		} else if(ruleCall == ga.solutionAccess.ledgerEntryLedgerEntryParserRuleCall_3_4_0) {
+			addSnippet(context, acceptor, ledgerEntryTemplate, "ledgerEntry (template)")
+		} else if(ruleCall == ga.fieldAccess.templateFieldParserRuleCall_1) {
+			addSnippet(context, acceptor, '''template(${1:"FieldName"}; ${2:Description})''', "template (template)")
+		} else if(ruleCall == ga.fieldAccess.customFieldParserRuleCall_0) {
+			addSnippet(context, acceptor, '''field(${1:"FieldName"}; ${2:Decimal})''', "field (template)")
+		} else {
+			super._createProposals(ruleCall, context, acceptor)
 		}
 	}
 
@@ -148,11 +238,8 @@ class MdalIdeContentProposalProvider extends IdeContentProposalProvider {
 		]
 	}
 
-	protected def addSnippet(ContentAssistContext context, IIdeContentProposalAcceptor acceptor, String snippetText, String description, String documentation) {
+	protected def addSnippet(ContentAssistContext context, IIdeContentProposalAcceptor acceptor, String snippetText, String description) {
 		val snippet = proposalCreator.createSnippet(snippetText, description, context)
-		if(!documentation.isNullOrEmpty) {
-			snippet.documentation = "Snippet: " + documentation + " (mdAL)"
-		}
 		acceptor.accept(snippet, proposalPriorities.getDefaultPriority(snippet))
 	}
 
