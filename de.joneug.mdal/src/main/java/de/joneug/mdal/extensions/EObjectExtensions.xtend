@@ -33,9 +33,12 @@ class EObjectExtensions {
 		return output
 	}
 
+	def static <T extends EObject> List<T> getAllContentsOfType(EObject object, Class<T> type) {
+		return EcoreUtil2.getAllContentsOfType(object, type)
+	}
+
 	def static <T extends EObject> List<T> getAllContentsOfTypeFromRoot(EObject object, Class<T> type) {
-		val root = EcoreUtil2.getContainerOfType(object, Model)
-		return EcoreUtil2.getAllContentsOfType(root, type)
+		return EcoreUtil2.getContainerOfType(object, Model).getAllContentsOfType(type)
 	}
 	
 	def static <T extends EObject> getContainerOfType(EObject object, Class<T> type) {

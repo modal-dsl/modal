@@ -53,7 +53,7 @@ class MdalGeneratorTest {
 				'table 123456700 "SEM Seminar Setup"',
 				'field(1; "Primary Key"; Code[10])',
 				'DrillDownPageID = "SEM Seminar Setup";',
-				'AccessByPermission = TableData "SEM Pstd. Seminar Reg. Header" = R;'
+				'AccessByPermission = TableData "SEM Pstd. Sem. Reg. Header" = R;'
 			]
 		)
 		checkFileContains(
@@ -62,12 +62,12 @@ class MdalGeneratorTest {
 				'table 123456702 "SEM Seminar"',
 				'DataCaptionFields = Description, "No.";',
 				'DrillDownPageID = "SEM Seminar List";',
-				'field(3; "Description"; Text[100])',
-				'field(6; "Duration Days"; Decimal)',
+				'field(2; "Description"; Text[100])',
+				'field(5; "Duration Days"; Decimal)',
 				'key(Key2; "Search Description") { }',
 				'fieldgroup(DropDown; Description, "Description 2", "No.") { }',
 				'fieldgroup(Brick; Description, "No.") { }',
-				'SeminarRegHeader: Record "SEM Seminar Reg. Header";',
+				'SemRegHeader: Record "SEM Sem. Reg. Header";',
 				'if NoSeriesMgt.SelectSeries(SemSetup."Seminar Nos.", OldSem."No. Series", "No. Series") then begin',
 				'local procedure OnAfterGetSemSetup(var SemSetup: Record "SEM Seminar Setup")'
 			]

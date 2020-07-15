@@ -1,6 +1,7 @@
 package de.joneug.mdal.ide
 
 import de.joneug.mdal.util.ExampleContentGenerator
+import org.eclipse.lsp4j.DiagnosticSeverity
 import org.eclipse.xtext.testing.AbstractLanguageServerTest
 import org.junit.jupiter.api.Test
 
@@ -9,7 +10,6 @@ import static org.junit.Assert.assertFalse
 import static org.junit.Assert.assertTrue
 
 import static extension de.joneug.mdal.extensions.ObjectExtensions.*
-import org.eclipse.lsp4j.DiagnosticSeverity
 
 class MdalLanguageServerTest extends AbstractLanguageServerTest {
 
@@ -42,9 +42,9 @@ class MdalLanguageServerTest extends AbstractLanguageServerTest {
 		val diagnostics = diagnostics.get(file)
 		assertFalse('Incorrect model should have errors', diagnostics.empty)
 		logDebug(diagnostics)
-		assertEquals(8, diagnostics.length)
-		assertEquals(6, diagnostics.filter[it.severity == DiagnosticSeverity.Error].length)
-		assertEquals(2, diagnostics.filter[it.severity == DiagnosticSeverity.Warning].length)
+		assertEquals(11, diagnostics.length)
+		assertEquals(8, diagnostics.filter[it.severity == DiagnosticSeverity.Error].length)
+		assertEquals(3, diagnostics.filter[it.severity == DiagnosticSeverity.Warning].length)
 	}
 	
 	@Test

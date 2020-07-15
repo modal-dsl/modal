@@ -53,9 +53,9 @@ class MdalParsingTest {
 		// Validate number of issues
 		val issues = model.validate
 		logDebug(issues)
-		assertEquals(8, issues.length)
-		assertEquals(6, issues.filter[it.severity == Severity.ERROR].length)
-		assertEquals(2, issues.filter[it.severity == Severity.WARNING].length)
+		assertEquals(11, issues.length)
+		assertEquals(8, issues.filter[it.severity == Severity.ERROR].length)
+		assertEquals(3, issues.filter[it.severity == Severity.WARNING].length)
 		
 		// Master should have name or description
 		model.assertWarning(MdalPackage.eINSTANCE.master, MdalValidator.ENTITY_NAME_DESCRIPTION)
@@ -76,6 +76,12 @@ class MdalParsingTest {
 		
 		// Page field unknown
 		model.assertError(MdalPackage.eINSTANCE.pageField, MdalValidator.PAGE_FIELD_UNKNOWN_FIELD)
+		
+		// Group name already exists
+		model.assertError(MdalPackage.eINSTANCE.group, MdalValidator.GROUP_NAME_EXISTS)
+		
+		// Duplicate page field
+		model.assertWarning(MdalPackage.eINSTANCE.pageField, MdalValidator.PAGE_FIELD_NAME_EXISTS)
 	}
 	
 }
