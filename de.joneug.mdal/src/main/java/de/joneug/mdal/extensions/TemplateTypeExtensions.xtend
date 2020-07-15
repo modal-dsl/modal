@@ -153,7 +153,7 @@ class TemplateTypeExtensions {
 	}
 	
 	static def dispatch Map<String, String> getAssignmentMap(TemplateContactInfo templateType, IncludeField includeField) {
-		return constructAssignmentMap(templateType, includeField, #['Contact Person', 'Phone No.', 'Telex No.', 'Fax No.', 'Telex Answer Back', 'Email', 'Home Page'])
+		return constructAssignmentMap(templateType, includeField, #['Contact Person', 'Phone No.', 'Telex No.', 'Fax No.', 'Telex Answer Back', 'E-Mail', 'Home Page'])
 	}
 	
 	static def dispatch Map<String, String> getAssignmentMap(TemplateSalesperson templateType, IncludeField includeField) {
@@ -383,7 +383,7 @@ class TemplateTypeExtensions {
 			}
 			field(«management.getNewFieldNo(entity)»; "«prefix»E-Mail"; Text[80])
 			{
-				Caption = '«prefix»Email';
+				Caption = '«prefix»E-Mail';
 				ExtendedDatatype = EMail;
 				«IF editable»
 					
