@@ -115,11 +115,6 @@ class IncludeFieldExtensions {
 				}
 			'''
 		} else if(field === null && includeField.fieldName == 'Code') {
-			// IncludeFields for Supplemental entities are handled in DocumentHeaderExtensions
-			if(includeField.entity instanceof Supplemental && containerEntity instanceof DocumentHeader) {
-				return ''''''
-			}
-			
 			return '''
 				field(«includeField.name.saveQuote»; «includeField.name.saveQuote»)
 				{
