@@ -195,10 +195,12 @@ class DocumentLineExtensions {
 		    begin
 		    end;
 		
-		    local procedure InitRecord()
+		    procedure InitRecord()
 		    begin
 		        Get«document.header.tableVariableName»;
-		
+				
+				OnBeforeInitRecord(Rec, «document.header.tableVariableName»);
+				
 		        Init();
 		        «FOR headerIncludeField : line.includeFields.filter[it.entity === document.header]»
 		        	
@@ -216,6 +218,18 @@ class DocumentLineExtensions {
 					"Shortcut Dimension 1 Code" := «document.header.tableVariableName»."Shortcut Dimension 1 Code";
 					"Shortcut Dimension 2 Code" := «document.header.tableVariableName»."Shortcut Dimension 2 Code";
 				«ENDIF»
+				
+				OnAfterInitRecord(Rec, «document.header.tableVariableName»);
+		    end;
+		    
+		    [IntegrationEvent(false, false)]
+		  	local procedure OnBeforeInitRecord(var «line.tableVariableName»: Record «line.tableName.saveQuote»; var «document.header.tableVariableName»: Record «document.header.tableName.saveQuote»)
+		    begin
+		    end;
+		    
+		    [IntegrationEvent(false, false)]
+		    local procedure OnAfterInitRecord(var «line.tableVariableName»: Record «line.tableName.saveQuote»; var «document.header.tableVariableName»: Record «document.header.tableName.saveQuote»)
+		    begin
 		    end;
 		
 		    procedure SetHideValidationDialog(NewHideValidationDialog: Boolean)
@@ -246,9 +260,7 @@ class DocumentLineExtensions {
 		    	procedure ValidateShortcutDimCode(FieldNumber: Integer; var ShortcutDimCode: Code[20])
 		    	begin
 		    		OnBeforeValidateShortcutDimCode(Rec, xRec, FieldNumber, ShortcutDimCode);
-		    		
 		    		DimMgt.ValidateShortcutDimValues(FieldNumber, ShortcutDimCode, "Dimension Set ID");
-		    		
 		    		OnAfterValidateShortcutDimCode(Rec, xRec, FieldNumber, ShortcutDimCode);
 		    	end;
 		    	
