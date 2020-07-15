@@ -62,6 +62,10 @@ class SolutionExtensions {
 		// Ledger Entry
 		solution.logInfo("Generating ledger entry files")
 		solution.ledgerEntry.doGenerate
+		
+		// Navigate Extensions
+		solution.logInfo("Generating navigate files")
+		solution.doGenerateNavigateExtensionObjects
 	}
 	
 	/*
@@ -574,6 +578,56 @@ class SolutionExtensions {
 		            TableRelation = "Source Code";
 		        }
 		    }
+		}
+	'''
+	
+	/*
+	 * Navigate Extension
+	 * 
+	 */
+	 
+	static def doGenerateNavigateExtensionObjects(Solution solution) {
+		solution.saveCodeunit(solution.navigateExtensionCodeunitName, solution.doGenerateNavigateExtensionCodeunit)
+	}
+	
+	static def getNavigateExtensionCodeunitName(Solution solution) {
+		return solution.constructObjectName('Navigate Event Sub.')
+	}
+	
+	static def doGenerateNavigateExtensionCodeunit(Solution solution) '''
+		«val document = solution.document»
+		«val header = document.header»
+		codeunit «management.newCodeunitNo» «solution.navigateExtensionCodeunitName.saveQuote»
+		{
+			[EventSubscriber(ObjectType::Page, Page::Navigate, 'OnAfterNavigateFindRecords', '', true, false)]
+			local procedure NavigateOnAfterNavigateFindRecords(var DocumentEntry: Record "Document Entry"; DocNoFilter: Text; PostingDateFilter: Text)
+			var
+				«header.tableVariableNamePosted»: Record «header.tableNamePosted.saveQuote»;
+				Navigate: Page Navigate;
+			begin
+				If «header.tableVariableNamePosted».ReadPermission then begin
+					«header.tableVariableNamePosted».SetFilter("No.", DocNoFilter);
+					«header.tableVariableNamePosted».SetFilter("Posting Date", PostingDateFilter);
+					Navigate.InsertIntoDocEntry(DocumentEntry, Database::«header.tableNamePosted.saveQuote», 0, '«document.namePosted»', «header.tableVariableNamePosted».Count);
+				end;
+			end;
+			
+			[EventSubscriber(ObjectType::Page, Page::Navigate, 'OnAfterNavigateShowRecords', '', true, false)]
+			local procedure NavigateOnAfterNavigateShowRecords(TableID: Integer; DocNoFilter: Text; PostingDateFilter: Text; ItemTrackingSearch: Boolean; var TempDocumentEntry: Record "Document Entry" temporary; SalesInvoiceHeader: Record "Sales Invoice Header"; SalesCrMemoHeader: Record "Sales Cr.Memo Header"; PurchInvHeader: Record "Purch. Inv. Header"; PurchCrMemoHdr: Record "Purch. Cr. Memo Hdr."; ServiceInvoiceHeader: Record "Service Invoice Header"; ServiceCrMemoHeader: Record "Service Cr.Memo Header")
+			var
+				«header.tableVariableNamePosted»: Record «header.tableNamePosted.saveQuote»;
+			begin
+				if TableID <> Database::«header.tableNamePosted.saveQuote» then
+					exit;
+				
+				«header.tableVariableNamePosted».SetFilter("No.", DocNoFilter);
+				«header.tableVariableNamePosted».SetFilter("Posting Date", PostingDateFilter);
+				
+				If (TempDocumentEntry."No. of Records" = 1) then
+					PAGE.Run(PAGE::«document.documentPageNamePosted.saveQuote», «header.tableVariableNamePosted»)
+				else
+					PAGE.Run(0, «header.tableVariableNamePosted»);
+			end;
 		}
 	'''
 	
