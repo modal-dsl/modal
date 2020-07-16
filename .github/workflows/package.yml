@@ -7,7 +7,7 @@ on:
     tags-ignore:
       - '*'
 env:
-  IMAGE_NAME: joneug/mdal
+  IMAGE_NAME: mdal/cli
   IMAGE_TAG: latest
   
 jobs:

@@ -1,8 +1,8 @@
 # `mdAL`: A DSL for AL Extension Development
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/joneug/mdal/Build)
-![Codecov](https://img.shields.io/codecov/c/gh/joneug/mdal)
-![GitHub release (latest by date)](https://img.shields.io/github/v/release/joneug/mdal)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/mdal-lang/mdal/Build)
+![Codecov](https://img.shields.io/codecov/c/gh/mdal-lang/mdal)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/mdal-lang/mdal)
 
 This repository contains the implementation of the Domain Specific Language `mdAL`. `mdAL` enables a Model-Driven approach to extension module development for the ERP System Microsoft Dynamics 365 Business Central.
 
