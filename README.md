@@ -44,7 +44,7 @@ Moreover, these customizations to standard objects are generated:
 * `Comment Line` table extension
 * `Comment Line Table Name` enum extension
 
-Specific code that cannot be generated from a `mdAL` model file can be integrated by subscribing to the various event publishers available in the generated AL code. Hence, you can use `mdAL` to automatically generate a base AL extension and create an additional AL extension that depends on the base extension and adds your specific code. This way you do not have to change generated code in order to do customizations. Take a look at the [demo projects](#demo-projects) to see how this could be done.
+Specific code that cannot be generated from a `mdAL` model file can be integrated by subscribing to the various event publishers available in the generated AL code. Hence, you can use `mdAL` to automatically generate a base AL extension and create an additional AL extension that depends on the base extension and adds your specific code. This way you do not have to change generated code in order to do customizations. Take a look at the [demo projects](#demo-projects) to see how this could be done. For more information on `mdAL` visit [mdal-lang.github.io](https://mdal-lang.github.io/#/).
 
 If you need additional event publishers or find errors in the generated code, please open an [issue](https://github.com/mdal-lang/mdal/issues).
 
