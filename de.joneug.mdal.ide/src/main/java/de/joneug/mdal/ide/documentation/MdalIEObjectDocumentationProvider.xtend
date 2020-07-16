@@ -17,6 +17,7 @@ import org.eclipse.xtext.Keyword
 import org.eclipse.xtext.documentation.IEObjectDocumentationProvider
 
 import static extension de.joneug.mdal.extensions.FieldTypeExtensions.*
+import static extension de.joneug.mdal.extensions.ObjectExtensions.*
 import static extension de.joneug.mdal.extensions.StringExtensions.*
 
 class MdalIEObjectDocumentationProvider implements IEObjectDocumentationProvider {
@@ -25,7 +26,15 @@ class MdalIEObjectDocumentationProvider implements IEObjectDocumentationProvider
 	MdalGrammarAccess ga
 	
 	override getDocumentation(EObject object) {
-		return getDocumentationInternal(object)
+		if(object === null) return null
+		
+		try {
+			return getDocumentationInternal(object)
+		} catch(Exception e) {
+			this.logError("Documentation for EObject '" + object + "' could not be provided\nException: " + e)
+		}
+		
+		return null
 	}
 	
 	protected def dispatch String getDocumentationInternal(EObject object) {
@@ -33,77 +42,77 @@ class MdalIEObjectDocumentationProvider implements IEObjectDocumentationProvider
 	}
 	
 	protected def dispatch String getDocumentationInternal(Solution solution) '''
-	```mdal
-	solution «solution.name.saveQuote»
-	```
+		```mdal
+		solution «solution.name.saveQuote»
+		```
 	'''
 	
 	protected def dispatch String getDocumentationInternal(Master master) '''
-	```mdal
-	master «master.name»
-	
-	«master.fieldsDocumentation»
-	```
+		```mdal
+		master «master.name»
+		
+		«master.fieldsDocumentation»
+		```
 	'''
 	
 	protected def dispatch String getDocumentationInternal(Supplemental supplemental) '''
-	```mdal
-	supplemental «supplemental.name.saveQuote»
-	
-	«supplemental.fieldsDocumentation»
-	```
+		```mdal
+		supplemental «supplemental.name.saveQuote»
+		
+		«supplemental.fieldsDocumentation»
+		```
 	'''
 	
 	protected def dispatch String getDocumentationInternal(DocumentHeader documentHeader) '''
-	```mdal
-	document header «documentHeader.name.saveQuote»
-	
-	«documentHeader.fieldsDocumentation»
-	```
+		```mdal
+		document header «documentHeader.name.saveQuote»
+		
+		«documentHeader.fieldsDocumentation»
+		```
 	'''
 	
 	protected def dispatch String getDocumentationInternal(DocumentLine documentLine) '''
-	```mdal
-	document line «documentLine.name.saveQuote»
-	
-	«documentLine.fieldsDocumentation»
-	```
+		```mdal
+		document line «documentLine.name.saveQuote»
+		
+		«documentLine.fieldsDocumentation»
+		```
 	'''
 	
 	protected def dispatch String getDocumentationInternal(LedgerEntry ledgerEntry) '''
-	```mdal
-	ledgerEntry «ledgerEntry.name.saveQuote»
-	
-	«ledgerEntry.fieldsDocumentation»
-	```
+		```mdal
+		ledgerEntry «ledgerEntry.name.saveQuote»
+		
+		«ledgerEntry.fieldsDocumentation»
+		```
 	'''
 	
 	protected def dispatch String getDocumentationInternal(CustomField field) '''
-	```mdal
-	field «field.name.saveQuote»: «field.type.doGenerate»
-	```
+		```mdal
+		field «field.name.saveQuote»: «field.type.doGenerate»
+		```
 	'''
 	
 	protected def dispatch String getDocumentationInternal(TemplateField field) '''
-	```mdal
-	template «field.name.saveQuote»: «field.type.class.simpleName.replace('Impl', '').replace('Template', '')»
-	```
+		```mdal
+		template «field.name.saveQuote»: «field.type.class.simpleName.replace('Impl', '').replace('Template', '')»
+		```
 	'''
 	
 	protected def dispatch String getDocumentationInternal(IncludeField field) '''
-	```mdal
-	include «field.name.saveQuote»: «field.entityName.saveQuote».«field.fieldName.saveQuote»
-	```
+		```mdal
+		include «field.name.saveQuote»: «field.entityName.saveQuote».«field.fieldName.saveQuote»
+		```
 	'''
 	
 	protected def getFieldsDocumentation(Entity entity) '''
-	«FOR field : entity.fields»
-		«IF field instanceof CustomField»
-			«field.name.saveQuote.padEnd(35)»«field.type.doGenerate»
-		«ELSEIF field instanceof TemplateField»
-			«field.name.saveQuote.padEnd(35)»template
-		«ENDIF»
-	«ENDFOR»
+		«FOR field : entity.fields»
+			«IF field instanceof CustomField»
+				«field.name.saveQuote.padEnd(35)»«field.type.doGenerate»
+			«ELSEIF field instanceof TemplateField»
+				«field.name.saveQuote.padEnd(35)»template
+			«ENDIF»
+		«ENDFOR»
 	'''
 	
 	protected def dispatch String getDocumentationInternal(Keyword keyword) {
@@ -126,6 +135,9 @@ class MdalIEObjectDocumentationProvider implements IEObjectDocumentationProvider
 			return 'The `listPage` keyword stars a list page definition.'
 		} else if(keyword == ga.solutionAccess.prefixKeyword_3_0_0) {
 			return 'The `Prefix` keyword defines the prefix for all AL objects.'
+		} else if(keyword == ga.masterAccess.fieldsKeyword_3_1_0 || keyword == ga.supplementalAccess.fieldsKeyword_3_1_0 ||
+			keyword == ga.documentHeaderAccess.fieldsKeyword_4_2_0 || keyword == ga.ledgerEntryAccess.fieldsKeyword_4_1_0) {
+			return 'The `fields` keyword starts a table fields definition.'
 		} else if(keyword == ga.masterAccess.shortNameKeyword_3_0_0 || keyword == ga.supplementalAccess.shortNameKeyword_3_0_0 ||
 			keyword == ga.documentAccess.shortNameKeyword_3_0_0 || keyword == ga.documentHeaderAccess.shortNameKeyword_4_0_0 ||
 			keyword == ga.documentLineAccess.shortNameKeyword_4_0_0 || keyword == ga.ledgerEntryAccess.shortNameKeyword_4_0_0) {

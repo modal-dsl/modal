@@ -21,31 +21,26 @@ class MdalHoverContextContent {
 		val directGrammarElement = context.directGrammarElement
 		val element = context.element
 		
-		switch (directGrammarElement) {
-			case ga.includeFieldAccess.entityNameSTRINGTerminalRuleCall_4_0: {
-				if(element instanceof IncludeField) {
-					return documentationProvider.getDocumentation(element.entity)
-				}
+		if(element instanceof IncludeField) {
+			if(directGrammarElement == ga.includeFieldAccess.entityNameSTRINGTerminalRuleCall_4_0) {
+				return documentationProvider.getDocumentation(element.entity)
+			} else if(directGrammarElement == ga.includeFieldAccess.fieldNameSTRINGTerminalRuleCall_6_0) {
+				return documentationProvider.getDocumentation(element.field)
 			}
-			case ga.includeFieldAccess.fieldNameSTRINGTerminalRuleCall_6_0: {
-				if(element instanceof IncludeField) {
-					return documentationProvider.getDocumentation(element.field)
-				}
-			}
-			case ga.pageFieldAccess.fieldNameSTRINGTerminalRuleCall_2_0: {
-				if(element instanceof PageField) {
-					val fieldEither = element.fieldEither
-					if (fieldEither.isLeft) {
+		} else if(element instanceof PageField) {
+			if(directGrammarElement == ga.pageFieldAccess.fieldNameSTRINGTerminalRuleCall_2_0) {
+				val fieldEither = element.fieldEither
+				if(fieldEither !== null) {
+					if(fieldEither.isLeft) {
 						return documentationProvider.getDocumentation(fieldEither.getLeft)
 					} else {
 						return documentationProvider.getDocumentation(fieldEither.getRight)
-					}
+					}					
 				}
 			}
-			default: {
-				return documentationProvider.getDocumentation(directGrammarElement)
-			}
-        }
+		}
+		
+		return documentationProvider.getDocumentation(directGrammarElement)
     }
 	
 }
