@@ -13,11 +13,14 @@ This repository contains the implementation of the Domain Specific Language (DSL
 Thus, `mdAL` provides AL code generation for:
 
 * Tables
+  * Setup
   * Master
   * Supplemental
   * (Posted) Document Header and Line
   * Document Comment Line
   * Journal Template, Batch and Line
+* Enums
+  * From specified table fields
 * Pages
   * Master
     * Card and List Page
@@ -32,8 +35,16 @@ Thus, `mdAL` provides AL code generation for:
   * Post (Yes/No)
   * Jnl. Check Line
   * Jnl. Post Line
+  * Reg.-Show Ledger
 
-Specific code that cannot be generated form a `mdAL` model file can be integrated by subscribing to the various event publishers available in the generated AL code. Hence, you can use `mdAL` to automatically generate a base AL extension and create an additional AL extension that depends on the base extension and adds your specific code. This way you do not have to change generated code in order to do customizations. Take a look at the [demo projects](#demo-projects) to see how this could be done.
+Moreover, these customizations to standard objects are generated:
+
+* Event subscribers implementing the Navigate functionality for the specified Posted Document Header
+* `Source Code Setup` table extension
+* `Comment Line` table extension
+* `Comment Line Table Name` enum extension
+
+Specific code that cannot be generated from a `mdAL` model file can be integrated by subscribing to the various event publishers available in the generated AL code. Hence, you can use `mdAL` to automatically generate a base AL extension and create an additional AL extension that depends on the base extension and adds your specific code. This way you do not have to change generated code in order to do customizations. Take a look at the [demo projects](#demo-projects) to see how this could be done.
 
 If you need additional event publishers or find errors in the generated code, please open an [issue](https://github.com/mdal-lang/mdal/issues).
 
