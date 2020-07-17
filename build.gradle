@@ -31,7 +31,7 @@ subprojects {
 	apply plugin: 'eclipse'
 	
 	group = 'de.joneug.mdal'
-	version = '0.1.0'
+	version = '0.2.0'
 	
 	sourceCompatibility = '8'
 	targetCompatibility = '8'
