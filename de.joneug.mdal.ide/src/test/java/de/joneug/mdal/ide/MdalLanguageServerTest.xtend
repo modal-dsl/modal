@@ -102,11 +102,10 @@ class MdalLanguageServerTest extends AbstractLanguageServerTest {
 	        line = 43
 	        column = 28
 	        expectedCompletionItems = '''
-	            "Instructor" -> "Instructor" [[«line», «column»] .. [«line», «column»]]
-	            "Seminar Registration Header" -> "Seminar Registration Header" [[«line», «column»] .. [«line», «column»]]
-	            "Seminar Registration Line" -> "Seminar Registration Line" [[«line», «column»] .. [«line», «column»]]
-	            "Seminar Room" -> "Seminar Room" [[«line», «column»] .. [«line», «column»]]
-	            "Seminar" -> "Seminar" [[«line», «column»] .. [«line», «column»]]
+	            Seminar Registration Header -> Seminar Registration Header [[«line», «column - 7»] .. [«line», «column»]]
+	            Seminar Registration Line -> Seminar Registration Line [[«line», «column - 7»] .. [«line», «column»]]
+	            Seminar Room -> Seminar Room [[«line», «column - 7»] .. [«line», «column»]]
+	            Seminar -> Seminar [[«line», «column - 7»] .. [«line», «column»]]
 	        '''
     	]
 	}
@@ -129,7 +128,7 @@ class MdalLanguageServerTest extends AbstractLanguageServerTest {
 	        			ShortName = "Sem. Ledger Entry";
 	        			
 	        			fields {
-	        				include("Language Code"; "Seminar"."Language Code")
+	        				include("Language Code"; "Seminar".)
 	        			}
 	        		}
 	        	}
