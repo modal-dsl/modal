@@ -34,18 +34,23 @@ class MdalIdeContentProposalProvider extends IdeContentProposalProvider {
 	extension MdalGrammarAccess ga
 
 	override protected createProposals(AbstractElement assignment, ContentAssistContext context, IIdeContentProposalAcceptor acceptor) {
-		try {
+		try {			
 			if(assignment == ga.includeFieldAccess.entityNameAssignment_4) {				
 				val currentModel = context.currentModel
+				
+				var String prefix = null
+				if(currentModel instanceof IncludeField) {
+					prefix = currentModel.entityName
+				}
 	
 				if(currentModel.getContainerOfType(DocumentHeader) !== null) {
-					addEntityProposals(context, acceptor, #[Master, Supplemental])
+					addEntityProposals(context, acceptor, prefix, #[Master, Supplemental])
 					return
 				} else if(currentModel.getContainerOfType(DocumentLine) !== null) {
-					addEntityProposals(context, acceptor, #[Master, Supplemental, DocumentHeader])
+					addEntityProposals(context, acceptor, prefix, #[Master, Supplemental, DocumentHeader])
 					return
 				} else if(currentModel.getContainerOfType(LedgerEntry) !== null) {
-					addEntityProposals(context, acceptor, #[Master, Supplemental, DocumentHeader, DocumentLine])
+					addEntityProposals(context, acceptor, prefix, #[Master, Supplemental, DocumentHeader, DocumentLine])
 					return
 				}
 			} else if(assignment == ga.includeFieldAccess.fieldNameAssignment_6) {				
@@ -55,7 +60,7 @@ class MdalIdeContentProposalProvider extends IdeContentProposalProvider {
 		
 					if(entity !== null) {
 						entity.inferredFieldNames.forEach [
-							addProposal(context, acceptor, it, ContentAssistEntry.KIND_FIELD)
+							addProposal(context, acceptor, it, includeField.fieldName, ContentAssistEntry.KIND_FIELD)
 						]
 						return
 					}
@@ -64,19 +69,15 @@ class MdalIdeContentProposalProvider extends IdeContentProposalProvider {
 				management.symbolReferences.forEach [symbolReference |
 					var tables = symbolReference.tables
 					
-					// Filter based on typed string
+					var String prefix = null
 					if(context.currentModel instanceof CustomField) {
 						val customField = context.currentModel as CustomField
-						
-						if(!customField.tableRelation.isNullOrEmpty) {
-							tables = tables.filter [table |
-								table.name.contains(customField.tableRelation)
-							].toList
-						}
+						prefix = customField.tableRelation			
 					}
+					val prefixFinal = prefix
 	
 					tables.forEach [
-						addProposal(context, acceptor, it.name, ContentAssistEntry.KIND_CLASS)
+						addProposal(context, acceptor, it.name, prefixFinal, ContentAssistEntry.KIND_CLASS)
 					]
 					return
 				]
@@ -87,17 +88,18 @@ class MdalIdeContentProposalProvider extends IdeContentProposalProvider {
 					
 					if(entity !== null) {
 						entity.fields.forEach [
-							addProposal(context, acceptor, it.name, ContentAssistEntry.KIND_FIELD)
+							addProposal(context, acceptor, it.name, pageField.fieldName, ContentAssistEntry.KIND_FIELD)
 						]
 						entity.inferredIncludeFields.forEach[
-							addProposal(context, acceptor, it.name, ContentAssistEntry.KIND_FIELD)
+							addProposal(context, acceptor, it.name, pageField.fieldName, ContentAssistEntry.KIND_FIELD)
 						]
 						return
 					}
 				}
 			}
 		} catch(Exception e) {
-			this.logError("No proposals could be provided with context '" + context + "'\nException: " + e)
+			this.logError("No proposals could be provided with context '" + context + "'\nException:")
+			e.printStackTrace(System.err)
 		}
 		
 		super.createProposals(assignment, context, acceptor)
@@ -215,15 +217,15 @@ class MdalIdeContentProposalProvider extends IdeContentProposalProvider {
 		}
 	}
 
-	protected def addProposal(ContentAssistContext context, IIdeContentProposalAcceptor acceptor, String proposalText, String kind) {
-		val proposal = proposalCreator.createProposal(proposalText.quote, "", context, kind, null)
+	protected def addProposal(ContentAssistContext context, IIdeContentProposalAcceptor acceptor, String proposalText, String prefix, String kind) {
+		val proposal = proposalCreator.createProposal(prefix === null ? proposalText.quote : proposalText, prefix === null ? "" : prefix, context, kind, null)
 		acceptor.accept(proposal, proposalPriorities.getDefaultPriority(proposal))
 	}
 
-	protected def <T extends Entity> addEntityProposals(ContentAssistContext context, IIdeContentProposalAcceptor acceptor, Class<T>[] entityTypes) {
+	protected def <T extends Entity> addEntityProposals(ContentAssistContext context, IIdeContentProposalAcceptor acceptor, String prefix, Class<T>[] entityTypes) {
 		entityTypes.forEach [ entityType |
 			context.currentModel.getAllContentsOfTypeFromRoot(entityType).forEach [ entity |
-				addProposal(context, acceptor, entity.name, ContentAssistEntry.KIND_CLASS)
+				addProposal(context, acceptor, entity.name, prefix, ContentAssistEntry.KIND_CLASS)
 			]
 		]
 	}

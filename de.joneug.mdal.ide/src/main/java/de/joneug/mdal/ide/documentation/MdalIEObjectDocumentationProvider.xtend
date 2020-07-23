@@ -31,7 +31,8 @@ class MdalIEObjectDocumentationProvider implements IEObjectDocumentationProvider
 		try {
 			return getDocumentationInternal(object)
 		} catch(Exception e) {
-			this.logError("Documentation for EObject '" + object + "' could not be provided\nException: " + e)
+			this.logError("Documentation for EObject '" + object + "' could not be provided\nException:")
+			e.printStackTrace(System.err)
 		}
 		
 		return null
