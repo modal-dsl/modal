@@ -18,7 +18,7 @@ Thus, `mdAL` provides AL code generation for:
   * Supplemental
   * (Posted) Document Header and Line
   * Document Comment Line
-  * Journal Template, Batch and Line
+  * Journal Line
   * Ledger Entry
   * Register
 * Enums
