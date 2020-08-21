@@ -73,6 +73,10 @@ class EObjectExtensions {
 		management.generatorFsa.generateFile(MdalGenerator.ENUM_EXT_PATH + '/' + objectName.toEnumExtFileName, fileContent)
 	}
 	
+	static def savePageExt(EObject object, String objectName, CharSequence fileContent) {
+		management.generatorFsa.generateFile(MdalGenerator.PAGE_EXT_PATH + '/' + objectName.toPageExtFileName, fileContent)
+	}
+	
 	static def existsEnum(EObject object, String objectName) {
 		if(management.generatorFsa === null) return true;
 		management.generatorFsa.isFile(MdalGenerator.ENUM_PATH + '/' + objectName.toEnumFileName)

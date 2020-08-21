@@ -31,6 +31,7 @@ public class MdalGenerator extends AbstractGenerator {
 	public static final String ENUM_PATH = "Enum";
 	public static final String ENUM_EXT_PATH = "EnumExt";
 	public static final String TABLE_EXT_PATH = "TableExt";
+	public static final String PAGE_EXT_PATH = "PageExt";
 	
 	@Override
 	public void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {		

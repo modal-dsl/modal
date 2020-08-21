@@ -560,9 +560,14 @@ class SolutionExtensions {
 	
 	static def doGenerateSourceCodeSetupObjects(Solution solution) {
 		solution.saveTableExt(solution.sourceCodeSetupTableExtName, solution.doGenerateSourceCodeSetupTableExt)
+		solution.savePageExt(solution.sourceCodeSetupPageExtName, solution.doGenerateSourceCodeSetupPageExt)
 	}
 	
 	static def getSourceCodeSetupTableExtName(Solution solution) {
+		return solution.constructObjectName('Source Code Setup Ext')
+	}
+	
+	static def getSourceCodeSetupPageExtName(Solution solution) {
 		return solution.constructObjectName('Source Code Setup Ext')
 	}
 	
@@ -576,6 +581,28 @@ class SolutionExtensions {
 		        {
 		            Caption = '«document.name»';
 		            TableRelation = "Source Code";
+		        }
+		    }
+		}
+	'''
+	
+	static def doGenerateSourceCodeSetupPageExt(Solution solution) '''
+		«val document = solution.document»
+		pageextension «management.newPageExtNo» «solution.sourceCodeSetupPageExtName.saveQuote» extends "Source Code Setup"
+		{
+		    layout
+		    {
+		        addafter("Cost Accounting")
+		        {
+		            group(«solution.name.saveQuote»)
+		            {
+		                Caption = '«solution.name»';
+		
+		                field(«document.name.saveQuote»; «document.name.saveQuote»)
+		                {
+		                    ApplicationArea = All;
+		                }
+		            }
 		        }
 		    }
 		}

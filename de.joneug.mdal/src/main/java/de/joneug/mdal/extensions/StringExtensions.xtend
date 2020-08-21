@@ -72,4 +72,8 @@ class StringExtensions {
 		return tableExtName.clean + '.TableExt.al'
 	}
 	
+	def static toPageExtFileName(String tableExtName) {
+		return tableExtName.clean + '.PageExt.al'
+	}
+	
 }

@@ -36,7 +36,7 @@ public class GeneratorManagement {
 	}
 
 	enum ALObjectType {
-		TABLE, PAGE, CODEUNIT, ENUM, TABLE_EXT, ENUM_EXT
+		TABLE, PAGE, CODEUNIT, ENUM, TABLE_EXT, ENUM_EXT, PAGE_EXT
 	}
 
 	protected TreeSet<ObjectRange> alObjectRanges;
@@ -230,6 +230,10 @@ public class GeneratorManagement {
 
 	public int getNewEnumExtNo() {
 		return getNewObjectNo(ALObjectType.ENUM_EXT);
+	}
+	
+	public int getNewPageExtNo() {
+		return getNewObjectNo(ALObjectType.PAGE_EXT);
 	}
 
 	protected int getNewObjectNo(ALObjectType objectType) {
