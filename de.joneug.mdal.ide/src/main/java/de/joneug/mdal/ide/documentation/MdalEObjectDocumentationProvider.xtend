@@ -20,7 +20,7 @@ import static extension de.joneug.mdal.extensions.FieldTypeExtensions.*
 import static extension de.joneug.mdal.extensions.ObjectExtensions.*
 import static extension de.joneug.mdal.extensions.StringExtensions.*
 
-class MdalIEObjectDocumentationProvider implements IEObjectDocumentationProvider {
+class MdalEObjectDocumentationProvider implements IEObjectDocumentationProvider {
 	
 	@Inject
 	MdalGrammarAccess ga

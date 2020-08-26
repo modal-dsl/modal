@@ -1,14 +1,14 @@
 package de.joneug.mdal.ide.hover
 
 import com.google.inject.Inject
-import de.joneug.mdal.ide.documentation.MdalIEObjectDocumentationProvider
+import de.joneug.mdal.ide.documentation.MdalEObjectDocumentationProvider
 import de.joneug.mdal.mdal.IncludeField
 import de.joneug.mdal.mdal.PageField
 import de.joneug.mdal.services.MdalGrammarAccess
 
 import static extension de.joneug.mdal.extensions.IncludeFieldExtensions.*
-import static extension de.joneug.mdal.extensions.PageFieldExtensions.*
 import static extension de.joneug.mdal.extensions.ObjectExtensions.*
+import static extension de.joneug.mdal.extensions.PageFieldExtensions.*
 
 class MdalHoverContextContent {
 	
@@ -16,7 +16,7 @@ class MdalHoverContextContent {
 	MdalGrammarAccess ga
 	
 	@Inject
-	MdalIEObjectDocumentationProvider documentationProvider
+	MdalEObjectDocumentationProvider documentationProvider
 	
 	def content(MdalHoverContext context) {
 		val directGrammarElement = context.directGrammarElement

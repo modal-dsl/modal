@@ -12,7 +12,7 @@ import org.eclipse.xtext.ide.server.hover.HoverService;
 import de.joneug.mdal.ide.action.MdalCodeActionService;
 import de.joneug.mdal.ide.command.MdalCommandService;
 import de.joneug.mdal.ide.contentassist.MdalIdeContentProposalProvider;
-import de.joneug.mdal.ide.documentation.MdalIEObjectDocumentationProvider;
+import de.joneug.mdal.ide.documentation.MdalEObjectDocumentationProvider;
 import de.joneug.mdal.ide.hover.MdalHoverService;
 
 /**
@@ -37,7 +37,7 @@ public class MdalIdeModule extends AbstractMdalIdeModule {
 	}
 	
 	public Class<? extends IEObjectDocumentationProvider> bindIEObjectDocumentationProviderr() {
-        return MdalIEObjectDocumentationProvider.class;
+        return MdalEObjectDocumentationProvider.class;
     }
 	
 }
