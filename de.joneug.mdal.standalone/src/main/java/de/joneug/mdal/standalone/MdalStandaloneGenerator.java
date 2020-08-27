@@ -51,12 +51,15 @@ public class MdalStandaloneGenerator implements Callable<Integer> {
 	@Override
 	public Integer call() throws Exception {
 		// Load model
+		LOGGER.info("Loading model file");
 		Resource resource = resourceSet.getResource(URI.createFileURI(modelFile.getAbsolutePath()), true);
 		
 		// Clean
+		LOGGER.info("Cleaning output folder");
 		MdalUtils.forceDeleteDirectory(MdalGenerator.OUTPUT_FOLDER);
 		
 		// Generate
+		LOGGER.info("Starting generator");
 		generator.doGenerate(resource, this.fsa, new GeneratorContext());
 		
 		return 0;

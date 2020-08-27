@@ -51,6 +51,10 @@ class MdalUtils {
 		Files.walk(Paths.get(path)).sorted(Comparator.reverseOrder()).map[it.toFile].forEach[it.delete]
 	}
 	
+	def static forceDeleteFile(String path) {
+		if ((new File(path)).delete) {}
+	}
+	
 	def static calcFileHashCode(File file) {
 		return com.google.common.io.Files.asByteSource(file).hash(Hashing.sha256()).asInt
 	}
