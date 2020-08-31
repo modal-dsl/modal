@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2020-08-31
+
+### Added
+
+* Generator for source code setup page extension
+* Documentation
+* Tests
+
 ## [0.2.1] - 2020-07-23
 
 ### Fixes
