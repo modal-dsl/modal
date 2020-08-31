@@ -542,8 +542,8 @@ class LedgerEntryExtensions {
 		                    ToolTip = 'Specifies the number of the «document.name».';
 		                }
 		                «FOR pageField : ledgerEntry.listPageFields»
-    	                	«pageField.doGenerate»
-    	                «ENDFOR»
+		                	«pageField.doGenerate»
+		                «ENDFOR»
 		                field("User ID"; "User ID")
 		                {
 		                    ApplicationArea = All;
