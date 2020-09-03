@@ -68,8 +68,8 @@ class DocumentLineExtensions {
 		line.saveTable(line.tableNamePosted, line.doGenerateTablePosted)
 		
 		// Pages
-		line.savePage(line.subformPageName, line.doGenerateSuformPage)
-		line.savePage(line.subformPageNamePosted, line.doGenerateSuformPagePosted)
+		line.savePage(line.subformPageName, line.doGenerateSubformPage)
+		line.savePage(line.subformPageNamePosted, line.doGenerateSubformPagePosted)
 	}
 	
 	static def doGenerateTable(DocumentLine line) '''
@@ -368,7 +368,7 @@ class DocumentLineExtensions {
 		}
 	'''
 	
-	static def doGenerateSuformPage(DocumentLine line) '''
+	static def doGenerateSubformPage(DocumentLine line) '''
 		page «management.newPageNo» «line.subformPageName.saveQuote»
 		{
 		
@@ -440,7 +440,7 @@ class DocumentLineExtensions {
 		}
 	'''
 	
-	static def doGenerateSuformPagePosted(DocumentLine line) '''
+	static def doGenerateSubformPagePosted(DocumentLine line) '''
 		page «management.newPageNo» «line.subformPageNamePosted.saveQuote»
 		{
 		    AutoSplitKey = true;
