@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.stream.JsonReader;
 
 import de.joneug.mdal.util.MdalUtils;
 
@@ -64,7 +66,9 @@ public class SymbolReference {
 			String jsonString = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines()
 					.collect(Collectors.joining("\n"));
 			
-			SymbolReference symbolReference = new SymbolReference(JsonParser.parseString(jsonString).getAsJsonObject());
+			JsonReader reader = new JsonReader(new StringReader(jsonString));
+			reader.setLenient(true);
+			SymbolReference symbolReference = new SymbolReference(JsonParser.parseReader(reader).getAsJsonObject());
 			symbolReference.setHashCode(MdalUtils.calcFileHashCode(appFile));
 			return symbolReference;
 		}
