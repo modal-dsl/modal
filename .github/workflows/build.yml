@@ -27,9 +27,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Build
-        run: ./gradlew build
+        run: ./gradlew build --info
       - name: Generate Code Coverage Report
-        run: ./gradlew codeCoverageReport
+        run: ./gradlew codeCoverageReport --info
       - name: Upload Code Coverage Report
         uses: codecov/codecov-action@v1
         with:
