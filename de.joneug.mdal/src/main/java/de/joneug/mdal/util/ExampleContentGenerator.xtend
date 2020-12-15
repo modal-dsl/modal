@@ -1,6 +1,37 @@
 package de.joneug.mdal.util
 
 class ExampleContentGenerator {
+	
+	static def generateMinimalModel() '''
+		solution "Seminar Management" {
+			Prefix = "SEM";
+			
+			master "Seminar" {
+				ShortName = "Sem.";
+				
+				fields {
+					template("Description"; Description)
+					field("Duration Days"; Decimal)
+					template("Dimensions"; Dimensions)
+				}
+				
+				cardPage {
+					group("General") {
+						field("Description")
+						field("Duration Days")
+					}
+						group("Posting Details") {
+						field("Dimensions")
+					}
+				}
+				
+				listPage {
+					field("Description")
+					field("Duration Days")
+				}
+			}
+		}
+	'''
 
 	static def generateCorrectModel() '''
 		solution "Seminar Management" {

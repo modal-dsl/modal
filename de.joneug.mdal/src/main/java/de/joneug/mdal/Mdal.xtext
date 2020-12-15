@@ -9,10 +9,10 @@ Solution:
 	'solution' name=STRING '{'
 		(
 			('Prefix' '=' prefix=STRING ';')? &
-			(master=Master) &
+			(master=Master)? &
 			(supplementals+=Supplemental)* &
-			(document=Document) &
-			(ledgerEntry=LedgerEntry)
+			(document=Document)? &
+			(ledgerEntry=LedgerEntry)?
 		)
 	'}'
 ;
