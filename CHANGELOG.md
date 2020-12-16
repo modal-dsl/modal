@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2020-12-16
+
+### Added
+
+* Improved modularity (#14, #16)
+    - Now you can use `mdAL` in a more modularized way: You dont't have to specify all entities anymore but can choose to only generate AL code for parts of a solution (e. g. only Master or Supplemental entities).
+
+### Changed
+
+* Update to Xtext 2.23.0
+* Update to picocli 4.5.2
+
 ## [0.3.1] - 2020-09-21
 
 ### Fixes
