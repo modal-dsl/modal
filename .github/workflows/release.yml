@@ -48,8 +48,8 @@ jobs:
           asset_content_type: application/zip
       - name: Set up Environment Variables (CLI)
         run: |
-          echo "::set-env name=ASSET_PATH::$(ls de.joneug.mdal.standalone/build/distributions/*.zip | head -1)"
-          echo "::set-env name=ASSET_NAME::$(cd de.joneug.mdal.standalone/build/distributions/ && ls *.zip | head -1)"
+          echo "ASSET_PATH=$(ls de.joneug.mdal.standalone/build/distributions/*.zip | head -1)" >> $GITHUB_ENV
+          echo "ASSET_NAME=$(cd de.joneug.mdal.standalone/build/distributions/ && ls *.zip | head -1)" >> $GITHUB_ENV
       - name: Upload Release Asset (CLI)
         uses: actions/upload-release-asset@v1
         env:
