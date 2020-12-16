@@ -28,7 +28,19 @@ class MdalLanguageServerTest extends AbstractLanguageServerTest {
 		initialize()
 
 		val file = 'seminar.mdal'.writeFile("")
-		file.open(ExampleContentGenerator.generateMinimalModel.toString)
+		file.open('''
+			solution "Seminar Management" {
+				Prefix = "SEM";
+				
+				master "Seminar" {
+					ShortName = "Sem.";
+					
+					fields {
+						template("Description"; Description)
+					}
+				}
+			}
+		''')
 		val diagnostics = diagnostics.get(file)
 		assertTrue('''Unexpected errors: «diagnostics»''', diagnostics.empty)
 	}

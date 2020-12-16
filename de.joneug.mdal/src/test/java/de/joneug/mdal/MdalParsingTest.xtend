@@ -29,8 +29,74 @@ class MdalParsingTest {
 	@Inject extension ValidationTestHelper
 
 	@Test
-	def void testMinimalModel() {
-		val model = parseHelper.parse(ExampleContentGenerator.generateMinimalModel)
+	def void testOnlyMaster() {
+		val model = parseHelper.parse('''
+			solution "Seminar Management" {
+				Prefix = "SEM";
+				master "Seminar" {
+					ShortName = "Sem.";
+					fields {
+						template("Description"; Description)
+					}
+				}
+			}
+		''')
+
+		assertNotNull(model)
+		val errors = model.eResource.errors
+		assertTrue('''Unexpected errors: «errors.join(", ")»''', errors.isEmpty)
+		model.assertNoIssues
+	}
+	
+	@Test
+	def void testOnlySupplemental() {
+		val model = parseHelper.parse('''
+			solution "Seminar Management" {
+				Prefix = "SEM";
+				supplemental "Seminar Room" {
+					ShortName = "Sem. Room";
+					fields {
+						template("Name"; Name)
+					}
+				}
+			}
+		''')
+
+		assertNotNull(model)
+		val errors = model.eResource.errors
+		assertTrue('''Unexpected errors: «errors.join(", ")»''', errors.isEmpty)
+		model.assertNoIssues
+	}
+	
+	@Test
+	def void testMasterDocument() {
+		val model = parseHelper.parse('''
+			solution "Seminar Management" {
+				Prefix = "SEM";
+				master "Seminar" {
+					ShortName = "Sem.";
+					fields {
+						template("Description"; Description)
+					}
+				}
+				document "Seminar Registration" {
+					ShortName = "Sem. Reg.";
+					header "Seminar Registration Header" {
+						ShortName = "Sem. Reg. Header";
+						StatusCaptions = ["Planning", "Registration", "Closed", "Canceled"];
+						fields {
+							field("Starting Date"; Date)
+						}
+					}
+					line "Seminar Registration Line" {
+						ShortName = "Sem. Reg. Line";
+						fields {
+							field("Bill-to Customer No."; Code[20])
+						}
+					}
+				}
+			}
+		''')
 
 		assertNotNull(model)
 		val errors = model.eResource.errors
@@ -55,7 +121,7 @@ class MdalParsingTest {
 	}
 
 	@Test
-	def void testModelWithIssues() {
+	def void testModelWithErrors() {
 		val model = parseHelper.parse(ExampleContentGenerator.generateModelWithErrors)
 		assertNotNull(model)
 
