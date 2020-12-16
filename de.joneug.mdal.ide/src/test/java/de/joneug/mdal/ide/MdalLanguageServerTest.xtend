@@ -22,6 +22,28 @@ class MdalLanguageServerTest extends AbstractLanguageServerTest {
 		val capabilities = initialize().capabilities
 		assertTrue(capabilities.definitionProvider && capabilities.documentFormattingProvider)
 	}
+	
+	@Test
+	def void testMinimalModel() {
+		initialize()
+
+		val file = 'seminar.mdal'.writeFile("")
+		file.open('''
+			solution "Seminar Management" {
+				Prefix = "SEM";
+				
+				master "Seminar" {
+					ShortName = "Sem.";
+					
+					fields {
+						template("Description"; Description)
+					}
+				}
+			}
+		''')
+		val diagnostics = diagnostics.get(file)
+		assertTrue('''Unexpected errors: «diagnostics»''', diagnostics.empty)
+	}
 
 	@Test
 	def void testCorrectModel() {

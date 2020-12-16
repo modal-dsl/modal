@@ -35,37 +35,45 @@ class SolutionExtensions {
 	static def doGenerate(Solution solution) {
 		solution.logInfo("Generating solution '" + solution.name + "'")
 		
-		// Setup
-		solution.logInfo("Generating setup files")
-		solution.doGenerateSetup
+		if (solution.master !== null || solution.document !== null) {
+			// Setup
+			solution.logInfo("Generating setup files")
+			solution.doGenerateSetup
+		}
 		
 		// Comments
 		solution.logInfo("Generating comment files")
 		solution.doGenerateCommentObjects
 		
-		// Source Code Setup
-		solution.logInfo("Generating source code setup files")
-		solution.doGenerateSourceCodeSetupObjects
-		
-		// Master
-		solution.logInfo("Generating master files")
-		solution.master.doGenerate
+		if (solution.master !== null) {
+			// Master
+			solution.logInfo("Generating master files")
+			solution.master.doGenerate
+		}
 		
 		// Supplementals
 		solution.logInfo("Generating supplemental files")
 		solution.supplementals.forEach[it.doGenerate]
 		
-		// Document
-		solution.logInfo("Generating document files")
-		solution.document.doGenerate
-		
-		// Ledger Entry
-		solution.logInfo("Generating ledger entry files")
-		solution.ledgerEntry.doGenerate
-		
-		// Navigate Extensions
-		solution.logInfo("Generating navigate files")
-		solution.doGenerateNavigateExtensionObjects
+		if (solution.document !== null) {
+			// Document
+			solution.logInfo("Generating document files")
+			solution.document.doGenerate
+			
+			// Ledger Entry
+			if (solution.ledgerEntry !== null) {
+				solution.logInfo("Generating ledger entry files")
+				solution.ledgerEntry.doGenerate
+			}
+			
+			// Source Code Setup
+			solution.logInfo("Generating source code setup files")
+			solution.doGenerateSourceCodeSetupObjects
+			
+			// Navigate Extensions
+			solution.logInfo("Generating navigate files")
+			solution.doGenerateNavigateExtensionObjects
+		}
 	}
 	
 	/*
@@ -111,22 +119,24 @@ class SolutionExtensions {
 		            Caption = '«solution.master.cleanedName» Nos.';
 		            TableRelation = "No. Series";
 		        }
-		        field(3; "«solution.document.shortName» Nos."; Code[20])
-		        {
-		            Caption = '«solution.document.shortName» Nos.';
-		            TableRelation = "No. Series";
-		        }
-		        field(4; "«solution.document.shortNamePosted» Nos."; Code[20])
-		        {
-		            Caption = '«solution.document.shortNamePosted» Nos.';
-		            TableRelation = "No. Series";
-		        }
-		        field(10; "Copy Comments"; Boolean)
-		        {
-		            AccessByPermission = TableData «solution.document.header.tableNamePosted.saveQuote» = R;
-		            Caption = 'Copy Comments To Posted Reg.';
-		            InitValue = true;
-		        }
+		        «IF solution.document !== null»
+		        	field(3; "«solution.document.shortName» Nos."; Code[20])
+		        	{
+		        		Caption = '«solution.document.shortName» Nos.';
+		        		TableRelation = "No. Series";
+		        	}
+		        	field(4; "«solution.document.shortNamePosted» Nos."; Code[20])
+		        	{
+		        		Caption = '«solution.document.shortNamePosted» Nos.';
+		        		TableRelation = "No. Series";
+		        	}
+		        	field(10; "Copy Comments"; Boolean)
+		        	{
+		        		AccessByPermission = TableData «solution.document.header.tableNamePosted.saveQuote» = R;
+		        		Caption = 'Copy Comments To Posted Reg.';
+		        		InitValue = true;
+		        	}
+		        «ENDIF»
 		    }
 		
 		    keys
@@ -165,15 +175,17 @@ class SolutionExtensions {
 		    {
 		        area(content)
 		        {
-		            group(General)
-		            {
-		                Caption = 'General';
-		
-		                field("Copy Comments"; "Copy Comments")
-		                {
-		                    ApplicationArea = All;
-		                }
-		            }
+		        	«IF solution.document !== null»
+		        		group(General)
+		        		{
+		        			Caption = 'General';
+		        			
+		        			field("Copy Comments"; "Copy Comments")
+		        			{
+		        				ApplicationArea = All;
+		        			}
+		        		}
+		            «ENDIF»
 		            group("Number Series")
 		            {
 		                Caption = 'Number Series';
@@ -182,14 +194,16 @@ class SolutionExtensions {
 		                {
 		                    ApplicationArea = All;
 		                }
-		                field("«solution.document.shortName» Nos."; "«solution.document.shortName» Nos.")
-		                {
-		                    ApplicationArea = All;
-		                }
-		                field("«solution.document.shortNamePosted» Nos."; "«solution.document.shortNamePosted» Nos.")
-		                {
-		                    ApplicationArea = All;
-		                }
+		                «IF solution.document !== null»
+		                	field("«solution.document.shortName» Nos."; "«solution.document.shortName» Nos.")
+		                	{
+		                		ApplicationArea = All;
+		                	}
+		                	field("«solution.document.shortNamePosted» Nos."; "«solution.document.shortNamePosted» Nos.")
+		                	{
+		                		ApplicationArea = All;
+		                	}
+		                «ENDIF»
 		            }
 		        }
 		    }
@@ -214,12 +228,16 @@ class SolutionExtensions {
 	 */
 	
 	static def void doGenerateCommentObjects(Solution solution) {
-		solution.saveEnumExt(solution.commentLineTableNameEnumExtName, solution.doGenerateCommentLineTableNameEnumExt)
-		solution.saveEnum(solution.commentDocumentTypeEnumName, solution.doGenerateCommentDocumentTypeEnum)
-		solution.saveTableExt(solution.commentLineTableExtName, solution.doGenerateCommentLineTableExtName)
-		solution.saveTable(solution.commentLineTableName, solution.doGenerateCommentLineTable)
-		solution.savePage(solution.commentListPageName, solution.doGenerateCommentListPage)
-		solution.savePage(solution.commentSheetPageName, solution.doGenerateCommentSheetPage)
+		if (solution.master !== null) {
+			solution.saveEnumExt(solution.commentLineTableNameEnumExtName, solution.doGenerateCommentLineTableNameEnumExt)
+			solution.saveTableExt(solution.commentLineTableExtName, solution.doGenerateCommentLineTableExtName)
+		}
+		if (solution.document !== null) {
+			solution.saveEnum(solution.commentDocumentTypeEnumName, solution.doGenerateCommentDocumentTypeEnum)
+			solution.saveTable(solution.commentLineTableName, solution.doGenerateCommentLineTable)
+			solution.savePage(solution.commentListPageName, solution.doGenerateCommentListPage)
+			solution.savePage(solution.commentSheetPageName, solution.doGenerateCommentSheetPage)
+		}
 	}
 	
 	static def getCommentLineTableNameEnumExtName(Solution solution) {

@@ -9,6 +9,7 @@ import org.eclipse.xtext.generator.InMemoryFileSystemAccess
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.extensions.InjectionExtension
 import org.eclipse.xtext.testing.util.ParseHelper
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.^extension.ExtendWith
@@ -30,7 +31,7 @@ class MdalGeneratorTest {
 	MdalGenerator generator
 
 	InMemoryFileSystemAccess fsa
-	
+
 	GeneratorManagement management
 
 	@BeforeEach
@@ -39,11 +40,106 @@ class MdalGeneratorTest {
 		this.fsa = new InMemoryFileSystemAccess()
 		fsa.generateFile('app.json', ExampleContentGenerator.generateAppJson)
 		this.management = GeneratorManagement.getInstance()
-    	this.management.initializeFileSystemAccess(fsa)
+		this.management.initializeFileSystemAccess(fsa)
 	}
 
 	@Test
-	def void testDoGenerate() {
+	def void testOnlyMaster() {
+		doGenerate('''
+			solution "Seminar Management" {
+				Prefix = "SEM";
+				master "Seminar" {
+					ShortName = "Sem.";
+					fields {
+						template("Description"; Description)
+					}
+				}
+			}
+		''')
+		checkFileExists("EnumExt/SEMCommentLineTableNameExt.EnumExt.al")
+		checkFileExists("Page/SEMSeminarCard.Page.al")
+		checkFileExists("Page/SEMSeminarList.Page.al")
+		checkFileExists("Page/SEMSeminarSetup.Page.al")
+		checkFileExists("Table/SEMSeminar.Table.al")
+		checkFileExists("Table/SEMSeminarSetup.Table.al")
+		checkFileExists("TableExt/SEMCommentLineExt.TableExt.al")
+	}
+
+	@Test
+	def void testOnlySupplemental() {
+		doGenerate('''
+			solution "Seminar Management" {
+			    Prefix = "SEM";
+				supplemental "Seminar Room" {
+					ShortName = "Sem. Room";
+					fields {
+						template("Name"; Name)
+					}
+				}
+			}
+		''')
+		checkFileExists("Page/SEMSeminarRooms.Page.al")
+		checkFileExists("Table/SEMSeminarRoom.Table.al")
+	}
+	
+	@Test
+	def void testMasterDocument() {
+		doGenerate('''
+			solution "Seminar Management" {
+				Prefix = "SEM";
+				master "Seminar" {
+					ShortName = "Sem.";
+					fields {
+						template("Description"; Description)
+					}
+				}
+				document "Seminar Registration" {
+					ShortName = "Sem. Reg.";
+					header "Seminar Registration Header" {
+						ShortName = "Sem. Reg. Header";
+						StatusCaptions = ["Planning", "Registration", "Closed", "Canceled"];
+						fields {
+							field("Starting Date"; Date)
+						}
+					}
+					line "Seminar Registration Line" {
+						ShortName = "Sem. Reg. Line";
+						fields {
+							field("Bill-to Customer No."; Code[20])
+						}
+					}
+				}
+			}
+		''')
+		checkFileExists("Codeunit/SEMNavigateEventSub.Codeunit.al")
+		checkFileExists("Enum/SEMSeminarCommentDocumentType.Enum.al")
+		checkFileExists("Enum/SEMSemRegStatus.Enum.al")
+		checkFileExists("EnumExt/SEMCommentLineTableNameExt.EnumExt.al")
+		checkFileExists("Page/SEMPostedSemReg.Page.al")
+		checkFileExists("Page/SEMPostedSemRegList.Page.al")
+		checkFileExists("Page/SEMPostedSemRegSubf.Page.al")
+		checkFileExists("Page/SEMSeminarCard.Page.al")
+		checkFileExists("Page/SEMSeminarCommentList.Page.al")
+		checkFileExists("Page/SEMSeminarCommentSheet.Page.al")
+		checkFileExists("Page/SEMSeminarList.Page.al")
+		checkFileExists("Page/SEMSeminarRegistration.Page.al")
+		checkFileExists("Page/SEMSeminarRegistrationList.Page.al")
+		checkFileExists("Page/SEMSeminarSetup.Page.al")
+		checkFileExists("Page/SEMSemRegSubf.Page.al")
+		checkFileExists("PageExt/SEMSourceCodeSetupExt.PageExt.al")
+		checkFileExists("Table/SEMPstdSemRegHeader.Table.al")
+		checkFileExists("Table/SEMPstdSemRegLine.Table.al")
+		checkFileExists("Table/SEMSeminar.Table.al")
+		checkFileExists("Table/SEMSeminarCommentLine.Table.al")
+		checkFileExists("Table/SEMSeminarSetup.Table.al")
+		checkFileExists("Table/SEMSemRegHeader.Table.al")
+		checkFileExists("Table/SEMSemRegLine.Table.al")
+		checkFileExists("TableExt/SEMCommentLineExt.TableExt.al")
+		checkFileExists("TableExt/SEMSourceCodeSetupExt.TableExt.al")
+	}
+
+	@Test
+	def void testCorrectModel() {
 		doGenerate(ExampleContentGenerator.generateCorrectModel.toString)
 
 		// Tables
@@ -72,7 +168,7 @@ class MdalGeneratorTest {
 				'local procedure OnAfterGetSemSetup(var SemSetup: Record "SEM Seminar Setup")'
 			]
 		)
-		
+
 		// Pages
 		checkFileContains(
 			"Page/SEMSeminarSetup.Page.al",
@@ -84,6 +180,13 @@ class MdalGeneratorTest {
 				'group("Number Series")'
 			]
 		)
+	}
+
+	@Test
+	def void testIncorrectModel() {
+		Assertions.assertThrows(IllegalArgumentException, [
+			doGenerate(ExampleContentGenerator.generateModelWithErrors.toString)
+		])
 	}
 
 	def doGenerate(String modelString) {
@@ -111,9 +214,10 @@ class MdalGeneratorTest {
 		logDebug(fsa.getFileInDefaultOutput(filePath))
 
 		val fileContents = fsa.getFileInDefaultOutput(filePath).toString
-		
-		expectedContents.forEach[
-			assertTrue('''File at path "«filePath»" doesn't contain the expected content "«it»"".''', fileContents.contains(it))
+
+		expectedContents.forEach [
+			assertTrue('''File at path "«filePath»" doesn't contain the expected content "«it»"".''',
+				fileContents.contains(it))
 		]
 	}
 

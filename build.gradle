@@ -16,7 +16,7 @@ allprojects {
 }
 
 subprojects {
-	ext.xtextVersion = '2.21.0'
+	ext.xtextVersion = '2.23.0'
 	repositories {
 		mavenCentral()
 	}
