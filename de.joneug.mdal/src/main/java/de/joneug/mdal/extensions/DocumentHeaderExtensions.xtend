@@ -1295,31 +1295,33 @@ class DocumentHeaderExtensions {
 		                    ToolTip = 'View or add comments for the record.';
 		                }
 		            }
-		            group("P&osting")
-		            {
-		                Caption = 'P&osting';
-		                Image = Post;
-		                action(Post)
-		                {
-		                    ApplicationArea = All;
-		                    Caption = 'P&ost';
-		                    Ellipsis = true;
-		                    Image = PostOrder;
-		                    Promoted = true;
-		                    PromotedCategory = Category7;
-		                    PromotedIsBig = true;
-		                    ShortCutKey = 'F9';
-		                    ToolTip = 'Finalize the document or journal by posting the amounts and quantities to the related accounts in your company books.';
-		
-		                    trigger OnAction()
-		                    var
-		                        «document.codeunitVariableNamePostYesNo»: Codeunit «document.codeunitNamePostYesNo.saveQuote»;
-		                    begin
-		                        «document.codeunitVariableNamePostYesNo».Run(Rec);
-		                        CurrPage.Update(false);
-		                    end;
-		                }
-		            }
+		            «IF document.solution.ledgerEntry !== null»
+		            	group("P&osting")
+		            	{
+		            		Caption = 'P&osting';
+		            		Image = Post;
+		            		action(Post)
+		            		{
+		            			ApplicationArea = All;
+		            			Caption = 'P&ost';
+		            			Ellipsis = true;
+		            			Image = PostOrder;
+		            			Promoted = true;
+		            			PromotedCategory = Category7;
+		            			PromotedIsBig = true;
+		            			ShortCutKey = 'F9';
+		            			ToolTip = 'Finalize the document or journal by posting the amounts and quantities to the related accounts in your company books.';
+		            			
+		            			trigger OnAction()
+		            			var
+		            				«document.codeunitVariableNamePostYesNo»: Codeunit «document.codeunitNamePostYesNo.saveQuote»;
+		            			begin
+		            				«document.codeunitVariableNamePostYesNo».Run(Rec);
+		            				CurrPage.Update(false);
+		            			end;
+		            		}
+		            	}
+		            «ENDIF»
 		        }
 		    }
 		}

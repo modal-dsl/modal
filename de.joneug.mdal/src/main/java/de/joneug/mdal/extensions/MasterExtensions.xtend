@@ -139,12 +139,14 @@ class MasterExtensions {
 				CommentLine.SetRange("No.", "No.");
 				CommentLine.DeleteAll();
 				
-				«document.header.tableVariableName».SetCurrentKey("«master.cleanedName» No.");
-				«document.header.tableVariableName».SetRange("«master.cleanedName» No.", "No.");
-				IF NOT «document.header.tableVariableName».IsEmpty THEN
-					Error(
-						ExistingDocumentsErr,
-						TableCaption, "No.", «document.header.tableVariableName».TableCaption);
+				«IF document !== null»
+					«document.header.tableVariableName».SetCurrentKey("«master.cleanedName» No.");
+					«document.header.tableVariableName».SetRange("«master.cleanedName» No.", "No.");
+					IF NOT «document.header.tableVariableName».IsEmpty THEN
+						Error(
+							ExistingDocumentsErr,
+							TableCaption, "No.", «document.header.tableVariableName».TableCaption);
+				«ENDIF»
 			end;
 			
 			trigger OnRename()
@@ -158,8 +160,10 @@ class MasterExtensions {
 				NoSeriesMgt: Codeunit NoSeriesManagement;
 				CommentLine: Record "Comment Line";
 				«master.tableVariableName»: Record "«master.tableName»";
-				«document.header.tableVariableName»: Record "«document.header.tableName»";
-				ExistingDocumentsErr: Label 'You cannot delete %1 %2 because there is at least one outstanding %3 for this «master.name».';
+				«IF document !== null»
+					«document.header.tableVariableName»: Record "«document.header.tableName»";
+					ExistingDocumentsErr: Label 'You cannot delete %1 %2 because there is at least one outstanding %3 for this «master.name».';
+				«ENDIF»
 				«IF master.hasTemplateOfType(TemplateDimensions)»
 					DimMgt: Codeunit DimensionManagement;
 				«ENDIF»
@@ -379,22 +383,24 @@ class MasterExtensions {
 		                }
 		            }
 		        }
-		        area(creation)
-		        {
-		            action(New«document.cleanedName»)
-		            {
-		                AccessByPermission = tabledata «document.header.tableName.saveQuote» = RIM;
-		                ApplicationArea = All;
-		                Caption = '«document.name»';
-		                Image = NewDocument;
-		                Promoted = true;
-		                PromotedCategory = Category4;
-		                RunObject = Page «document.documentPageName.saveQuote»;
-		                RunPageLink = "«master.name» No." = field("No.");
-		                RunPageMode = Create;
-		                Visible = NOT IsOfficeAddin;
-		            }
-		        }
+		        «IF document !== null»
+		        	area(creation)
+		        	{
+		        		action(New«document.cleanedName»)
+		        		{
+		        			AccessByPermission = tabledata «document.header.tableName.saveQuote» = RIM;
+		        			ApplicationArea = All;
+		        			Caption = '«document.name»';
+		        			Image = NewDocument;
+		        			Promoted = true;
+		        			PromotedCategory = Category4;
+		        			RunObject = Page «document.documentPageName.saveQuote»;
+		        			RunPageLink = "«master.name» No." = field("No.");
+		        			RunPageMode = Create;
+		        			Visible = NOT IsOfficeAddin;
+		        		}
+		        	}
+		        «ENDIF»
 		    }
 		
 		    var

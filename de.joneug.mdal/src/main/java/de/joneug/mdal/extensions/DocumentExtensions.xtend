@@ -145,10 +145,12 @@ class DocumentExtensions {
 		document.line.doGenerate
 		
 		// Codeunits
-		document.saveCodeunit(document.codeunitNamePost, document.doGenerateCodeunitPost)
-		document.saveCodeunit(document.codeunitNamePostYesNo, document.doGenerateCodeunitPostYesNo)
-		document.saveCodeunit(document.codeunitNameJnlCheckLine, document.doGenerateCodeunitJnlCheckLine)
-		document.saveCodeunit(document.codeunitNameJnlPostLine, document.doGenerateCodeunitJnlPostLine)
+		if (document.solution.ledgerEntry !== null) {
+			document.saveCodeunit(document.codeunitNamePost, document.doGenerateCodeunitPost)
+			document.saveCodeunit(document.codeunitNamePostYesNo, document.doGenerateCodeunitPostYesNo)
+			document.saveCodeunit(document.codeunitNameJnlCheckLine, document.doGenerateCodeunitJnlCheckLine)
+			document.saveCodeunit(document.codeunitNameJnlPostLine, document.doGenerateCodeunitJnlPostLine)
+		}
 	}
 	
 	static def doGenerateStatusEnum(Document document) '''
