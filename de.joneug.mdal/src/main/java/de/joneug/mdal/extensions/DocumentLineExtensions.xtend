@@ -7,6 +7,7 @@ import de.joneug.mdal.mdal.DocumentLine
 import de.joneug.mdal.mdal.TemplateDimensions
 
 import static extension de.joneug.mdal.extensions.DocumentExtensions.*
+import static extension de.joneug.mdal.extensions.DocumentHeaderExtensions.*
 import static extension de.joneug.mdal.extensions.EObjectExtensions.*
 import static extension de.joneug.mdal.extensions.EntityExtensions.*
 import static extension de.joneug.mdal.extensions.IncludeFieldExtensions.*
