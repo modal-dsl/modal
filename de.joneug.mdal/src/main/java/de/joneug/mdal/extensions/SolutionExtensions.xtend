@@ -114,7 +114,7 @@ class SolutionExtensions {
 		        {
 		            Caption = 'Primary Key';
 		        }
-		        field(2; "«solution.master.cleanedName» Nos."; Code[20])
+		        field(2; "«solution.master.name» Nos."; Code[20])
 		        {
 		            Caption = '«solution.master.cleanedName» Nos.';
 		            TableRelation = "No. Series";
@@ -247,7 +247,7 @@ class SolutionExtensions {
 	static def doGenerateCommentLineTableNameEnumExt(Solution solution) '''
 		enumextension «management.newEnumExtNo» «solution.commentLineTableNameEnumExtName.saveQuote» extends "Comment Line Table Name"
 		{
-			value(50000; "«solution.master.cleanedName»") { }
+			value(50000; «solution.master.name.saveQuote») { }
 		}
 	'''
 	
@@ -262,7 +262,7 @@ class SolutionExtensions {
 			{
 				modify("No.")
 				{
-					TableRelation = if ("Table Name" = const(«solution.master.name»)) «solution.master.tableName.saveQuote»;
+					TableRelation = if ("Table Name" = const(«solution.master.name.saveQuote»)) «solution.master.tableName.saveQuote»;
 				}
 			}
 		}

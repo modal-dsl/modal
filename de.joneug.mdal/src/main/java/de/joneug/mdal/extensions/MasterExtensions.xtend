@@ -66,7 +66,7 @@ class MasterExtensions {
 					begin
 						if "No." <> xRec."No." then begin
 							Get«solution.setupTableVariableName»();
-							NoSeriesMgt.TestManual(«solution.setupTableVariableName»."«master.cleanedName» Nos.");
+							NoSeriesMgt.TestManual(«solution.setupTableVariableName»."«master.name» Nos.");
 							"No. Series" := '';
 						end;
 					end;
@@ -89,7 +89,7 @@ class MasterExtensions {
 				}
 				field(«management.getNewFieldNo(master)»; Comment; Boolean)
 				{
-					CalcFormula = Exist ("Comment Line" where("Table Name" = const(«master.cleanedName»), "No." = field("No.")));
+					CalcFormula = Exist ("Comment Line" where("Table Name" = const(«master.name.saveQuote»), "No." = field("No.")));
 					Caption = 'Comment';
 					Editable = false;
 					FieldClass = FlowField;
@@ -117,7 +117,7 @@ class MasterExtensions {
 			begin
 				if "No." = '' then begin
 					Test«master.cleanedName»NoSeries();
-					NoSeriesMgt.InitSeries(«solution.setupTableVariableName»."«master.cleanedName» Nos.", xRec."No. Series", 0D, "No.", "No. Series");
+					NoSeriesMgt.InitSeries(«solution.setupTableVariableName»."«master.name» Nos.", xRec."No. Series", 0D, "No.", "No. Series");
 				end;
 				
 				«IF master.hasTemplateOfType(TemplateDimensions)»
@@ -136,7 +136,7 @@ class MasterExtensions {
 					DimMgt.DeleteDefaultDim(Database::"«master.tableName»", "No.");
 					
 				«ENDIF»
-				CommentLine.SetRange("Table Name", CommentLine."Table Name"::«master.cleanedName»);
+				CommentLine.SetRange("Table Name", CommentLine."Table Name"::«master.name.saveQuote»);
 				CommentLine.SetRange("No.", "No.");
 				CommentLine.DeleteAll();
 				
@@ -177,7 +177,7 @@ class MasterExtensions {
 				with «master.tableVariableName» do begin
 					«master.tableVariableName» := Rec;
 					Test«master.cleanedName»NoSeries();
-					if NoSeriesMgt.SelectSeries(«solution.setupTableVariableName»."«master.cleanedName» Nos.", Old«master.tableVariableName»."No. Series", "No. Series") then begin
+					if NoSeriesMgt.SelectSeries(«solution.setupTableVariableName»."«master.name» Nos.", Old«master.tableVariableName»."No. Series", "No. Series") then begin
 						Test«master.cleanedName»NoSeries();
 						NoSeriesMgt.SetSeries("No.");
 						Rec := «master.tableVariableName»;
@@ -229,7 +229,7 @@ class MasterExtensions {
 			local procedure Test«master.cleanedName»NoSeries()
 			begin
 				Get«solution.setupTableVariableName»();
-				«solution.setupTableVariableName».TestField("«master.cleanedName» Nos.");
+				«solution.setupTableVariableName».TestField("«master.name» Nos.");
 			end;
 			
 			procedure TestBlocked()
@@ -378,7 +378,7 @@ class MasterExtensions {
 		                    Promoted = true;
 		                    PromotedCategory = Category6;
 		                    RunObject = Page "Comment Sheet";
-		                    RunPageLink = "Table Name" = const(«master.cleanedName»),
+		                    RunPageLink = "Table Name" = const(«master.name.saveQuote»),
 		                                  "No." = field("No.");
 		                    ToolTip = 'View or add comments for the record.';
 		                }
@@ -478,7 +478,7 @@ class MasterExtensions {
 	                    Promoted = true;
 	                    PromotedCategory = Category4;
 	                    RunObject = Page "Comment Sheet";
-	                    RunPageLink = "Table Name" = const(«master.cleanedName»),
+	                    RunPageLink = "Table Name" = const(«master.name.saveQuote»),
 	                                  "No." = field("No.");
 	                    ToolTip = 'View or add comments for the record.';
 	                }
