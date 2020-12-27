@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.1] - 2020-12-27
+
+### Fixes
+
+* AL CodeCop warnings for generated code (#19)
+* AL code generator issues with short names for documents (#20)
+* AL code generator issues with spaces in master entity's name (#22)
+
 ## [0.4.0] - 2020-12-16
 
 ### Added
