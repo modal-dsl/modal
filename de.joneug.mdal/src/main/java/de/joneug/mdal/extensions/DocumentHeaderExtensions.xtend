@@ -220,14 +220,12 @@ class DocumentHeaderExtensions {
 		
 		            trigger OnLookup()
 		            begin
-		                with «header.tableVariableName» do begin
-		                    «header.tableVariableName» := Rec;
-		                    Get«solution.setupTableVariableName»();
-		                    TestNoSeries();
-		                    if NoSeriesMgt.LookupSeries(GetPostingNoSeriesCode, "Posting No. Series") then
-		                        Validate("Posting No. Series");
-		                    Rec := «header.tableVariableName»;
-		                end;
+		                «header.tableVariableName» := Rec;
+		                Get«solution.setupTableVariableName»();
+		                TestNoSeries();
+		                if NoSeriesMgt.LookupSeries(GetPostingNoSeriesCode, «header.tableVariableName»."Posting No. Series") then
+		                    «header.tableVariableName».Validate("Posting No. Series");
+		                Rec := «header.tableVariableName»;
 		            end;
 		
 		            trigger OnValidate()
@@ -454,17 +452,15 @@ class DocumentHeaderExtensions {
 		        if IsHandled then
 		            exit;
 		
-		        with «header.tableVariableName» do begin
-		            Copy(Rec);
-		            Get«solution.setupTableVariableName»();
-		            TestNoSeries;
-		            if NoSeriesMgt.SelectSeries(GetNoSeriesCode(), Old«header.tableVariableName»."No. Series", "No. Series") then begin
-		                NoSeriesMgt.SetSeries("No.");
-		                if «header.tableVariableName»2.Get("No.") then
-		                    Error(AlreadyExistsErr, TableCaption, "No.");
-		                Rec := «header.tableVariableName»;
-		                exit(true);
-		            end;
+		        «header.tableVariableName».Copy(Rec);
+		        Get«solution.setupTableVariableName»();
+		        TestNoSeries();
+		        if NoSeriesMgt.SelectSeries(«header.tableVariableName».GetNoSeriesCode(), Old«header.tableVariableName»."No. Series", «header.tableVariableName»."No. Series") then begin
+		            NoSeriesMgt.SetSeries(«header.tableVariableName»."No.");
+		            if «header.tableVariableName»2.Get(«header.tableVariableName»."No.") then
+		                Error(AlreadyExistsErr, TableCaption, «header.tableVariableName»."No.");
+		            Rec := «header.tableVariableName»;
+		            exit(true);
 		        end;
 		    end;
 		

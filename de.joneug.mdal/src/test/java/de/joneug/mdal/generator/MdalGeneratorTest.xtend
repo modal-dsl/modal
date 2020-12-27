@@ -164,7 +164,7 @@ class MdalGeneratorTest {
 				'fieldgroup(DropDown; Description, "Description 2", "No.") { }',
 				'fieldgroup(Brick; Description, "No.") { }',
 				'SemRegHeader: Record "SEM Sem. Reg. Header";',
-				'if NoSeriesMgt.SelectSeries(SemSetup."Seminar Nos.", OldSem."No. Series", "No. Series") then begin',
+				'if NoSeriesMgt.SelectSeries(SemSetup."Seminar Nos.", OldSem."No. Series", Sem."No. Series") then begin',
 				'local procedure OnAfterGetSemSetup(var SemSetup: Record "SEM Seminar Setup")'
 			]
 		)

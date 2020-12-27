@@ -447,7 +447,7 @@ class TemplateTypeExtensions {
 							if Cont.Get(«fieldName.saveQuote») then
 								Cont.SetRange("Company No.", Cont."Company No.")
 							else
-								if ContBusinessRelation.FindByRelation(ContBusinessRelation."Link to Table"::Customer, «fieldName.saveQuote») then
+								if ContBusinessRelation.FindByRelation(ContBusinessRelation."Link to Table"::Customer.AsInteger(), «fieldName.saveQuote») then
 									Cont.SetRange("Company No.", ContBusinessRelation."Contact No.")
 								else
 									Cont.SetRange("No.", '');

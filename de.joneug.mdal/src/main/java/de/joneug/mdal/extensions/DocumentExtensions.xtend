@@ -271,16 +271,13 @@ class DocumentExtensions {
 		    begin
 		        OnBeforeFinalizePosting(«header.tableVariableName», Temp«line.tableVariableName»Global, EverythingInvoiced, SuppressCommit);
 		
-		        with «header.tableVariableName» do begin
-		            if not EverythingInvoiced then begin
-		                OnFinalizePostingOnNotEverythingInvoiced(«header.tableVariableName», Temp«line.tableVariableName»Global, SuppressCommit)
-		            end else begin
-		                PostUpdatePostedLine;
-		            end;
+		        if not EverythingInvoiced then
+		            OnFinalizePostingOnNotEverythingInvoiced(«header.tableVariableName», Temp«line.tableVariableName»Global, SuppressCommit)
+		        else
+		            PostUpdatePostedLine;
 		
-		            if not PreviewMode then
-		                DeleteAfterPosting(«header.tableVariableName»);
-		        end;
+		        if not PreviewMode then
+		            DeleteAfterPosting(«header.tableVariableName»);
 		
 		        OnAfterFinalizePostingOnBeforeCommit(«header.tableVariableName», «header.tableVariableNamePosted», SuppressCommit, PreviewMode);
 		
@@ -329,25 +326,23 @@ class DocumentExtensions {
 		        if SkipDelete then
 		            exit;
 		
-		        with «header.tableVariableName» do begin
-		            if HasLinks then
-		                DeleteLinks;
+		        if «header.tableVariableName».HasLinks() then
+		            «header.tableVariableName».DeleteLinks();
 		
-		            Delete;
+		        «header.tableVariableName».Delete();
 		
-		            ResetTempLines(Temp«line.tableVariableName»Local);
-		            if Temp«line.tableVariableName»Local.FindFirst() then
-		                repeat
-		                    if Temp«line.tableVariableName»Local.HasLinks then
-		                        Temp«line.tableVariableName»Local.DeleteLinks;
-		                until Temp«line.tableVariableName»Local.Next() = 0;
+		        ResetTempLines(Temp«line.tableVariableName»Local);
+		        if Temp«line.tableVariableName»Local.FindFirst() then
+		            repeat
+		                if Temp«line.tableVariableName»Local.HasLinks() then
+		                    Temp«line.tableVariableName»Local.DeleteLinks();
+		            until Temp«line.tableVariableName»Local.Next() = 0;
 		
-		            «line.tableVariableName».SetRange("Document No.", "No.");
-		            OnBefore«line.tableVariableName»DeleteAll(«line.tableVariableName», SuppressCommit);
-		            «line.tableVariableName».DeleteAll();
+		        «line.tableVariableName».SetRange("Document No.", «header.tableVariableName»."No.");
+		        OnBefore«line.tableVariableName»DeleteAll(«line.tableVariableName», SuppressCommit);
+		        «line.tableVariableName».DeleteAll();
 		
-		            «solution.commentLineTableVariableName».DeleteComments(«solution.commentLineTableVariableName»."Document Type"::«document.name.saveQuote», "No.");
-		        end;
+		        «solution.commentLineTableVariableName».DeleteComments(«solution.commentLineTableVariableName»."Document Type"::«document.name.saveQuote», «header.tableVariableName»."No.");
 		
 		        OnAfterDeleteAfterPosting(«header.tableVariableName», «header.tableVariableNamePosted», SuppressCommit);
 		    end;
@@ -367,22 +362,19 @@ class DocumentExtensions {
 		    begin
 		    end;
 		
-		
 		    local procedure PostUpdatePostedLine()
 		    var
 		        «line.tableVariableName»: Record «line.tableName.saveQuote»;
 		        Temp«line.tableVariableName»: Record «line.tableName.saveQuote» temporary;
 		    begin
 		        ResetTempLines(Temp«line.tableVariableName»);
-		        with Temp«line.tableVariableName» do begin
-		            OnPostUpdatePostedLineOnBeforeFindSet(Temp«line.tableVariableName»);
-		            if FindSet() then
-		                repeat
-		                    «line.tableVariableName».Get("Document No.", "Line No.");
-		                    OnPostUpdatePostedLineOnBeforeModify(«line.tableVariableName», Temp«line.tableVariableName»);
-		                    «line.tableVariableName».Modify();
-		                until Next() = 0;
-		        end;
+		        OnPostUpdatePostedLineOnBeforeFindSet(Temp«line.tableVariableName»);
+		        if Temp«line.tableVariableName».FindSet() then
+		            repeat
+		                «line.tableVariableName».Get(Temp«line.tableVariableName»."Document No.", Temp«line.tableVariableName»."Line No.");
+		                OnPostUpdatePostedLineOnBeforeModify(«line.tableVariableName», Temp«line.tableVariableName»);
+		                «line.tableVariableName».Modify();
+		            until Temp«line.tableVariableName».Next() = 0;
 		    end;
 		
 		    [IntegrationEvent(false, false)]
@@ -409,10 +401,8 @@ class DocumentExtensions {
 		
 		    local procedure UpdateLastPostingNos(var «header.tableVariableName»: Record «header.tableName.saveQuote»)
 		    begin
-		        with «header.tableVariableName» do begin
-		            "Last Posting No." := «header.tableVariableNamePosted»."No.";
-		            "Posting No." := '';
-		        end;
+		        «header.tableVariableName»."Last Posting No." := «header.tableVariableNamePosted»."No.";
+		        «header.tableVariableName»."Posting No." := '';
 		
 		        OnAfterUpdateLastPostingNos(«header.tableVariableName»);
 		    end;
@@ -426,22 +416,20 @@ class DocumentExtensions {
 		    var
 		        IsHandled: Boolean;
 		    begin
-		        with «line.tableVariableName» do begin
-		            TestLine(«header.tableVariableName», «line.tableVariableName»);
+		        TestLine(«header.tableVariableName», «line.tableVariableName»);
 		
-		            UpdateLineBeforePost(«header.tableVariableName», «line.tableVariableName»);
+		        UpdateLineBeforePost(«header.tableVariableName», «line.tableVariableName»);
 		
-		            IsHandled := false;
-		            OnPostLineOnBeforeInsertPostedLine(«header.tableVariableName», «line.tableVariableName», IsHandled, «header.tableVariableNamePosted»);
-		            if not IsHandled then begin
-		                «line.tableVariableNamePosted».Init;
-		                «line.tableVariableNamePosted».TransferFields(«line.tableVariableName»);
-		                «line.tableVariableNamePosted»."Document No." := «header.tableVariableNamePosted»."No.";
+		        IsHandled := false;
+		        OnPostLineOnBeforeInsertPostedLine(«header.tableVariableName», «line.tableVariableName», IsHandled, «header.tableVariableNamePosted»);
+		        if not IsHandled then begin
+		            «line.tableVariableNamePosted».Init();
+		            «line.tableVariableNamePosted».TransferFields(«line.tableVariableName»);
+		            «line.tableVariableNamePosted»."Document No." := «header.tableVariableNamePosted»."No.";
 		
-		                OnBeforePostedLineInsert(«line.tableVariableNamePosted», «header.tableVariableNamePosted», Temp«line.tableVariableName»Global, «header.tableVariableName», SrcCode, SuppressCommit);
-		                «line.tableVariableNamePosted».Insert(true);
-		                OnAfterPostedLineInsert(«line.tableVariableNamePosted», «header.tableVariableNamePosted», Temp«line.tableVariableName»Global, «header.tableVariableName», SrcCode, SuppressCommit);
-		            end;
+		            OnBeforePostedLineInsert(«line.tableVariableNamePosted», «header.tableVariableNamePosted», Temp«line.tableVariableName»Global, «header.tableVariableName», SrcCode, SuppressCommit);
+		            «line.tableVariableNamePosted».Insert(true);
+		            OnAfterPostedLineInsert(«line.tableVariableNamePosted», «header.tableVariableNamePosted», Temp«line.tableVariableName»Global, «header.tableVariableName», SrcCode, SuppressCommit);
 		        end;
 		
 		        OnAfterPostPostedLine(«header.tableVariableName», «line.tableVariableName», SuppressCommit, «line.tableVariableNamePosted»);
@@ -551,37 +539,35 @@ class DocumentExtensions {
 		
 		    local procedure CheckAndUpdate()
 		    begin
-		        with «header.tableVariableName» do begin
-		            // Check
-		            CheckMandatoryHeaderFields(«header.tableVariableName»);
-		            CheckPostRestrictions(«header.tableVariableName»);
+		        // Check
+		        CheckMandatoryHeaderFields(«header.tableVariableName»);
+		        CheckPostRestrictions(«header.tableVariableName»);
 		
-		            if not HideProgressWindow then
-		                InitProgressWindow(«header.tableVariableName»);
+		        if not HideProgressWindow then
+		            InitProgressWindow(«header.tableVariableName»);
 		
-		            CheckNothingToPost(«header.tableVariableName»);
+		        CheckNothingToPost(«header.tableVariableName»);
 		
-		            OnAfterCheck«document.shortName.clean»(«header.tableVariableName», SuppressCommit);
+		        OnAfterCheck«document.shortName.clean»(«header.tableVariableName», SuppressCommit);
 		
-		            // Update
-		            ModifyHeader := UpdatePostingNo(«header.tableVariableName»);
+		        // Update
+		        ModifyHeader := UpdatePostingNo(«header.tableVariableName»);
 		
-		            OnBeforePostCommit«document.shortName.clean»(«header.tableVariableName», PreviewMode, ModifyHeader, SuppressCommit, Temp«line.tableVariableName»Global);
-		            if not PreviewMode and ModifyHeader then begin
-		                Modify;
-		                if not SuppressCommit then
-		                    Commit();
-		            end;
-		
-		            LockTables(«header.tableVariableName»);
-		
-		            SourceCodeSetup.Get();
-		            SrcCode := SourceCodeSetup.«document.name.saveQuote»;
-		
-		            OnCheckAndUpdateOnAfterSetSourceCode(«header.tableVariableName», SourceCodeSetup, SrcCode);
-		
-		            InsertPostedHeaders(«header.tableVariableName»);
+		        OnBeforePostCommit«document.shortName.clean»(«header.tableVariableName», PreviewMode, ModifyHeader, SuppressCommit, Temp«line.tableVariableName»Global);
+		        if not PreviewMode and ModifyHeader then begin
+		            «header.tableVariableName».Modify();
+		            if not SuppressCommit then
+		                Commit();
 		        end;
+		
+		        LockTables(«header.tableVariableName»);
+		
+		        SourceCodeSetup.Get();
+		        SrcCode := SourceCodeSetup.«document.name.saveQuote»;
+		
+		        OnCheckAndUpdateOnAfterSetSourceCode(«header.tableVariableName», SourceCodeSetup, SrcCode);
+		
+		        InsertPostedHeaders(«header.tableVariableName»);
 		
 		        OnAfterCheckAndUpdate(«header.tableVariableName», SuppressCommit, PreviewMode);
 		    end;
@@ -624,27 +610,25 @@ class DocumentExtensions {
 		        «solution.commentLineTableVariableName»: Record «solution.commentLineTableName.saveQuote»;
 		        RecordLinkManagement: Codeunit "Record Link Management";
 		    begin
-		        with «header.tableVariableName» do begin
-		            «header.tableVariableNamePosted».Init();
-		            «header.tableVariableNamePosted».TransferFields(«header.tableVariableName»);
+		        «header.tableVariableNamePosted».Init();
+		        «header.tableVariableNamePosted».TransferFields(«header.tableVariableName»);
 		
-		            «header.tableVariableNamePosted»."No." := "Posting No.";
-		            «header.tableVariableNamePosted»."No. Series" := "Posting No. Series";
-		            «header.tableVariableNamePosted»."«document.shortName» No." := "No.";
-		            «header.tableVariableNamePosted»."«document.shortName» Nos." := "No. Series";
-		            if GuiAllowed and not HideProgressWindow then
-		                Window.Update(1, StrSubstNo(«document.shortNamePosted.clean»NoMsg, "No.", «header.tableVariableNamePosted»."No."));
-		            «header.tableVariableNamePosted»."Source Code" := SrcCode;
-		            «header.tableVariableNamePosted»."User ID" := UserId;
-		            «header.tableVariableNamePosted»."No. Printed" := 0;
+		        «header.tableVariableNamePosted»."No." := «header.tableVariableName»."Posting No.";
+		        «header.tableVariableNamePosted»."No. Series" := «header.tableVariableName»."Posting No. Series";
+		        «header.tableVariableNamePosted»."«document.shortName» No." := «header.tableVariableName»."No.";
+		        «header.tableVariableNamePosted»."«document.shortName» Nos." := «header.tableVariableName»."No. Series";
+		        if GuiAllowed and not HideProgressWindow then
+		            Window.Update(1, StrSubstNo(«document.shortNamePosted.clean»NoMsg, «header.tableVariableName»."No.", «header.tableVariableNamePosted»."No."));
+		        «header.tableVariableNamePosted»."Source Code" := SrcCode;
+		        «header.tableVariableNamePosted»."User ID" := UserId();
+		        «header.tableVariableNamePosted»."No. Printed" := 0;
 		
-		            OnBefore«header.tableVariableNamePosted»Insert(«header.tableVariableNamePosted», «header.tableVariableName», SuppressCommit);
-		            «header.tableVariableNamePosted».Insert(true);
-		            OnAfter«header.tableVariableNamePosted»Insert(«header.tableVariableNamePosted», «header.tableVariableName», SuppressCommit);
+		        OnBefore«header.tableVariableNamePosted»Insert(«header.tableVariableNamePosted», «header.tableVariableName», SuppressCommit);
+		        «header.tableVariableNamePosted».Insert(true);
+		        OnAfter«header.tableVariableNamePosted»Insert(«header.tableVariableNamePosted», «header.tableVariableName», SuppressCommit);
 		
-		            if «solution.setupTableVariableName»."Copy Comments" then begin
-		                «solution.commentLineTableVariableName».CopyComments(«solution.commentLineTableVariableName»."Document Type"::«document.name.saveQuote», «solution.commentLineTableVariableName»."Document Type"::«document.namePosted.saveQuote», "No.", «header.tableVariableNamePosted»."No.");
-		            end;
+		        if «solution.setupTableVariableName»."Copy Comments" then begin
+		            «solution.commentLineTableVariableName».CopyComments(«solution.commentLineTableVariableName»."Document Type"::«document.name.saveQuote», «solution.commentLineTableVariableName»."Document Type"::«document.namePosted.saveQuote», «header.tableVariableName»."No.", «header.tableVariableNamePosted»."No.");
 		        end;
 		    end;
 		
@@ -687,18 +671,16 @@ class DocumentExtensions {
 		        NoSeriesMgt: Codeunit NoSeriesManagement;
 		        IsHandled: Boolean;
 		    begin
-		        with «header.tableVariableName» do begin
-		            OnBeforeUpdatePostingNo(«header.tableVariableName», PreviewMode, ModifyHeader, IsHandled);
+		        OnBeforeUpdatePostingNo(«header.tableVariableName», PreviewMode, ModifyHeader, IsHandled);
 		
-		            if not IsHandled then
-		                if "Posting No." = '' then
-		                    if not PreviewMode then begin
-		                        TestField("Posting No. Series");
-		                        "Posting No." := NoSeriesMgt.GetNextNo("Posting No. Series", "Posting Date", true);
-		                        ModifyHeader := true;
-		                    end else
-		                        "Posting No." := PostingPreviewNoTok;
-		        end;
+		        if not IsHandled then
+		            if «header.tableVariableName»."Posting No." = '' then
+		                if not PreviewMode then begin
+		                    «header.tableVariableName».TestField("Posting No. Series");
+		                    «header.tableVariableName»."Posting No." := NoSeriesMgt.GetNextNo(«header.tableVariableName»."Posting No. Series", «header.tableVariableName»."Posting Date", true);
+		                    ModifyHeader := true;
+		                end else
+		                    «header.tableVariableName»."Posting No." := PostingPreviewNoTok;
 		
 		        OnAfterUpdatePostingNo(«header.tableVariableName», NoSeriesMgt, SuppressCommit);
 		    end;
@@ -872,19 +854,17 @@ class DocumentExtensions {
 		        if IsHandled then
 		            exit;
 		
-		        with «ledgerEntry.tableVariableNameJournal» do begin
-		            if EmptyLine then
-		                exit;
+		        if «ledgerEntry.tableVariableNameJournal».EmptyLine then
+		            exit;
 		
-		            TestField("«master.name» No.");
-		            TestField("Posting Date");
+		        «ledgerEntry.tableVariableNameJournal».TestField("«master.name» No.");
+		        «ledgerEntry.tableVariableNameJournal».TestField("Posting Date");
 		
-		            CheckPostingDate(«ledgerEntry.tableVariableNameJournal»);
+		        CheckPostingDate(«ledgerEntry.tableVariableNameJournal»);
 		
-		            if "Document Date" <> 0D then
-		                if "Document Date" <> NormalDate("Document Date") then
-		                    FieldError("Document Date", CannotBeClosingDateErr);
-		        end;
+		        if «ledgerEntry.tableVariableNameJournal»."Document Date" <> 0D then
+		            if «ledgerEntry.tableVariableNameJournal»."Document Date" <> NormalDate(«ledgerEntry.tableVariableNameJournal»."Document Date") then
+		                «ledgerEntry.tableVariableNameJournal».FieldError("Document Date", CannotBeClosingDateErr);
 		
 		        OnAfterRunCheck(«ledgerEntry.tableVariableNameJournal»);
 		    end;
@@ -894,17 +874,15 @@ class DocumentExtensions {
 		        UserSetupManagement: Codeunit "User Setup Management";
 		        IsHandled: Boolean;
 		    begin
-		        with «ledgerEntry.tableVariableNameJournal» do begin
-		            if "Posting Date" <> NormalDate("Posting Date") then
-		                FieldError("Posting Date", CannotBeClosingDateErr);
+		        if «ledgerEntry.tableVariableNameJournal»."Posting Date" <> NormalDate(«ledgerEntry.tableVariableNameJournal»."Posting Date") then
+		            «ledgerEntry.tableVariableNameJournal».FieldError("Posting Date", CannotBeClosingDateErr);
 		
-		            IsHandled := false;
-		            OnCheckPostingDateOnBeforeCheckAllowedPostingDate("Posting Date", IsHandled);
-		            if IsHandled then
-		                exit;
+		        IsHandled := false;
+		        OnCheckPostingDateOnBeforeCheckAllowedPostingDate(«ledgerEntry.tableVariableNameJournal»."Posting Date", IsHandled);
+		        if IsHandled then
+		            exit;
 		
-		            UserSetupManagement.CheckAllowedPostingDate("Posting Date");
-		        end;
+		        UserSetupManagement.CheckAllowedPostingDate(«ledgerEntry.tableVariableNameJournal»."Posting Date");
 		    end;
 		
 		    [IntegrationEvent(false, false)]
@@ -961,57 +939,55 @@ class DocumentExtensions {
 		    begin
 		        OnBeforePostJnlLine(«ledgerEntry.tableVariableNameJournal»);
 		
-		        with «ledgerEntry.tableVariableNameJournal» do begin
-		            if EmptyLine then
-		                exit;
+		        if «ledgerEntry.tableVariableNameJournal».EmptyLine() then
+		            exit;
 		
-		            «document.codeunitVariableNameJnlCheckLine».RunCheck(«ledgerEntry.tableVariableNameJournal»);
+		        «document.codeunitVariableNameJnlCheckLine».RunCheck(«ledgerEntry.tableVariableNameJournal»);
 		
-		            if NextEntryNo = 0 then begin
-		                «ledgerEntry.tableVariableName».LockTable();
-		                NextEntryNo := «ledgerEntry.tableVariableName».GetLastEntryNo() + 1;
-		            end;
-		
-		            if "Document Date" = 0D then
-		                "Document Date" := "Posting Date";
-		
-		            if «ledgerEntry.tableVariableNameRegister»."No." = 0 then begin
-		                «ledgerEntry.tableVariableNameRegister».LockTable;
-		                if (not «ledgerEntry.tableVariableNameRegister».FindLast()) or («ledgerEntry.tableVariableNameRegister»."To Entry No." <> 0) then begin
-		                    «ledgerEntry.tableVariableNameRegister».Init();
-		                    «ledgerEntry.tableVariableNameRegister»."No." := «ledgerEntry.tableVariableNameRegister»."No." + 1;
-		                    «ledgerEntry.tableVariableNameRegister»."From Entry No." := NextEntryNo;
-		                    «ledgerEntry.tableVariableNameRegister»."To Entry No." := NextEntryNo;
-		                    «ledgerEntry.tableVariableNameRegister»."Creation Date" := Today;
-		                    «ledgerEntry.tableVariableNameRegister»."Creation Time" := Time;
-		                    «ledgerEntry.tableVariableNameRegister»."Source Code" := "Source Code";
-		                    «ledgerEntry.tableVariableNameRegister»."Journal Batch Name" := "Journal Batch Name";
-		                    «ledgerEntry.tableVariableNameRegister»."User ID" := UserId;
-		                    «ledgerEntry.tableVariableNameRegister».Insert();
-		                end;
-		            end;
-		            «ledgerEntry.tableVariableNameRegister»."To Entry No." := NextEntryNo;
-		            «ledgerEntry.tableVariableNameRegister».Modify();
-		
-		            «master.tableVariableName».Get("«master.name» No.");
-		
-		            IsHandled := false;
-		            OnBeforeCheck«master.tableVariableName»Blocked(«master.tableVariableName», IsHandled);
-		            if not IsHandled then
-		                «master.tableVariableName».TestField(Blocked, false);
-		
-		            «ledgerEntry.tableVariableName».Init();
-		            «ledgerEntry.tableVariableName».CopyFrom«ledgerEntry.tableVariableNameJournal»(«ledgerEntry.tableVariableNameJournal»);
-		
-		            «ledgerEntry.tableVariableName»."User ID" := UserId;
-		            «ledgerEntry.tableVariableName»."Entry No." := NextEntryNo;
-		
-		            OnBeforeLedgerEntryInsert(«ledgerEntry.tableVariableName», «ledgerEntry.tableVariableNameJournal»);
-		
-		            «ledgerEntry.tableVariableName».Insert(true);
-		
-		            NextEntryNo := NextEntryNo + 1;
+		        if NextEntryNo = 0 then begin
+		            «ledgerEntry.tableVariableName».LockTable();
+		            NextEntryNo := «ledgerEntry.tableVariableName».GetLastEntryNo() + 1;
 		        end;
+		
+		        if «ledgerEntry.tableVariableNameJournal»."Document Date" = 0D then
+		            «ledgerEntry.tableVariableNameJournal»."Document Date" := «ledgerEntry.tableVariableNameJournal»."Posting Date";
+		
+		        if «ledgerEntry.tableVariableNameRegister»."No." = 0 then begin
+		            «ledgerEntry.tableVariableNameRegister».LockTable();
+		            if (not «ledgerEntry.tableVariableNameRegister».FindLast()) or («ledgerEntry.tableVariableNameRegister»."To Entry No." <> 0) then begin
+		                «ledgerEntry.tableVariableNameRegister».Init();
+		                «ledgerEntry.tableVariableNameRegister»."No." := «ledgerEntry.tableVariableNameRegister»."No." + 1;
+		                «ledgerEntry.tableVariableNameRegister»."From Entry No." := NextEntryNo;
+		                «ledgerEntry.tableVariableNameRegister»."To Entry No." := NextEntryNo;
+		                «ledgerEntry.tableVariableNameRegister»."Creation Date" := Today();
+		                «ledgerEntry.tableVariableNameRegister»."Creation Time" := Time();
+		                «ledgerEntry.tableVariableNameRegister»."Source Code" := «ledgerEntry.tableVariableNameJournal»."Source Code";
+		                «ledgerEntry.tableVariableNameRegister»."Journal Batch Name" := «ledgerEntry.tableVariableNameJournal»."Journal Batch Name";
+		                «ledgerEntry.tableVariableNameRegister»."User ID" := UserId();
+		                «ledgerEntry.tableVariableNameRegister».Insert();
+		            end;
+		        end;
+		        «ledgerEntry.tableVariableNameRegister»."To Entry No." := NextEntryNo;
+		        «ledgerEntry.tableVariableNameRegister».Modify();
+		
+		        «master.tableVariableName».Get(«ledgerEntry.tableVariableNameJournal»."«master.name» No.");
+		
+		        IsHandled := false;
+		        OnBeforeCheck«master.tableVariableName»Blocked(«master.tableVariableName», IsHandled);
+		        if not IsHandled then
+		            «master.tableVariableName».TestField(Blocked, false);
+		
+		        «ledgerEntry.tableVariableName».Init();
+		        «ledgerEntry.tableVariableName».CopyFrom«ledgerEntry.tableVariableNameJournal»(«ledgerEntry.tableVariableNameJournal»);
+		
+		        «ledgerEntry.tableVariableName»."User ID" := UserId();
+		        «ledgerEntry.tableVariableName»."Entry No." := NextEntryNo;
+		
+		        OnBeforeLedgerEntryInsert(«ledgerEntry.tableVariableName», «ledgerEntry.tableVariableNameJournal»);
+		
+		        «ledgerEntry.tableVariableName».Insert(true);
+		
+		        NextEntryNo := NextEntryNo + 1;
 		
 		        OnAfterPostJnlLine(«ledgerEntry.tableVariableNameJournal»);
 		    end;

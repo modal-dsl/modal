@@ -174,15 +174,13 @@ class MasterExtensions {
 				
 			procedure AssistEdit(Old«master.tableVariableName»: Record "«master.tableName»"): Boolean
 			begin
-				with «master.tableVariableName» do begin
-					«master.tableVariableName» := Rec;
+				«master.tableVariableName» := Rec;
+				Test«master.cleanedName»NoSeries();
+				if NoSeriesMgt.SelectSeries(«solution.setupTableVariableName»."«master.name» Nos.", Old«master.tableVariableName»."No. Series", «master.tableVariableName»."No. Series") then begin
 					Test«master.cleanedName»NoSeries();
-					if NoSeriesMgt.SelectSeries(«solution.setupTableVariableName»."«master.name» Nos.", Old«master.tableVariableName»."No. Series", "No. Series") then begin
-						Test«master.cleanedName»NoSeries();
-						NoSeriesMgt.SetSeries("No.");
-						Rec := «master.tableVariableName»;
-						exit(true);
-					end;
+					NoSeriesMgt.SetSeries(«master.tableVariableName»."No.");
+					Rec := «master.tableVariableName»;
+					exit(true);
 				end;
 			end;
 			
