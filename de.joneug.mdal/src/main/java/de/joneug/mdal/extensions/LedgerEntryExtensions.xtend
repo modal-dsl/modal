@@ -508,35 +508,35 @@ class LedgerEntryExtensions {
 		            repeater(Control1)
 		            {
 		                ShowCaption = false;
-		                field("Posting Date"; "Posting Date")
+		                field("Posting Date"; Rec."Posting Date")
 		                {
 		                    ApplicationArea = All;
 		                    ToolTip = 'Specifies the date when the entry was posted.';
 		                }
-		                field("Document Date"; "Document Date")
+		                field("Document Date"; Rec."Document Date")
 		                {
 		                    Visible = false;
 		                }
-		                field("Document No."; "Document No.")
+		                field("Document No."; Rec."Document No.")
 		                {
 		                    ApplicationArea = All;
 		                    ToolTip = 'Specifies the document number on the «master.name» ledger entry.';
 		                }
-		                field(Description; Description)
+		                field(Description; Rec.Description)
 		                {
 		                    ApplicationArea = All;
 		                    ToolTip = 'Specifies the description of the posted entry.';
 		                }
-		                field("Source No."; "Source No.")
+		                field("Source No."; Rec."Source No.")
 		                {
 		                    ApplicationArea = All;
 		                }
-		                field("«master.name» No."; "«master.name» No.")
+		                field("«master.name» No."; Rec."«master.name» No.")
 		                {
 		                    ApplicationArea = All;
 		                    ToolTip = 'Specifies the number of the «master.name».';
 		                }
-		                field("«document.name» No."; "«document.name» No.")
+		                field("«document.name» No."; Rec."«document.name» No.")
 		                {
 		                    ApplicationArea = All;
 		                    ToolTip = 'Specifies the number of the «document.name».';
@@ -544,7 +544,7 @@ class LedgerEntryExtensions {
 		                «FOR pageField : ledgerEntry.listPageFields»
 		                	«pageField.doGenerate»
 		                «ENDFOR»
-		                field("User ID"; "User ID")
+		                field("User ID"; Rec."User ID")
 		                {
 		                    ApplicationArea = All;
 		                    ToolTip = 'Specifies the ID of the user who posted the entry, to be used, for example, in the change log.';
@@ -557,19 +557,19 @@ class LedgerEntryExtensions {
 		                        UserMgt.DisplayUserInformation("User ID");
 		                    end;
 		                }
-		                field("Source Code"; "Source Code")
+		                field("Source Code"; Rec."Source Code")
 		                {
 		                    ApplicationArea = All;
 		                    ToolTip = 'Specifies the source code that specifies where the entry was created.';
 		                    Visible = false;
 		                }
-		                field("Reason Code"; "Reason Code")
+		                field("Reason Code"; Rec."Reason Code")
 		                {
 		                    ApplicationArea = All;
 		                    ToolTip = 'Specifies the reason code, a supplementary source code that enables you to trace the entry.';
 		                    Visible = false;
 		                }
-		                field("Entry No."; "Entry No.")
+		                field("Entry No."; Rec."Entry No.")
 		                {
 		                    ApplicationArea = All;
 		                    ToolTip = 'Specifies the number of the entry, as assigned from the specified number series when the entry was created.';
@@ -644,22 +644,22 @@ class LedgerEntryExtensions {
 		            repeater(Control1)
 		            {
 		                ShowCaption = false;
-		                field("No."; "No.")
+		                field("No."; Rec."No.")
 		                {
 		                    ApplicationArea = All;
 		                    ToolTip = 'Specifies the number of the «master.name» ledger register.';
 		                }
-		                field("Creation Date"; "Creation Date")
+		                field("Creation Date"; Rec."Creation Date")
 		                {
 		                    ApplicationArea = All;
 		                    ToolTip = 'Specifies the date when the entries in the register were posted.';
 		                }
-		                field("Creation Time"; "Creation Time")
+		                field("Creation Time"; Rec."Creation Time")
 		                {
 		                    ApplicationArea = All;
 		                    ToolTip = 'Specifies the time when the entries in the register were posted.';
 		                }
-		                field("User ID"; "User ID")
+		                field("User ID"; Rec."User ID")
 		                {
 		                    ApplicationArea = All;
 		                    ToolTip = 'Specifies the ID of the user who posted the entry, to be used, for example, in the change log.';
@@ -671,28 +671,28 @@ class LedgerEntryExtensions {
 		                        UserMgt.DisplayUserInformation("User ID");
 		                    end;
 		                }
-		                field(SourceCode; "Source Code")
+		                field(SourceCode; Rec."Source Code")
 		                {
 		                    ApplicationArea = All;
 		                    ToolTip = 'Specifies the source code for the entries in the register.';
 		                }
-		                field("Journal Batch Name"; "Journal Batch Name")
+		                field("Journal Batch Name"; Rec."Journal Batch Name")
 		                {
 		                    ApplicationArea = All;
 		                    ToolTip = 'Specifies the batch name of the «master.name» journal that the entries were posted from.';
 		                }
-		                field(Reversed; Reversed)
+		                field(Reversed; Rec.Reversed)
 		                {
 		                    ApplicationArea = Suite;
 		                    ToolTip = 'Specifies if the register has been reversed (undone) from the Reverse Entries window.';
 		                    Visible = false;
 		                }
-		                field("From Entry No."; "From Entry No.")
+		                field("From Entry No."; Rec."From Entry No.")
 		                {
 		                    ApplicationArea = All;
 		                    ToolTip = 'Specifies the first «master.name» ledger entry number in the register.';
 		                }
-		                field("To Entry No."; "To Entry No.")
+		                field("To Entry No."; Rec."To Entry No.")
 		                {
 		                    ApplicationArea = All;
 		                    ToolTip = 'Specifies the last «master.name» ledger entry number in the register.';

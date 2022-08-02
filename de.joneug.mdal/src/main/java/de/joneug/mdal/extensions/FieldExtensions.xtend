@@ -80,7 +80,7 @@ class FieldExtensions {
 			fieldName = includeField.name
 		}
 		return '''
-			field(«fieldName.saveQuote»; «fieldName.saveQuote»)
+			field(«fieldName.saveQuote»; Rec.«fieldName.saveQuote»)
 			{
 				ApplicationArea = All;
 			}

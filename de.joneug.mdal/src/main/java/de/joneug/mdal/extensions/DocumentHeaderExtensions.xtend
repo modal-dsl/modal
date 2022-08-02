@@ -985,25 +985,25 @@ class DocumentHeaderExtensions {
 		        {
 		            repeater(Control1)
 		            {
-		                field("No."; "No.")
+		                field("No."; Rec."No.")
 		                {
 		                    ApplicationArea = All;
 		                    ToolTip = 'Specifies the number of the involved entry or record, according to the specified number series.';
 		                }
-		                field("External Document No."; "External Document No.")
+		                field("External Document No."; Rec."External Document No.")
 		                {
 		                    ApplicationArea = All;
 		                    Visible = false;
 		                }
-		                field("Document Date"; "Document Date")
+		                field("Document Date"; Rec."Document Date")
 		                {
 		                    ApplicationArea = All;
 		                }
-		                field(Status; Status)
+		                field(Status; Rec.Status)
 		                {
 		                    ApplicationArea = All;
 		                }
-		                field("«master.name» No."; "«master.name» No.")
+		                field("«master.name» No."; Rec."«master.name» No.")
 		                {
 		                    ApplicationArea = All;
 		                }
@@ -1088,25 +1088,25 @@ class DocumentHeaderExtensions {
 		            repeater(Control1)
 		            {
 		            	ShowCaption = false;
-		                field("No."; "No.")
+		                field("No."; Rec."No.")
 		                {
 		                    ApplicationArea = All;
 		                    ToolTip = 'Specifies the number of the involved entry or record, according to the specified number series.';
 		                }
-		                field("External Document No."; "External Document No.")
+		                field("External Document No."; Rec."External Document No.")
 		                {
 		                    ApplicationArea = All;
 		                    Visible = false;
 		                }
-		                field("Document Date"; "Document Date")
+		                field("Document Date"; Rec."Document Date")
 		                {
 		                    ApplicationArea = All;
 		                }
-		                field(Status; Status)
+		                field(Status; Rec.Status)
 		                {
 		                    ApplicationArea = All;
 		                }
-		                field("«master.name» No."; "«master.name» No.")
+		                field("«master.name» No."; Rec."«master.name» No.")
 		                {
 		                    ApplicationArea = All;
 		                }
@@ -1191,7 +1191,7 @@ class DocumentHeaderExtensions {
 		            group(General)
 		            {
 		                Caption = 'General';
-		                field("No."; "No.")
+		                field("No."; Rec."No.")
 		                {
 		                    ApplicationArea = All;
 		                    Importance = Promoted;
@@ -1203,32 +1203,32 @@ class DocumentHeaderExtensions {
 		                            CurrPage.Update;
 		                    end;
 		                }
-		                field("«master.name» No."; "«master.name» No.")
+		                field("«master.name» No."; Rec."«master.name» No.")
 		                {
 		                    ApplicationArea = All;
 		                }
-		                field(Status; Status)
+		                field(Status; Rec.Status)
 		                {
 		                    ApplicationArea = All;
 		                    Importance = Promoted;
 		                    QuickEntry = false;
 		                }
-		                field("External Document No."; "External Document No.")
+		                field("External Document No."; Rec."External Document No.")
 		                {
 		                	ApplicationArea = All;
 		                	Importance = Promoted;
 		                }
-		                field(DocumentDate; "Document Date")
+		                field(DocumentDate; Rec."Document Date")
 		                {
 		                    ApplicationArea = All;
 		                    Importance = Additional;
 		                }
-		                field("Posting Date"; "Posting Date")
+		                field("Posting Date"; Rec."Posting Date")
 		                {
 		                    ApplicationArea = All;
 		                    Importance = Promoted;
 		                }
-		                field("Posting Description"; "Posting Description")
+		                field("Posting Description"; Rec."Posting Description")
 		                {
 		                    ApplicationArea = All;
 		                    Visible = false;
@@ -1344,38 +1344,38 @@ class DocumentHeaderExtensions {
 		            group(General)
 		            {
 		                Caption = 'General';
-		                field("No."; "No.")
+		                field("No."; Rec."No.")
 		                {
 		                    ApplicationArea = All;
 		                    Importance = Promoted;
 		                    ToolTip = 'Specifies the number of the involved entry or record, according to the specified number series.';
 		                }
-		                field("«master.name» No."; "«master.name» No.")
+		                field("«master.name» No."; Rec."«master.name» No.")
 		                {
 		                    ApplicationArea = All;
 		                }
-		                field(Status; Status)
+		                field(Status; Rec.Status)
 		                {
 		                    ApplicationArea = All;
 		                    Importance = Promoted;
 		                    QuickEntry = false;
 		                }
-		                field("External Document No."; "External Document No.")
+		                field("External Document No."; Rec."External Document No.")
 		                {
 		                	ApplicationArea = All;
 		                	Importance = Promoted;
 		                }
-		                field(DocumentDate; "Document Date")
+		                field(DocumentDate; Rec."Document Date")
 		                {
 		                    ApplicationArea = All;
 		                    Importance = Additional;
 		                }
-		                field("Posting Date"; "Posting Date")
+		                field("Posting Date"; Rec."Posting Date")
 		                {
 		                    ApplicationArea = All;
 		                    Importance = Promoted;
 		                }
-		                field("Posting Description"; "Posting Description")
+		                field("Posting Description"; Rec."Posting Description")
 		                {
 		                    ApplicationArea = All;
 		                    Visible = false;

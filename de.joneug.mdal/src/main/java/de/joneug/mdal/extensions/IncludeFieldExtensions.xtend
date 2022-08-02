@@ -109,14 +109,14 @@ class IncludeFieldExtensions {
 			}
 			
 			return '''
-				field(«includeField.name.saveQuote»; «includeField.name.saveQuote»)
+				field(«includeField.name.saveQuote»; Rec.«includeField.name.saveQuote»)
 				{
 					ApplicationArea = All;
 				}
 			'''
 		} else if(field === null && includeField.fieldName == 'Code') {
 			return '''
-				field(«includeField.name.saveQuote»; «includeField.name.saveQuote»)
+				field(«includeField.name.saveQuote»; Rec.«includeField.name.saveQuote»)
 				{
 					ApplicationArea = All;
 				}
