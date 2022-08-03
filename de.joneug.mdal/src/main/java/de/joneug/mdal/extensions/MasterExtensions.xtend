@@ -289,7 +289,7 @@ class MasterExtensions {
 		        	{
 		        		Caption = 'General';
 		        		
-		        		field("No."; "No.")
+		        		field("No."; Rec."No.")
 		                {
 		                    ApplicationArea = All;
 		                    Importance = Standard;
@@ -303,11 +303,11 @@ class MasterExtensions {
 		                «FOR pageField : master.getPageFieldsInGroup('General')»
 		                	«pageField.doGenerate»
 		                «ENDFOR»
-		                field(Blocked; Blocked)
+		                field(Blocked; Rec.Blocked)
 		                {
 		                    ApplicationArea = All;
 		                }
-		                field(LastDateModified; "Last Date Modified")
+		                field(LastDateModified; Rec."Last Date Modified")
 		                {
 		                    ApplicationArea = All;
 		                    Importance = Additional;

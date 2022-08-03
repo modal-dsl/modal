@@ -388,7 +388,7 @@ class DocumentLineExtensions {
 		            {
 		                ShowCaption = false;
 		                
-		                field("Line No."; "Line No.")
+		                field("Line No."; Rec."Line No.")
 		                {
 		                	ApplicationArea = All;
 		                	ToolTip = 'Specifies the number of the line.';
@@ -398,11 +398,11 @@ class DocumentLineExtensions {
 		                	«pageField.doGenerate»
 		                «ENDFOR»
 		                «IF line.hasTemplateOfType(TemplateDimensions)»
-		                	field("Shortcut Dimension 1 Code"; "Shortcut Dimension 1 Code")
+		                	field("Shortcut Dimension 1 Code"; Rec."Shortcut Dimension 1 Code")
 		                	{
 		                		ApplicationArea = All;
 		                	}
-		                	field("Shortcut Dimension 2 Code"; "Shortcut Dimension 2 Code")
+		                	field("Shortcut Dimension 2 Code"; Rec."Shortcut Dimension 2 Code")
 		                	{
 		                		ApplicationArea = All;
 		                	}
@@ -462,11 +462,11 @@ class DocumentLineExtensions {
 		                	«pageField.doGenerate»
 		                «ENDFOR»
 		                «IF line.hasTemplateOfType(TemplateDimensions)»
-		                	field("Shortcut Dimension 1 Code"; "Shortcut Dimension 1 Code")
+		                	field("Shortcut Dimension 1 Code"; Rec."Shortcut Dimension 1 Code")
 		                	{
 		                		ApplicationArea = All;
 		                	}
-		                	field("Shortcut Dimension 2 Code"; "Shortcut Dimension 2 Code")
+		                	field("Shortcut Dimension 2 Code"; Rec."Shortcut Dimension 2 Code")
 		                	{
 		                		ApplicationArea = All;
 		                	}

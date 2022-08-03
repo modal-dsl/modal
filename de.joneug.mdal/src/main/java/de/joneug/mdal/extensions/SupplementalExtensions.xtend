@@ -177,14 +177,14 @@ class SupplementalExtensions {
 	            repeater(Control1)
 	            {
 	            	ShowCaption = false;
-	                field("Code"; "Code")
+	                field("Code"; Rec."Code")
 	                {
 	                    ApplicationArea = All;
 	                }
 	                «FOR pageField : supplemental.listPageFields»
 	                	«pageField.doGenerate»
 	                «ENDFOR»
-	                field(Blocked; Blocked)
+	                field(Blocked; Rec.Blocked)
 	                {
 	                    ApplicationArea = All;
 	                    Visible = false;
